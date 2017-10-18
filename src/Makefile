@@ -3,15 +3,16 @@
 
 TARGET := .
 JAVAC := javac
-PACKAGES := com.github.shiftac.upartier;
+PACKAGES := com.github.shiftac.upartier;com.github.shiftac.upartier.app.network;com.github.shiftac.upartier.server.network;
 PROG := 
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
-JAVAFLAGS := -encoding utf8
+JAVALIB := ../lib/org.json.jar
+JAVAFLAGS := -encoding utf8 -Xlint:deprecation
 
 .PHONY: all
 all:
-	$(JAVAC) $(JAVASRC) -d $(TARGET) $(JAVAFLAGS) -sourcepath $(JAVASRCPATH)
+	$(JAVAC) $(JAVASRC) -d $(TARGET) $(JAVAFLAGS) -cp $(JAVALIB) -sourcepath $(JAVASRCPATH)
 
 .PHONY: clean
 clean:

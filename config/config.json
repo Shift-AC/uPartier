@@ -1,0 +1,12 @@
+{
+    "server":
+    {
+        "network":
+        {
+            "server":
+            {
+                "port": 2333
+            }
+        }
+    }
+}
