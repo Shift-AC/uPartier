@@ -1,12 +1,24 @@
 {
-    "server":
+    "network":
     {
-        "network":
+        "server":
         {
-            "server":
+            "Server":
             {
+                "host": "127.0.0.1",
+                "maxWorker": 32,
                 "port": 2333
+            },
+            "WorkerManager":
+            {
+                "probaGapInms": 100
             }
+        },
+        "Packet":
+        {
+            "attemptPerKB": 1,
+            "baseAttempt": 10,
+            "sleepInms": 100
         }
     }
 }

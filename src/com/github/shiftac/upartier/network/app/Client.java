@@ -1,4 +1,4 @@
-package com.github.shiftac.upartier.app.network;
+package com.github.shiftac.upartier.network.app;
 
 /** 
  * Provides interfaces for sending/receving data as a client. 
@@ -12,7 +12,7 @@ package com.github.shiftac.upartier.app.network;
  * work. 
  * 
  * @author ShiftAC
- * @see com.github.shiftac.upartier.server.network.Server
+ * @see com.github.shiftac.upartier.network.server.Server
  */
 public class Client
 {

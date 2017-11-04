@@ -1,6 +1,8 @@
-package com.github.shiftac.upartier.server.network;
+package com.github.shiftac.upartier.network.server;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import static com.github.shiftac.upartier.Util.*;
 
@@ -25,22 +27,11 @@ import static com.github.shiftac.upartier.Util.*;
  * @author ShiftAC
  * @since 1.0
  */
-public class Server
+public class Server extends Thread
 {
-    static
-    {
-        try
-        {
-            server = new Server();
-        }
-        catch (Exception e)
-        {
-            errorExit(e);
-        }
-    }
-
-    private static Server server;
-    private ServerSocket ss;
+    private static Server server = null;
+    private ServerSocket ss = null;
+    private WorkerManager manager = null;
 
     public static Server getInstance()
     {
@@ -50,13 +41,49 @@ public class Server
     private Server()
         throws IOException
     {
-        initServerSocket();
+        Class class = getClass();
+        ss = new ServerSocket(getIntConfig(class, "port"));
+        int maxWorker = getIntConfig(class, "maxWorker");
+        manager= new WorkerManager(maxWorker);
     }
 
-    private void initServerSocket()
+    public void refuse(Socket s)
         throws IOException
     {
-        ss = new ServerSocket((int)getLongConfig(
-            "/server/network/server/port"));
+        s.close();
+    }
+
+    @Override
+    public void run()
+    {
+        while (true)
+        {
+            try
+            {
+                Socket s = ss.accept();
+                WorkerThread wt = manager.delegate(s);
+                if (wt == null)
+                {
+                    refuse(s);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static
+    {
+        try
+        {
+            server = new Server();
+            server.start();
+        }
+        catch (Exception e)
+        {
+            errorExit(e);
+        }
     }
 }
