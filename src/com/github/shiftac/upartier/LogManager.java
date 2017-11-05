@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class LogManager
@@ -64,7 +65,7 @@ public class LogManager
     
     public void logFatal(String msg, int level)
     {
-        log(msg, LOG_Fatal);
+        log(msg, LOG_FATAL);
         System.exit(1);
     }
 

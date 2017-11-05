@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
-import static com.github.shiftac.upartier.Util.*;
+import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+import com.github.shiftac.upartier.network.Packet;
+import com.github.shiftac.upartier.Util;
 
 /** 
  * Provides interfaces for sending/receving data as a server. 
@@ -32,6 +36,8 @@ public class Server extends Thread
     private static Server server = null;
     private ServerSocket ss = null;
     private WorkerManager manager = null;
+    public ConcurrentLinkedDeque<Packet> msgQueue = 
+        new ConcurrentLinkedDeque<Packet>();
 
     public static Server getInstance()
     {
@@ -41,9 +47,9 @@ public class Server extends Thread
     private Server()
         throws IOException
     {
-        Class c = getClass();
-        ss = new ServerSocket(getIntConfig(c, "port"));
-        int maxWorker = getIntConfig(c, "maxWorker");
+        Class<? extends Object> c = getClass();
+        ss = new ServerSocket(Util.getIntConfig(c, "port"));
+        int maxWorker = Util.getIntConfig(c, "maxWorker");
         manager= new WorkerManager(maxWorker);
     }
 
@@ -82,7 +88,7 @@ public class Server extends Thread
         }
         catch (Exception e)
         {
-            errorExit(e);
+            Util.errorExit(e);
         }
     }
 }

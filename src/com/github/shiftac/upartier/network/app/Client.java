@@ -1,15 +1,16 @@
 package com.github.shiftac.upartier.network.app;
 
-import static com.github.shiftac.upartier.Util.*;
-
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.shiftac.upartier.LogManager;
-import com.github.shiftac.upartier.network.AES128Encryptor;
 import com.github.shiftac.upartier.network.AES128Key;
-import com.github.shiftac.upartier.network.Encryptor;
+import com.github.shiftac.upartier.network.Packet;
+import com.github.shiftac.upartier.network.PacketFormatException;
+import com.github.shiftac.upartier.Util;
 
 /** 
  * Provides interfaces for sending/receving data as a client. 
@@ -25,7 +26,7 @@ import com.github.shiftac.upartier.network.Encryptor;
  * @author ShiftAC
  * @see com.github.shiftac.upartier.network.server.Server
  */
-public class Client extends Thread
+public class Client
 {
     private static Client client = null;
     private int id = 0;
@@ -34,8 +35,69 @@ public class Client extends Thread
     private Socket s = null;
     private InputStream is = null;
     private OutputStream os = null;
-    private Encryptor encryptor = new AES128Encryptor();
     private AES128Key key = null;
+    public ConcurrentLinkedDeque<Packet> sendQueue = 
+        new ConcurrentLinkedDeque<Packet>();
+    public ConcurrentLinkedDeque<Packet> recvQueue = 
+        new ConcurrentLinkedDeque<Packet>();
+    protected Thread ot = new Thread()
+    {
+        public void parse(Packet pak)
+        {
+
+        }
+
+        @Override
+        public void run()
+        {
+            if (synchronize() == 1)
+            {
+                return;
+            }
+            it.start();
+            while (true)
+            {
+                try
+                {
+                    while (!sendQueue.isEmpty())
+                    {
+                        parse(sendQueue.remove());
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+    protected Thread it = new Thread()
+    {
+        public void parse(Packet pak)
+        {
+            
+        }
+
+        @Override
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+                    while (!recvQueue.isEmpty())
+                    {
+                        parse(recvQueue.remove());
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     public static synchronized void startClient(int userID)
     {
@@ -57,25 +119,25 @@ public class Client extends Thread
         {
             byte[] buf = new byte[16];
             mili = LogManager.calendar.getTimeInMillis();
-            setInt(buf, 0, id);
-            setLong(buf, 4, mili);
-            String host = getStringConfig("/network/server/Server/host");
-            int port = getStringConfig("/network/server/Server/port");
+            Util.setInt(buf, 0, id);
+            Util.setLong(buf, 4, mili);
+            String host = Util.getStringConfig("/network/server/Server/host");
+            int port = Util.getIntConfig("/network/server/Server/port");
             s = new Socket(host, port);
             is = s.getInputStream();
             os = s.getOutputStream();
             os.write(buf);
             os.flush();
             is.read(buf);
-            if (id != getInt(buf, 0) || mili != getLong(buf, 4))
+            if (id != Util.getInt(buf, 0) || mili != Util.getLong(buf, 4))
             {
                 s.close();
                 throw new IOException("Synchronization failed.");
             }
-            ip = getInt(buf, 12);
+            ip = Util.getInt(buf, 12);
             os.write(buf);
             os.flush();
-            key = new AES128Key(ip, id, timestamp);
+            key = new AES128Key(ip, id, mili);
         }
         catch (Exception e)
         {
@@ -85,9 +147,8 @@ public class Client extends Thread
         return 0;
     }
 
-    @Override
-    public void run()
+    public void start()
     {
-        synchronize();
+        ot.start();
     }
 }

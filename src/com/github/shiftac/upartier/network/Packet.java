@@ -3,13 +3,13 @@ package com.github.shiftac.upartier.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static com.github.shiftac.upartier.Util.*;
+import com.github.shiftac.upartier.Util;
 
 public abstract class Packet
 {
-    static final int sleepInterval;
-    static final int baseAttempt;
-    static final int attemptPerKB;
+    static int sleepInterval;
+    static int baseAttempt;
+    static int attemptPerKB;
     public byte version = 0;
     public byte type = 0;
     public byte subtype = 0;
@@ -40,7 +40,7 @@ public abstract class Packet
             int ava = is.available();
             if (ava == 0)
             {
-                sleepIgnoreInterrupt(100);
+                Util.sleepIgnoreInterrupt(100);
             }
             else
             {
@@ -82,9 +82,9 @@ public abstract class Packet
     {
         try
         {
-            sleepInterval = getIntConfig("/network/Packet/sleepInms");
-            baseAttempt = getIntConfig("/network/Packet/baseAttempt");
-            attemptPerKB = getIntConfig("/network/Packet/attemptPerKB");
+            sleepInterval = Util.getIntConfig("/network/Packet/sleepInms");
+            baseAttempt = Util.getIntConfig("/network/Packet/baseAttempt");
+            attemptPerKB = Util.getIntConfig("/network/Packet/attemptPerKB");
         }
         catch (Exception e)
         {

@@ -3,7 +3,7 @@ package com.github.shiftac.upartier.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static com.github.shiftac.upartier.Util.*;
+import com.github.shiftac.upartier.Util;
 
 public class RawPacket extends Packet
 {
@@ -45,6 +45,6 @@ public class RawPacket extends Packet
     @Override
     public byte getVersion()
     {
-        return (byte)0;
+        return PacketType.version("RawPacket");
     }
 }

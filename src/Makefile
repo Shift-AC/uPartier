@@ -8,11 +8,11 @@ PROG :=
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 JAVALIB := ../lib/org.json.jar
-JAVAFLAGS := -encoding utf8 -Xlint:deprecation
+JAVAFLAGS := -encoding utf8 -Xlint:all
 
 .PHONY: all
 all:
-	$(JAVAC) $(JAVASRC) -d $(TARGET) $(JAVAFLAGS) -cp $(JAVALIB) -sourcepath $(JAVASRCPATH)
+	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp $(JAVALIB) -sourcepath $(JAVASRCPATH)
 
 .PHONY: clean
 clean:
