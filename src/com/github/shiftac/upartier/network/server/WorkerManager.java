@@ -5,15 +5,15 @@ import static com.github.shiftac.upartier.Util.*;
 
 public class WorkerManager
 {
-    private WorkerThread[] pool;
+    private AbstractWorkerThread[] pool;
     private int probeGap = getIntConfig(getClass(), "probeGapInms");
 
     public WorkerManager(int maxWorker)
     {
-        pool = new WorkerThread[maxWorker];
+        pool = new AbstractWorkerThread[maxWorker];
     }
 
-    public WorkerThread delegate(Socket s)
+    public AbstractWorkerThread delegate(Socket s)
     {
         int rec = 0;
         try

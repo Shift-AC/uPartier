@@ -25,7 +25,7 @@ public class LogManager
     private static final int LOG_WARNING = 2;
     private static final int LOG_ERROR = 3;
     private static final int LOG_FATAL = 4;
-    private static Calendar calendar = new GregorianCalendar(); 
+    public static Calendar calendar = new GregorianCalendar(); 
 
     public int verbose = 0;
 

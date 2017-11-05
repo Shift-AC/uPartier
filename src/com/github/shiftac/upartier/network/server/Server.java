@@ -41,9 +41,9 @@ public class Server extends Thread
     private Server()
         throws IOException
     {
-        Class class = getClass();
-        ss = new ServerSocket(getIntConfig(class, "port"));
-        int maxWorker = getIntConfig(class, "maxWorker");
+        Class c = getClass();
+        ss = new ServerSocket(getIntConfig(c, "port"));
+        int maxWorker = getIntConfig(c, "maxWorker");
         manager= new WorkerManager(maxWorker);
     }
 
@@ -61,8 +61,7 @@ public class Server extends Thread
             try
             {
                 Socket s = ss.accept();
-                WorkerThread wt = manager.delegate(s);
-                if (wt == null)
+                if (manager.delegate(s) == null)
                 {
                     refuse(s);
                 }

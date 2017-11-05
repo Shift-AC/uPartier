@@ -3,7 +3,7 @@
 
 TARGET := .
 JAVAC := javac
-PACKAGES := com.github.shiftac.upartier;com.github.shiftac.upartier.network.server;com.github.shiftac.upartier.network.app;
+PACKAGES := com.github.shiftac.upartier;com.github.shiftac.upartier.network;com.github.shiftac.upartier.network.server;com.github.shiftac.upartier.network.app;
 PROG := 
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))

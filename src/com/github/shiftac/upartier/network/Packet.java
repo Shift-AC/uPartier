@@ -5,28 +5,35 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import static com.github.shiftac.upartier.Util.*;
 
-public class Packet
+public abstract class Packet
 {
     static final int sleepInterval;
     static final int baseAttempt;
     static final int attemptPerKB;
-    byte version = 0;
-    byte type = 0;
-    short subtype = 0;
-    int len = 0;
-    byte[] data = null;
-    private byte[] buf = new byte[8];
+    public byte version = 0;
+    public byte type = 0;
+    public byte subtype = 0;
+    public byte padding = 0;
+    public int len = 0;
+    public byte[] data = null;
 
-    private static int getAttempt(int n)
+    protected static int getAttempt(int n)
     {
         return ((n >> 10) + 1) * attemptPerKB + baseAttempt;
     }
 
-    private static int readN(InputStream is, byte[] buf, int off, int n)
-        throws IOException
+    public void setLen(int len)
+    {
+        this.len = len;
+        data = new byte[len];
+    }
+
+    protected static int doRead(
+        InputStream is, byte[] buf, int off, int n, boolean force)
+        throws IOException, NetworkTimeoutException
     {
         int on = n;
-        int maxAttempt = getAttempt(n);
+        int maxAttempt = force ? getAttempt(n) : 2147483647;
 
         for (int att = 0; att < maxAttempt; ++att)
         {
@@ -46,59 +53,30 @@ public class Packet
                 }
             }
         }
-        return on - n;
+        if (force && n != 0)
+        {
+            throw new NetworkTimeoutException(n + " bytes remaining.");
+        }
+        return on;
     }
 
-    private static void forceReadN(InputStream is, byte[] buf, int off, int n)
-        throws IOException, NetworkTimeoutException
+    protected void checkVersion()
+        throws PacketFormatException
     {
-        int x = readN(is, buf, off, n);
-        if (x != 0)
+        if (version != getVersion())
         {
-            throw new NetworkTimeoutException(x + " bytes remaining.");
+            throw new PacketFormatException("Version(" + version + 
+                ") not match, Expected "+ getVersion());
         }
     }
 
-    public void forceRead(InputStream is)
-        throws IOException, NetworkTimeoutException
-    {
-        forceReadN(is, buf, 0, 8);
-        version = buf[0];
-        type = buf[1];
-        subtype = ((short)buf[2] << 8) + ((short)buf[3] & 0xFF);
-        len = ((int)buf[4] << 24) + (((int)buf[5] & 0xFF) << 16) + 
-            (((int)buf[6] & 0xFF) << 8) + ((int)buf[7] & 0xFF);
-        data = new byte[len];
-        forceReadN(is, data, 0, len);
-    }
+    public abstract void read(InputStream is, boolean force)
+        throws IOException, PacketFormatException, NetworkTimeoutException;
+    
+    public abstract void write(OutputStream os)
+        throws IOException, PacketFormatException;
 
-    public void read(InputStream is)
-        throws IOException
-    {
-        is.read(buf, 0, 8);
-        version = buf[0];
-        type = buf[1];
-        subtype = ((short)buf[2] << 8) + ((short)buf[3] & 0xFF);
-        len = ((int)buf[4] << 24) + (((int)buf[5] & 0xFF) << 16) + 
-            (((int)buf[6] & 0xFF) << 8) + ((int)buf[7] & 0xFF);
-        data = new byte[len];
-        is.read(data, 0, len);
-    }
-
-    public void write(OutputStream os)
-        throws IOException
-    {
-        buf[0] = version;
-        buf[1] = type;
-        buf[2] = (byte)(subtype >> 8);
-        buf[3] = (byte)subtype;
-        buf[4] = (byte)(len >> 24);
-        buf[5] = (byte)(len >> 16);
-        buf[6] = (byte)(len >> 8);
-        buf[7] = (byte)len;
-        os.write(buf);
-        os.write(data);
-    }
+    public abstract byte getVersion();
 
     static
     {
