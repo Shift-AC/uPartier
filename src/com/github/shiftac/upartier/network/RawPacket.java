@@ -9,6 +9,22 @@ public class RawPacket extends Packet
 {
     protected byte[] buf = new byte[headerLen()];
 
+    public RawPacket() 
+    {
+        version = getVersion();
+    }
+
+    public RawPacket(ByteArrayIO payload)
+    {
+        version = getVersion();
+        setLen(payload.getLength());
+        try
+        {
+            payload.write(data, 0, data.length);
+        }
+        catch (Exception e) {}
+    }
+
     @Override
     public void read(InputStream is, boolean force)
         throws IOException, PacketFormatException, NetworkTimeoutException

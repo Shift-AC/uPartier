@@ -11,6 +11,9 @@ import com.github.shiftac.upartier.network.AES128Key;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
+import com.github.shiftac.upartier.network.PacketType;
+import com.github.shiftac.upartier.network.PlainMessage;
+
 import com.github.shiftac.upartier.Util;
 
 public class Worker extends AbstractWorker
@@ -23,10 +26,20 @@ public class Worker extends AbstractWorker
     protected SimpleWaitThread ot = new SimpleWaitThread()
     {
         public void parse(Packet pak)
-            throws IOException
+            throws IOException, PacketFormatException
         {
             Util.log.logMessage("Parsing send package #" + pak.sequence);
 
+            if (pak.type != (byte)(
+                PacketType.TYPE_CTRL | PacketType.CTRL_LOCAL))
+            {
+                pak.write(os);
+                Util.log.logMessage("Package #" + pak.sequence + " sent.");
+            }
+            else
+            {
+                Util.log.logMessage("Parsing local control package...");
+            }
         }
 
         @Override
@@ -97,7 +110,26 @@ public class Worker extends AbstractWorker
     {
         public void parse(Packet pak)
         {
-            
+            Util.log.logMessage("Parsing incoming package...");
+            switch (pak.type)
+            {
+            case PacketType.TYPE_PUSH | PacketType.DATA_MESSAGE_PLAIN:
+                System.out.printf("Client #%d says: %s\n", userID, 
+                    new PlainMessage(pak.data).toString());
+                break;
+            case PacketType.TYPE_TRIGGER | PacketType.DATA_MESSAGE_PLAIN:
+                PlainMessage msg = new PlainMessage(pak.data);
+                System.out.printf("Client #%d(trigger) says: %s\n", userID, 
+                    msg.toString());
+                AES128Packet tpak = new AES128Packet(msg);
+                tpak.type = 
+                    PacketType.TYPE_PUSH | PacketType.DATA_MESSAGE_PLAIN;
+                issue(tpak);
+                break;
+            default:
+                Util.log.logWarning(
+                    "Unrecognized package. Inf:" + pak.getInf());
+            }
         }
 
         @Override

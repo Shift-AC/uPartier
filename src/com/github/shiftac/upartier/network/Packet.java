@@ -79,6 +79,10 @@ public abstract class Packet
             {
                 ava = force ? (ava < n ? ava : n) : n;
                 ava = is.read(buf, off, ava);
+                if (ava == -1)
+                {
+                    throw new IOException("Connection closed.");
+                }
                 off += ava;
                 if ((n -= ava) == 0)
                 {

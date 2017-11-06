@@ -50,12 +50,7 @@ public class Server extends Thread
     private void listen(int port)
         throws IOException
     {
-        ServerSocketChannel ssc = ServerSocketChannel.open();  
-        ssc.socket().bind(new InetSocketAddress(port));
-        ssc.socket().setReuseAddress(true);
-        ss = ssc.socket();
-        //ss.getChannel().setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-        //ssc.configureBlocking(false);
+        ss = new ServerSocket(port);
     }
 
     private Server()
@@ -84,8 +79,7 @@ public class Server extends Thread
             try
             {
                 Socket s = ss.accept();
-                s.getChannel().setOption(
-                    StandardSocketOptions.SO_KEEPALIVE, true);
+                s.setKeepAlive(true);
                 Util.log.logMessage(String.format(
                     "Accepted request from %s:%d", 
                     s.getInetAddress().toString(), s.getPort()));

@@ -3,12 +3,33 @@ package com.github.shiftac.upartier.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.github.shiftac.upartier.Util;
 
 public class AES128Packet extends Packet
 {
     protected byte[] buf = new byte[16];
     static AES128Key key = null;
+    static AtomicInteger nowSeq = new AtomicInteger(0);
+
+    public AES128Packet() 
+    {
+        version = getVersion();
+        sequence = nowSeq.addAndGet(1) & 0xFFFF;
+    }
+
+    public AES128Packet(ByteArrayIO payload)
+    {
+        version = getVersion();
+        sequence = nowSeq.addAndGet(1) & 0xFFFF;
+        setLen(payload.getLength());
+        try
+        {
+            payload.write(data, 0, data.length);
+        }
+        catch (Exception e) {}
+    }
 
     static synchronized AES128Key accessKey(
         AES128Key nkey, boolean read)
@@ -46,8 +67,9 @@ public class AES128Packet extends Packet
     @Override
     public void setLen(int len)
     {
-        padding = (byte)(16 - ((len + 8) & 0xF) & 0xF);
-        super.setLen(len + padding);
+        padding = (byte)(16 - ((len + headerLen()) & 0xF) & 0xF);
+        data = new byte[len + padding];
+        this.len = len;
     }
 
     void fill(byte[] src, int off, int len)
@@ -66,15 +88,22 @@ public class AES128Packet extends Packet
         doRead(is, buf, 0, 16, force);
         decrypt(buf, 0);
         setHeader(buf);
+        Util.log.logVerbose(getInf(), 3);
+        setLen(len);
         int hlen = headerLen();
         int m = 16 - hlen;
         for (int i = 0; i < m; ++i)
         {
             data[i] = buf[i + hlen];
         }
-        doRead(is, data, m, len + hlen - 16 - m, force);
+        if (len < m)
+        {
+            checkVersion();
+            return;
+        }
+        doRead(is, data, m, len + padding - m, force);
         checkVersion();
-        decrypt(data, 0);
+        decrypt(data, m);
     }
 
     @Override
@@ -97,7 +126,7 @@ public class AES128Packet extends Packet
         encrypt(buf, 0);
         encrypt(tdata, 0);
         os.write(buf);
-        os.write(tdata, 0, tdata.length);
+        os.write(tdata);
         os.flush();
     }
 
@@ -112,7 +141,7 @@ public class AES128Packet extends Packet
         throws PacketFormatException
     {
         super.checkVersion();
-        if (((len + headerLen()) & 0xF) != 0)
+        if (((len + padding + headerLen()) & 0xF) != 0)
         {
             throw new PacketFormatException("Length(" + len + ") not aligned.");
         }

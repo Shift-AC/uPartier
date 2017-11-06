@@ -16,6 +16,8 @@ import com.github.shiftac.upartier.network.AES128Key;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
+import com.github.shiftac.upartier.network.PacketType;
+import com.github.shiftac.upartier.network.PlainMessage;
 import com.github.shiftac.upartier.Util;
 
 /** 
@@ -47,10 +49,20 @@ public class Client
     protected SimpleWaitThread ot = new SimpleWaitThread()
     {
         public void parse(Packet pak)
-            throws IOException
+            throws IOException, PacketFormatException
         {
             Util.log.logMessage("Parsing send package #" + pak.sequence);
-
+            
+            if (pak.type != (byte)(
+                PacketType.TYPE_CTRL | PacketType.CTRL_LOCAL))
+            {
+                pak.write(os);
+                Util.log.logMessage("Package #" + pak.sequence + " sent.");    
+            }
+            else
+            {
+                Util.log.logMessage("Parsing local control package...");
+            }
         }
 
         @Override
@@ -114,7 +126,17 @@ public class Client
     {
         public void parse(Packet pak)
         {
-            
+            Util.log.logMessage("Parsing incoming package...");
+            switch (pak.type)
+            {
+            case PacketType.TYPE_PUSH | PacketType.DATA_MESSAGE_PLAIN:
+                PlainMessage msg = new PlainMessage(pak.data);
+                System.out.printf("Server says: %s\n", msg.toString());
+                break;
+            default:
+                Util.log.logWarning(
+                    "Unrecognized package. Inf:" + pak.getInf());
+            }
         }
 
         @Override
@@ -136,6 +158,20 @@ public class Client
             ot.doNotify();
         }
     };
+
+    public static Client getInstance()
+    {
+        return client;
+    }
+
+    public void issue(Packet pak)
+    {
+        sendQueue.add(pak);
+        Util.log.logVerbose(String.format(
+            "Packet #%d issued. Protocol inf:(%s)", pak.sequence, 
+                pak.getInf()), 2);
+        ot.doNotify();
+    }
 
     public static synchronized void startClient(int userID)
     {
@@ -177,11 +213,7 @@ public class Client
                 "Set userID=%d, timestamp=%d", id, mili), 2);
             String host = Util.getStringConfig("/network/server/Server/host");
             int port = Util.getIntConfig("/network/server/Server/port");
-            SocketChannel sc = SocketChannel.open();
-            sc.connect(new InetSocketAddress(host, port));
-            s = sc.socket();
-            s.getChannel().setOption(
-                StandardSocketOptions.SO_KEEPALIVE, true);
+            s = new Socket(host, port);
             is = s.getInputStream();
             os = s.getOutputStream();
             os.write(buf);

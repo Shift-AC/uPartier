@@ -10,11 +10,13 @@ public interface PacketType
     public static final int TYPE_PUSH = 0x10;
     public static final int TYPE_TRIGGER = 0x18;
 
-    public static final int CTRL_LOGIN = 0x0;
-    public static final int CTRL_CHANGELOGSTATE = 0x1;
+    public static final int CTRL_LOCAL = 0x0;
+    public static final int CTRL_LOGIN = 0x1;
 
-    public static final int DATA_MESSAGE = 0x0;
-    public static final int DATA_PROFILE = 0x1;
-    public static final int DATA_BOARD = 0x2;
-    public static final int DATA_POST = 0x3;
+    public static final int DATA_MESSAGE_PLAIN = 0x0;
+    public static final int DATA_MESSAGE_RICH = 0x1;
+    public static final int DATA_PROFILE = 0x2;
+    public static final int DATA_BOARD = 0x3;
+    public static final int DATA_POST = 0x4;
+    public static final int DATA_GENERAL = 0x5;
 }
