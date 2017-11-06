@@ -3,8 +3,11 @@ package com.github.shiftac.upartier.network.server;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.StandardSocketOptions; 
+import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.shiftac.upartier.network.Packet;
@@ -44,13 +47,24 @@ public class Server extends Thread
         return server;
     }
 
+    private void listen(int port)
+        throws IOException
+    {
+        ServerSocketChannel ssc = ServerSocketChannel.open();  
+        ssc.socket().bind(new InetSocketAddress(port));
+        ssc.socket().setReuseAddress(true);
+        ss = ssc.socket();
+        //ss.getChannel().setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+        //ssc.configureBlocking(false);
+    }
+
     private Server()
         throws IOException
     {
         Class<? extends Object> c = getClass();
         int port = Util.getIntConfig(c, "port");
         Util.log.logMessage("Server listening on port " + port + ".");
-        ss = new ServerSocket(port);
+        listen(port);
         int maxWorker = Util.getIntConfig(c, "maxWorker");
         manager= new WorkerManager(maxWorker);
     }
