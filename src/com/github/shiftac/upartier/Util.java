@@ -14,35 +14,31 @@ public class Util
     {
         try
         {
-            config = new JSONObject(new JSONTokener(new FileInputStream("config/config.json")));
+            config = new JSONObject(new JSONTokener(new FileInputStream(
+                "config/config.json")));
         }
         catch (Exception e)
         {
-            errorExit(e);
+            errorExit("Can't initialize config manager.", e);
         }
     }
 
     public static final long version = 0x0000000000000001;
 
     private static JSONObject config;
-    public static LogManager log = new LogManager(System.err);
+    public static LogManager log = new LogManager(System.err, 10, true);
 
     private static Object getConfig(String name)
         throws JSONPointerException
     {
+        Util.log.logVerbose(String.format("Getting config %s...", name), 3);
         return (new JSONPointer(name)).queryFrom(config);
     }
 
     public static int getIntConfig(String name)
         throws JSONPointerException
     {
-        return (int)(((Long)getConfig(name)).longValue());
-    }
-
-    public static long getLongConfig(String name)
-        throws JSONPointerException
-    {
-        return ((Long)getConfig(name)).longValue();
+        return ((Integer)getConfig(name)).intValue();
     }
 
     public static double getDoubleConfig(String name)
@@ -85,20 +81,14 @@ public class Util
             return null;
         }
         cname = cname.substring(pos + "upartier.".length());
-        cname.replace('.', '/');
+        cname = cname.replace('.', '/');
         return getConfig("/" + cname + "/" + name);
     }
 
     public static int getIntConfig(Class<? extends Object> c, String name)
         throws JSONPointerException
     {
-        return (int)(((Long)getConfig(c, name)).longValue());
-    }
-
-    public static long getLongConfig(Class<? extends Object> c, String name)
-        throws JSONPointerException
-    {
-        return ((Long)getConfig(c, name)).longValue();
+        return ((Integer)getConfig(c, name)).intValue();
     }
 
     public static double getDoubleConfig(Class<? extends Object> c, String name)
@@ -131,10 +121,10 @@ public class Util
         return (JSONObject)getConfig(c, name);
     }
 
-    public static void errorExit(Exception e)
+    public static void errorExit(String cause, Exception e)
     {
-        e.printStackTrace();
-        System.exit(1);
+        e.printStackTrace(Util.log.dest);
+        log.logFatal(cause, 1);
     }
 
     public static void sleepIgnoreInterrupt(long mili)

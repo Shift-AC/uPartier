@@ -27,14 +27,16 @@ public class WorkerManager
                     {
                         pool[i] = new Worker(s);
                         pool[i].start();
-                        return pool[i];
                     }
+                    Util.log.logVerbose(String.format(
+                        "Worker #%d now working..., ", i), 1);
+                    return pool[i];
                 }
             }
         }
         catch (Exception e) 
         {
-            e.printStackTrace();
+            e.printStackTrace(Util.log.dest);
             pool[rec] = null;
         }
         return null;

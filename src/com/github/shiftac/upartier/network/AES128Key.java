@@ -26,10 +26,10 @@ public class AES128Key
         int th = (int)(timestamp >>> 32);
         int tl = (int)timestamp;
         int[] key = new int[4];
-        key[1] = lfsr113_Bits(sa, id, th, tl);
-        key[2] = lfsr113_Bits(id, sa, tl, th);
-        key[3] = lfsr113_Bits(tl, th, id, sa);
-        key[4] = lfsr113_Bits(th, tl, sa, id);
+        key[0] = lfsr113_Bits(sa, id, th, tl);
+        key[1] = lfsr113_Bits(id, sa, tl, th);
+        key[2] = lfsr113_Bits(tl, th, id, sa);
+        key[3] = lfsr113_Bits(th, tl, sa, id);
 
         seed = new byte[16];
         for (int i = 0; i < 4; ++i)

@@ -48,12 +48,14 @@ public class Server extends Thread
         throws IOException
     {
         Class<? extends Object> c = getClass();
-        ss = new ServerSocket(Util.getIntConfig(c, "port"));
+        int port = Util.getIntConfig(c, "port");
+        Util.log.logMessage("Server listening on port " + port + ".");
+        ss = new ServerSocket(port);
         int maxWorker = Util.getIntConfig(c, "maxWorker");
         manager= new WorkerManager(maxWorker);
     }
 
-    public void refuse(Socket s)
+    protected void refuse(Socket s)
         throws IOException
     {
         s.close();
@@ -62,19 +64,24 @@ public class Server extends Thread
     @Override
     public void run()
     {
+        Util.log.logMessage("Server starting...");
         while (true)
         {
             try
             {
                 Socket s = ss.accept();
+                Util.log.logMessage(String.format(
+                    "Accepted request from %s:%d", 
+                    s.getInetAddress().toString(), s.getPort()));
                 if (manager.delegate(s) == null)
                 {
+                    Util.log.logWarning("Can't allocate worker, refuse.");
                     refuse(s);
                 }
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                e.printStackTrace(Util.log.dest);
             }
         }
     }
@@ -88,7 +95,7 @@ public class Server extends Thread
         }
         catch (Exception e)
         {
-            Util.errorExit(e);
+            Util.errorExit("Can't start server.", e);
         }
     }
 }

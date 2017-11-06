@@ -9,9 +9,8 @@ import java.util.GregorianCalendar;
 
 public class LogManager
 {
-    PrintStream dest;
+    public PrintStream dest;
     private long start;
-    private long startMili;
 
     private static final String[] typePrefix = 
     {
@@ -30,14 +29,29 @@ public class LogManager
 
     public int verbose = 0;
 
-    public boolean timestamp = false;
+    public final boolean timestamp;
 
-    public LogManager(OutputStream os)
+    public LogManager(OutputStream os, int verbose, boolean time)
     {
-        long mili = calendar.getTimeInMillis();
+        timestamp = time;
+        this.verbose = verbose;
         dest = new PrintStream(os);
-        start = mili / 1000;
-        startMili = mili % 1000;
+        if (time)
+        {
+            initTimestamp();
+        }
+    }
+
+    private void initTimestamp()
+    {
+        start = calendar.getTimeInMillis();
+        long ssec = start / 1000;
+        long smili = start % 1000;
+        Date date = new Date(start);
+        SimpleDateFormat format = new SimpleDateFormat(
+            "yyyy.MM.dd-HH:mm:ss z");
+        logMessage(String.format("LogManager initialized at %d.%d(%s).", 
+            ssec, smili, format.format(date)));
     }
 
     public void logVerbose(String msg, int level)
@@ -48,25 +62,25 @@ public class LogManager
         }
     }
 
-    public void logMessage(String msg, int level)
+    public void logMessage(String msg)
     {
         log(msg, LOG_MESSAGE);
     }
     
-    public void logWarning(String msg, int level)
+    public void logWarning(String msg)
     {
         log(msg, LOG_WARNING);
     }
     
-    public void logError(String msg, int level)
+    public void logError(String msg)
     {
         log(msg, LOG_ERROR);
     }
     
-    public void logFatal(String msg, int level)
+    public void logFatal(String msg, int retVal)
     {
         log(msg, LOG_FATAL);
-        System.exit(1);
+        System.exit(retVal);
     }
 
     protected String generateLine(int type, String msg)
@@ -75,7 +89,8 @@ public class LogManager
         prefix.append(typePrefix[type]);
         if (timestamp)
         {
-            long mili = calendar.getTimeInMillis();
+            calendar.setTime(new Date());
+            long mili = calendar.getTimeInMillis() - start;
             long sec = mili / 1000;
             mili = mili % 1000;
             prefix.append(String.format("(%7d.%03d)", sec, mili));

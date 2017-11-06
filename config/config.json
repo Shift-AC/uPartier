@@ -5,13 +5,13 @@
         {
             "Server":
             {
-                "host": "127.0.0.1",
+                "host": "222.29.98.219",
                 "maxWorker": 32,
                 "port": 2333
             },
             "WorkerManager":
             {
-                "probaGapInms": 100
+                "probeGapInms": 100
             }
         },
         "Packet":

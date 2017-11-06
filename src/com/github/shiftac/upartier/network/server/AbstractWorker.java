@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.github.shiftac.upartier.network.NetworkTimeoutException;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
+import com.github.shiftac.upartier.Util;
 
 public abstract class AbstractWorker
 {
@@ -27,6 +28,9 @@ public abstract class AbstractWorker
         this.s = s;
         is = s.getInputStream();
         os = s.getOutputStream();
+        Util.log.logMessage(String.format(
+            "Worker initialized for request from %s:%d", 
+            s.getInetAddress().toString(), s.getPort()));
     }
 
     // used to distribute information about encrypt key.
@@ -41,12 +45,17 @@ public abstract class AbstractWorker
     public void issue(Packet pak)
     {
         sendQueue.add(pak);
+        Util.log.logVerbose(String.format(
+            "Packet #%d issued. Protocol inf:(%s)", pak.sequence, 
+                pak.getInf()), 2);
     }
 
     protected void send(Packet pak)
          throws IOException, PacketFormatException
     {
         pak.write(os);
+        Util.log.logVerbose(String.format(
+            "Packet #%d sent.", pak.sequence), 2);
     }
 
     protected Packet recv(boolean force)
@@ -59,9 +68,11 @@ public abstract class AbstractWorker
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            e.printStackTrace(Util.log.dest);
         }
         pak.read(is, force);
+        Util.log.logVerbose(String.format(
+            "Packet received. Protocol inf:(%s)", pak.getInf()), 2);
         return pak;
     }
 }

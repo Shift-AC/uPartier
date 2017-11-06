@@ -3,6 +3,7 @@
 .PHONY: all
 all: clean init
 	make -C src TARGET=../bin
+	-make -C test
 
 .PHONY: init
 init:
@@ -15,3 +16,9 @@ clean:
 	
 README: README.md
 	pandoc README.md --latex-engine=xelatex -o README.pdf
+
+runServer:
+	java -cp "test:bin:lib/org.json.jar:;test;bin;lib/org.json.jar" TestServer
+
+runClient:
+	java -cp "test:bin:lib/org.json.jar:;test;bin;lib/org.json.jar" TestClient

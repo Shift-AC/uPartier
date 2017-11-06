@@ -7,7 +7,9 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.shiftac.upartier.LogManager;
+import com.github.shiftac.upartier.SimpleWaitThread;
 import com.github.shiftac.upartier.network.AES128Key;
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 import com.github.shiftac.upartier.Util;
@@ -38,12 +40,12 @@ public class Client
     private AES128Key key = null;
     public ConcurrentLinkedDeque<Packet> sendQueue = 
         new ConcurrentLinkedDeque<Packet>();
-    public ConcurrentLinkedDeque<Packet> recvQueue = 
-        new ConcurrentLinkedDeque<Packet>();
-    protected Thread ot = new Thread()
+    protected SimpleWaitThread ot = new SimpleWaitThread()
     {
         public void parse(Packet pak)
+            throws IOException
         {
+            Util.log.logMessage("Parsing send package #" + pak.sequence);
 
         }
 
@@ -63,16 +65,54 @@ public class Client
                     {
                         parse(sendQueue.remove());
                     }
+                    Util.log.logVerbose("Sending queue is empty.", 1);
+                    synchronized (this.wait)
+                    {
+                        if (!it.isAlive())
+                        {
+                            break;
+                        }
+                    }
+                    Util.log.logVerbose(
+                        "Recv thread still working, wait for packet issue.", 
+                        1);
+                    doWait();
+                }
+                catch (IOException ie)
+                {
+                    ie.printStackTrace(Util.log.dest);
+                    break;
                 }
                 catch (Exception e)
                 {
-                    e.printStackTrace();
+                    e.printStackTrace(Util.log.dest);
                 }
+            }
+            while (true)
+            {
+                try
+                {
+                    it.join();
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+                break;
+            }
+            try
+            {
+                s.close();
+            }
+            catch (Exception e)
+            {
+                Util.log.logWarning("Exception when closing socket!");
+                e.printStackTrace(Util.log.dest);
             }
         }
     };
 
-    protected Thread it = new Thread()
+    protected SimpleWaitThread it = new SimpleWaitThread()
     {
         public void parse(Packet pak)
         {
@@ -82,20 +122,20 @@ public class Client
         @Override
         public void run()
         {
-            while (true)
+            try
             {
-                try
+                AES128Packet pak = new AES128Packet();
+                while (true)
                 {
-                    while (!recvQueue.isEmpty())
-                    {
-                        parse(recvQueue.remove());
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
+                    pak.read(is, false);
+                    parse(pak);
                 }
             }
+            catch (Exception e)
+            {
+                e.printStackTrace(Util.log.dest);
+            }
+            ot.doNotify();
         }
     };
 
@@ -115,12 +155,15 @@ public class Client
 
     private int synchronize()
     {
+        Util.log.logVerbose("Synchronizing with server...", 1);
         try
         {
             byte[] buf = new byte[16];
             mili = LogManager.calendar.getTimeInMillis();
             Util.setInt(buf, 0, id);
             Util.setLong(buf, 4, mili);
+            Util.log.logVerbose(String.format(
+                "Set userID=%d, timestamp=%d", id, mili), 2);
             String host = Util.getStringConfig("/network/server/Server/host");
             int port = Util.getIntConfig("/network/server/Server/port");
             s = new Socket(host, port);
@@ -129,19 +172,28 @@ public class Client
             os.write(buf);
             os.flush();
             is.read(buf);
-            if (id != Util.getInt(buf, 0) || mili != Util.getLong(buf, 4))
+            int tid = Util.getInt(buf, 0);
+            long tts = Util.getLong(buf, 4);
+            int tip = Util.getInt(buf, 12);
+            Util.log.logVerbose(String.format(
+                "Got userID=%d, timestamp=%d, ip=%d", tid, tts, tip), 2);
+            if (id != tid || mili != tts)
             {
                 s.close();
                 throw new IOException("Synchronization failed.");
             }
-            ip = Util.getInt(buf, 12);
+            ip = tip;
             os.write(buf);
             os.flush();
+            is.read();
+            Util.log.logMessage("Synchronize completed.");
             key = new AES128Key(ip, id, mili);
+            AES128Packet.setKey(key);
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Util.log.logError("Exception in synchronization process!");
+            e.printStackTrace(Util.log.dest);
             return 1;
         }
         return 0;

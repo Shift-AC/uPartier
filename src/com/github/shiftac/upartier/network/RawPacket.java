@@ -7,19 +7,14 @@ import com.github.shiftac.upartier.Util;
 
 public class RawPacket extends Packet
 {
-    protected byte[] buf = new byte[8];
+    protected byte[] buf = new byte[headerLen()];
 
     @Override
     public void read(InputStream is, boolean force)
         throws IOException, PacketFormatException, NetworkTimeoutException
     {
-        doRead(is, buf, 0, 8, force);
-        version = buf[0];
-        type = buf[1];
-        subtype = buf[2];
-        padding = buf[3];
-        len = ((int)buf[4] << 24) + (((int)buf[5] & 0xFF) << 16) + 
-            (((int)buf[6] & 0xFF) << 8) + ((int)buf[7] & 0xFF);
+        doRead(is, buf, 0, buf.length, force);
+        setHeader(buf);
         data = new byte[len];
         doRead(is, data, 0, len, force);
         checkVersion();
@@ -29,14 +24,7 @@ public class RawPacket extends Packet
     public void write(OutputStream os)
         throws IOException
     {
-        buf[0] = version;
-        buf[1] = type;
-        buf[2] = subtype;
-        buf[3] = padding;
-        buf[4] = (byte)(len >> 24);
-        buf[5] = (byte)(len >> 16);
-        buf[6] = (byte)(len >> 8);
-        buf[7] = (byte)len;
+        fillHeader(buf);
         os.write(buf);
         os.write(data);
         os.flush();
