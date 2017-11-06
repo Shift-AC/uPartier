@@ -6,12 +6,18 @@
             "Server":
             {
                 "host": "127.0.0.1",
-                "maxWorker": 32,
                 "port": 2333
             },
             "WorkerManager":
             {
                 "probeGapInms": 100
+            }
+        },
+        "demo":
+        {
+            "EchoServer":
+            {
+                "maxWorker": 32
             }
         },
         "Packet":

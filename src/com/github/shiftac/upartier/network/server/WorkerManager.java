@@ -1,16 +1,22 @@
 package com.github.shiftac.upartier.network.server;
 
 import java.net.Socket;
+
+import com.github.shiftac.upartier.network.AbstractWorker;
 import com.github.shiftac.upartier.Util;
 
 public class WorkerManager
 {
     private AbstractWorker[] pool;
     private int probeGap = Util.getIntConfig(getClass(), "probeGapInms");
+    public Class<? extends AbstractWorker> cworker = null;
 
-    public WorkerManager(int maxWorker)
+    @SuppressWarnings("unchecked")
+    public WorkerManager(int maxWorker, String name)
+        throws ClassNotFoundException
     {
         pool = new AbstractWorker[maxWorker];
+        cworker = (Class<? extends AbstractWorker>)(Class.forName(name));
     }
 
     public AbstractWorker delegate(Socket s)
@@ -25,7 +31,9 @@ public class WorkerManager
                     rec = i;
                     synchronized(this)
                     {
-                        pool[i] = new Worker(s);
+                        pool[i] = 
+                            cworker.getDeclaredConstructor().newInstance();
+                        pool[i].init(s);
                         pool[i].start();
                     }
                     Util.log.logVerbose(String.format(

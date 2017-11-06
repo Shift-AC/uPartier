@@ -2,6 +2,7 @@ import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
 import com.github.shiftac.upartier.network.app.Client;
+import com.github.shiftac.upartier.network.demo.EchoClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,7 +16,8 @@ public class TestClient
     {
         try
         {
-            Client.startClient(10);
+            Client client = new EchoClient(10);
+            client.start();
             while (true)
             {
                 BufferedReader is = new BufferedReader(
@@ -34,7 +36,7 @@ public class TestClient
                     pak.type = PacketType.DATA_MESSAGE_PLAIN | 
                         PacketType.TYPE_PUSH;
                 }
-                Client.getInstance().issue(pak);
+                client.issue(pak);
             }
         }
         catch (Exception e)

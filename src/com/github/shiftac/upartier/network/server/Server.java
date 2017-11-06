@@ -11,57 +11,26 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.shiftac.upartier.network.Packet;
+import com.github.shiftac.upartier.network.PacketParser;
 import com.github.shiftac.upartier.Util;
 
-/** 
- * Provides interfaces for sending/receving data as a server. 
- * This class is a stand-alone thread working on the server and it acts as a
- * network interface.
- * <p>
- * In our application layer model, <code>Server</code> lays on the bottom of 
- * <i> network</i> layer. It implements sending/receving operations for general
- * usages, do encryption/decryption work, while other <i>network</i> layer
- * classes simply call interfaces it provides to complete the communication 
- * work. 
- * <p>
- * This class is a bit complicated than <code>com.github.shiftac.
- * upartier.app.network.Client</code>, because <code>Server</code> is a 
- * <i>global</i> singleton, it deals with all network requests concurrently,
- * while each <i>uPartier</i> instance has a <code>Client</code> instance to
- * communicate with the <code>Server</code>.
- * 
- * @see com.github.shiftac.upartier.app.network.Client
- * @author ShiftAC
- * @since 1.0
- */
-public class Server extends Thread
+public abstract class Server extends Thread
 {
-    private static Server server = null;
-    private ServerSocket ss = null;
-    private WorkerManager manager = null;
-    public ConcurrentLinkedDeque<Packet> msgQueue = 
-        new ConcurrentLinkedDeque<Packet>();
+    protected ServerSocket ss = null;
+    protected WorkerManager manager = null;
 
-    public static Server getInstance()
-    {
-        return server;
-    }
-
-    private void listen(int port)
+    protected void listen(int port)
         throws IOException
     {
         ss = new ServerSocket(port);
     }
 
-    private Server()
+    protected abstract void initManager();
+
+    public Server()
         throws IOException
     {
-        Class<? extends Object> c = getClass();
-        int port = Util.getIntConfig(c, "port");
-        Util.log.logMessage("Server listening on port " + port + ".");
-        listen(port);
-        int maxWorker = Util.getIntConfig(c, "maxWorker");
-        manager= new WorkerManager(maxWorker);
+        initManager();
     }
 
     protected void refuse(Socket s)
@@ -74,6 +43,17 @@ public class Server extends Thread
     public void run()
     {
         Util.log.logMessage("Server starting...");
+        int port = Util.getIntConfig("/network/server/Server/port");
+        try
+        {
+            listen(port);    
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return;
+        }
+        Util.log.logMessage("Server listening on port " + port + ".");
         while (true)
         {
             try
@@ -93,19 +73,6 @@ public class Server extends Thread
             {
                 e.printStackTrace(Util.log.dest);
             }
-        }
-    }
-
-    static
-    {
-        try
-        {
-            server = new Server();
-            server.start();
-        }
-        catch (Exception e)
-        {
-            Util.errorExit("Can't start server.", e);
         }
     }
 }

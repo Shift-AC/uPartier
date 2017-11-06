@@ -1,3 +1,4 @@
+import com.github.shiftac.upartier.network.demo.EchoServer;
 import com.github.shiftac.upartier.network.server.Server;
 import com.github.shiftac.upartier.Util;
 
@@ -7,7 +8,9 @@ public class TestServer
     {
         try
         {
-            Server s = Server.getInstance();
+            Server s = new EchoServer();
+            s.start();
+            s.join();
         }
         catch (Exception e)
         {
