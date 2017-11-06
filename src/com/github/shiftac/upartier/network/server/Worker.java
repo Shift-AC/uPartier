@@ -77,18 +77,7 @@ public class Worker extends AbstractWorker
                     e.printStackTrace(Util.log.dest);
                 }
             }
-            while (true)
-            {
-                try
-                {
-                    it.join();
-                }
-                catch (Exception e)
-                {
-                    continue;
-                }
-                break;
-            }
+            Util.joinIgnoreInterrupt(it);
             try
             {
                 s.close();

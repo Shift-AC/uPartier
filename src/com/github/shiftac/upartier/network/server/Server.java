@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.StandardSocketOptions; 
+import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -84,6 +84,8 @@ public class Server extends Thread
             try
             {
                 Socket s = ss.accept();
+                s.getChannel().setOption(
+                    StandardSocketOptions.SO_KEEPALIVE, true);
                 Util.log.logMessage(String.format(
                     "Accepted request from %s:%d", 
                     s.getInetAddress().toString(), s.getPort()));

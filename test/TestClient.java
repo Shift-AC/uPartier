@@ -8,6 +8,9 @@ public class TestClient
         try
         {
             Client.startClient(10);
+            Thread.sleep(10000);
+            System.out.println("???");
+            Client.startClient(11);
         }
         catch (Exception e)
         {

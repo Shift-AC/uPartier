@@ -3,7 +3,11 @@ package com.github.shiftac.upartier.network.app;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.StandardSocketOptions;
+import java.nio.channels.SocketChannel;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.shiftac.upartier.LogManager;
@@ -54,6 +58,7 @@ public class Client
         {
             if (synchronize() == 1)
             {
+                Util.log.logMessage(String.format("Session terminated."));
                 return;
             }
             it.start();
@@ -88,27 +93,20 @@ public class Client
                     e.printStackTrace(Util.log.dest);
                 }
             }
-            while (true)
-            {
-                try
-                {
-                    it.join();
-                }
-                catch (Exception e)
-                {
-                    continue;
-                }
-                break;
-            }
             try
             {
-                s.close();
+                if (s != null)
+                {
+                    s.close();
+                }
             }
             catch (Exception e)
             {
                 Util.log.logWarning("Exception when closing socket!");
                 e.printStackTrace(Util.log.dest);
             }
+            Util.joinIgnoreInterrupt(it);
+            Util.log.logMessage(String.format("Session terminated."));
         }
     };
 
@@ -146,6 +144,19 @@ public class Client
             client = new Client(userID);
             client.start();
         }
+        else if (client.id != userID)
+        {
+            try
+            {
+                Socket s = client.s;
+                client.s = null;
+                s.close();
+            }
+            catch (Exception e) {}
+            Util.joinIgnoreInterrupt(client.ot);
+            client = new Client(userID);
+            client.start();
+        }
     }
 
     private Client(int userID)
@@ -166,7 +177,11 @@ public class Client
                 "Set userID=%d, timestamp=%d", id, mili), 2);
             String host = Util.getStringConfig("/network/server/Server/host");
             int port = Util.getIntConfig("/network/server/Server/port");
-            s = new Socket(host, port);
+            SocketChannel sc = SocketChannel.open();
+            sc.connect(new InetSocketAddress(host, port));
+            s = sc.socket();
+            s.getChannel().setOption(
+                StandardSocketOptions.SO_KEEPALIVE, true);
             is = s.getInputStream();
             os = s.getOutputStream();
             os.write(buf);

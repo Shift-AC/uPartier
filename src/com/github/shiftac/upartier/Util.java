@@ -185,4 +185,20 @@ public class Util
     {
         setNumber(buf, off, 2, val);
     }
+
+    public static void joinIgnoreInterrupt(Thread t)
+    {
+        while (true)
+        {
+            try
+            {
+                t.join();
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
+            break;
+        }
+    }
 }
