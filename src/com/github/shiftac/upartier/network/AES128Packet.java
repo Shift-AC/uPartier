@@ -104,7 +104,7 @@ public class AES128Packet extends Packet
     @Override
     public byte getVersion()
     {
-        return PacketType.version("AES128Packet");
+        return (byte)PacketType.VER_AES128;
     }
 
     @Override
