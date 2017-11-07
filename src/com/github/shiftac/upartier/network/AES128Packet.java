@@ -3,7 +3,11 @@ package com.github.shiftac.upartier.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Key;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 
 import com.github.shiftac.upartier.Util;
 
@@ -54,14 +58,34 @@ public class AES128Packet extends Packet
         return accessKey(null, true);
     }
 
+    // contains code from http://blog.csdn.net/fishmai/article/details/52398532
+    // also encrypt(), AES128Key.AES128Key().
     void decrypt(byte[] src, int off)
     {
-        
+        try 
+        {
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, key.key, key.spec);
+            cipher.doFinal(src, off, src.length - off, src, off);
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace(Util.log.dest);
+        }
     }
 
     void encrypt(byte[] src, int off)
     {
-        
+        try 
+        {
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, key.key, key.spec);
+            cipher.doFinal(src, off, src.length - off, src, off);
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace(Util.log.dest);
+        } 
     }
 
     @Override

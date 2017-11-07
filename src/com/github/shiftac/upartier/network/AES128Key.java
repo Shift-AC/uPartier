@@ -2,10 +2,19 @@ package com.github.shiftac.upartier.network;
 
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.SecureRandom;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.KeyGenerator;
+
+import com.github.shiftac.upartier.Util;
 
 public class AES128Key
 {
     byte[] seed = null;
+    SecretKey key = null;
+    IvParameterSpec spec = null;
 
     static int lfsr113_Bits(int z1, int z2, int z3, int z4)
     {
@@ -38,6 +47,17 @@ public class AES128Key
             seed[(i << 2) + 1] = (byte)(key[i] >> 16);
             seed[(i << 2) + 2] = (byte)(key[i] >> 8);
             seed[(i << 2) + 3] = (byte)key[i];
+        }
+        try
+        {
+            KeyGenerator gen = KeyGenerator.getInstance("AES");
+            gen.init(128, new SecureRandom(seed));
+            this.key = gen.generateKey();
+            spec = new IvParameterSpec(seed);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace(Util.log.dest);
         }
     }
 }
