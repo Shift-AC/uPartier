@@ -19,10 +19,10 @@ import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
-import com.github.shiftac.upartier.network.app.Client;
+import com.github.shiftac.upartier.network.app.AbstractClient;
 import com.github.shiftac.upartier.Util;
 
-public final class EchoClient extends Client
+public final class EchoClient extends AbstractClient
 {
     public EchoClient(int userID)
     {

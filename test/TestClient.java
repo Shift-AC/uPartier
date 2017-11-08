@@ -1,7 +1,7 @@
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
-import com.github.shiftac.upartier.network.app.Client;
+import com.github.shiftac.upartier.network.app.AbstractClient;
 import com.github.shiftac.upartier.network.demo.EchoClient;
 
 import java.io.BufferedReader;
@@ -16,7 +16,7 @@ public class TestClient
     {
         try
         {
-            Client client = new EchoClient(10);
+            AbstractClient client = new EchoClient(10);
             client.start();
             while (true)
             {

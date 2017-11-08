@@ -2,17 +2,6 @@
 
 ## Common data structure
 
-- `Prefetchable` interface
-
-    ```java
-    public interface Prefetchable
-    {
-        public void prefetch();
-        public void fetchAll();
-    }
-    ```
-
-
 - For login operation:
 
     ```java
@@ -24,7 +13,7 @@
     }
     ```
 
-- For user profile fetch/renew:
+- For user profile fetch/modify:
 
     ```java
     interface Gender
@@ -34,14 +23,15 @@
         public static final int unknown = 2;
     }
     
-    class UserProfile
+    class User
     {
-        long id;
+        int id;
         int age;
         int gender;
         String mailAccount;
         String nickname;
         Image profile;
+        int postCount;
         ArrayList<Post> myPosts;
     }
     ```
@@ -53,6 +43,7 @@
     {
         int id;
         String name;
+        int postCount;
         ArrayList<Post> posts;
     }
     ```
@@ -63,6 +54,7 @@
     class Post
     {
         int id;
+        int blockID;
         String name;
         long time;
         String label;
@@ -70,6 +62,7 @@
         String note;
         User postUser;
         ArrayList<Message> messages;
+        int userCount;
         ArrayList<User> users;
     }
     ```
@@ -95,39 +88,347 @@
     class Message
     {
         byte type;
+        long time;
         Object content;
     }
     ```
 
 ### Cross-layer methods
 
-- `register/login`
+- register/login, fetch/modify user profile
 
-    Item | Detail
-    :---:|:-----:
-    From | UI layer  
-    Dest | Server Database  
-    Type | Fetch
-    Data layer API | Bypass
-    Net layer API | `UserProfile Client.login(LoginInf inf)`
-    
-    API detail:
+    API for client UI:
     ```java
-    // class Client
+    // class com.github.shiftac.upartier.network.app.Client
     /**
-     * Attempts to login(or register) use the given { @code LoginInf },
-     * try to fetch { @code UserProfile } for the user if login succeeded.
+     * Attempts to login(or register) use the given { @code LoginInf }, try to 
+     * fetch { @code User } for the user if login succeeded.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
      * 
      * @throws IOException if network exceptions occured.
-     * @throws AuthenticateException if no such user exists or wrong 
-     * password is given.
-     *
-     * @return 
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists or wrong password is given.
      */
-    UserProfile login(LoginInf inf)
-        throws IOException, AuthenticateException
-    {
+    static User login(LoginInf inf)
+        throws IOException, SocketTimeoutException, NoSuchUserException;
 
-    }
+    // class com.github.shiftac.upartier.data.User
+    /**
+     * Attempts to fetch user profile for a given user ID.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     *
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     */
+    static User fetchProfile(int id)
+        throws IOException, SocketTimeoutException, NoSuchUserException;
+
+    // class com.github.shiftac.upartier.data.Post
+    /**
+     * Attempts to fetch profile of user who issued current post.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     *
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     */
+    void fetchPostUserProfile();
+        throws IOException, SocketTimeoutException, NoSuchUserException;
+
+    // class com.github.shiftac.upartier.data.User
+    /**
+     * Attempts to modify user profile.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     *
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't get reply from server after
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     */
+    void modify()
+        throws IOException, SocketTimeoutException, NoSuchUserException;
     ```
 
+    API for server Net:
+    ```java
+    // class ?
+    /**
+     * Attempts to login(or register) use the given { @code LoginInf }. Also sets 
+     * status field of users to { @code online } in database.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists or wrong password is given.
+     */
+    void login(LoginInf inf)
+        throws IOException, NoSuchUserException;
+
+    // class ?
+    /**
+     * Attempts to set the status field of user to { @code offline} in database.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     */
+    void logout(int id)
+        throws IOException;
+
+    // class ?
+    /**
+     * Attempts to fetch user profile for a given user ID.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     *
+     * @throws IOException if IOException occured when accessing database files.
+     */
+    User fetchProfile(int id)
+        throws IOException;
+
+    // class ?
+    /**
+     * Attempts to modify user profile.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     *
+     * @throws IOException if IOException occured when accessing database files.
+     */
+    void renewProfile(User profile)
+        throws IOException;
+    ```
+
+- prefetch block
+
+    API for Client UI:
+    ```java
+    // class com.github.shiftac.upartier.data.Block
+    /**
+     * Try to fetch all existing post blocks, the { @code Block } objects returned
+     * in this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     */
+    static Block[] fetchBlocks()
+        throws IOException, SocketTimeoutException;
+    ```
+
+    API for Server Net:
+    ```java
+    // class ?
+    /**
+     * Try to fetch all existing post blocks, the { @code Block } objects returned 
+     * in this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     */
+    Block[] fetchBlocks()
+        throws IOException;
+    ```
+
+- prefetch post
+
+    API for Client UI:
+    ```java
+    // class com.github.shiftac.upartier.data.User
+    /**
+     * Try to fetch last { @code count } posts with time before { @code time } issued
+     * by current user, or fetch all remaining posts if there're not so many. The 
+     * { @code Post } objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     */
+    void fetchMyPosts(int count, long time)
+        throws IOException, SocketTimeoutException, NoSuchUserException;
+
+    // class com.github.shiftac.upartier.data.Block
+    /**
+     * Try to fetch last { @code count } posts with time before { @code time } for 
+     * current block, or fetch all remaining posts if there're not so many. The 
+     * { @code Post } objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchBlockException if no such block exists.
+     */
+    void fetchPosts(int count, long time)
+        throws IOException, SocketTimeoutException, NoSuchBlockException;
+    ```
+
+    API for Server Net:
+    ```java
+    // class ?
+    /**
+     * Try to fetch last { @code count } posts with time before { @code time } for a
+     * given user id, or fetch all remaining posts if there're not so many. The 
+     * { @code Post } objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists.
+     */
+    Post[] fetchPostForUser(int id, int count, long time)
+        throws IOException, NoSuchUserException;
+
+    // class ?
+    /**
+     * Try to fetch last { @code count } posts with time before { @code time } for a
+     * given block id, or fetch all posts if there're not so many. The { @code Post }
+     * objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchBlockException if no such block exists.
+     */
+    Post[] fetchPostForBlock(int id, int count, long time)
+        throws IOException, NoSuchBlockException;
+    ```
+
+- fetch posts
+
+    API for Client UI
+    ```java
+    // class com.github.shiftac.upartier.data.Post
+    /**
+     * Try to fetch user list and last { @code Post.FETCH_COUNT } messages 
+     * for current post. The messages will be stored in { @code messages} 
+     * in reverse order.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    void fetchBase()
+        throws IOException, SocketTimeoutException, NoSuchPostException;
+
+    // class com.github.shiftac.upartier.data.Post
+    /**
+     * Try to fetch { @code Post.FETCH_COUNT } messages for current post, 
+     * the messages will be stored in { @code messages} in reverse order.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    void fetchMessage()
+        throws IOException, SocketTimeoutException, NoSuchPostException;
+    ```
+
+    API for Server Net
+    ```java
+    // class ?
+    /**
+     * Try to fetch user list for a given post id.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    User[] fetchPostUserList(long id)
+        throws IOException, NoSuchPostException;
+
+    // class ?
+    /**
+     * Try to fetch last { @code count } messages before { @code time } for a given 
+     * post id. The messages should be stored in { @code messages} in reverse order.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    Message[] fetchMessage(long id, int count, long time)
+        throws IOException, NoSuchPostException;
+    ```
+
+- For modifying posts
+
+    API for Client UI
+    ```java
+    // class com.github.shiftac.upartier.data.User
+    /**
+     * Try to issue a new post. The { @code id }, { @code time }, { @code postUser }
+     * field of the parameter { @code Post } will be properly set on successful returns.
+     *
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSucBlockException if no such block exists.
+     */
+    void issue(Post post)
+        throws IOException, NoSuchUserException, NoSuchBlockException,
+        SocketTimeoutException;
+
+    // class com.github.shiftac.upartier.data.User
+    /**
+     * Try to send a reply message under a given post. This also modify 
+     * { @code messages } field of the parameter { @code Post }. On successful returns
+     * { @code time } field of parameter { @code message } will be properly set.
+     *
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    void sendMessage(Post post, Message message)
+        throws IOException, NoSuchUserException, NoSuchPostException,
+        SocketTimeoutException;
+    ```
+
+    API for Server Net
+    ```java
+    // class ?
+    /**
+     * Try to issue a new post. The { @code id }, { @code time }, { @code postUser }
+     * field of the parameter { @code Post } will be properly set on successful returns.
+     *
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSucBlockException if no such block exists.
+     */
+    void issuePost(Post post)
+        throws IOException, NoSuchUserException, NoSuchBlockException,
+        SocketTimeoutException;
+
+    // class ?
+    /**
+     * Try to send a reply message under a given post id. Returns list of users of this
+     * post.
+     *
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    User[] sendMessage(int userid, int postid, Message message)
+        throws IOException, NoSuchUserException, NoSuchPostException,
+        SocketTimeoutException;
+    ```

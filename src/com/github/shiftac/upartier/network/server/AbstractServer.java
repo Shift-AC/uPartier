@@ -14,7 +14,7 @@ import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketParser;
 import com.github.shiftac.upartier.Util;
 
-public abstract class Server extends Thread
+public abstract class AbstractServer extends Thread
 {
     protected ServerSocket ss = null;
     protected WorkerManager manager = null;
@@ -27,7 +27,7 @@ public abstract class Server extends Thread
 
     protected abstract void initManager();
 
-    public Server()
+    public AbstractServer()
         throws IOException
     {
         initManager();

@@ -21,14 +21,14 @@ import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
 import com.github.shiftac.upartier.Util;
 
-public abstract class Client extends AbstractWorker
+public abstract class AbstractClient extends AbstractWorker
 {
     protected int id = 0;
     protected long mili = 0;
     protected int ip = 0;
     protected AES128Key key = null;
 
-    public Client(int userID)
+    public AbstractClient(int userID)
     {
         super();
         id = userID;
@@ -36,8 +36,11 @@ public abstract class Client extends AbstractWorker
 
     @Override
     public void init(Socket s)
+        throws IOException
     {
-
+        this.s = s;
+        is = s.getInputStream();
+        os = s.getOutputStream();
     }
 
     @Override
@@ -54,9 +57,7 @@ public abstract class Client extends AbstractWorker
                 "Set userID=%d, timestamp=%d", id, mili), 2);
             String host = Util.getStringConfig("/network/server/Server/host");
             int port = Util.getIntConfig("/network/server/Server/port");
-            s = new Socket(host, port);
-            is = s.getInputStream();
-            os = s.getOutputStream();
+            init(new Socket(host, port));
             os.write(buf);
             os.flush();
             is.read(buf);

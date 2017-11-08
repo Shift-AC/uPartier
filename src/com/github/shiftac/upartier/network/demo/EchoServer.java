@@ -12,11 +12,11 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketParser;
-import com.github.shiftac.upartier.network.server.Server;
+import com.github.shiftac.upartier.network.server.AbstractServer;
 import com.github.shiftac.upartier.network.server.WorkerManager;
 import com.github.shiftac.upartier.Util;
 
-public final class EchoServer extends Server
+public final class EchoServer extends AbstractServer
 {
     public EchoServer()
         throws IOException
