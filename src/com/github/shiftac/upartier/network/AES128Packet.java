@@ -110,6 +110,12 @@ public class AES128Packet extends Packet
         throws IOException, PacketFormatException, NetworkTimeoutException
     {
         doRead(is, buf, 0, 16, force);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; ++i)
+        {
+            sb.append(String.format("%x ", buf[i]));
+        }
+        Util.log.logVerbose("Raw header: " + sb, 3);
         decrypt(buf, 0);
         setHeader(buf);
         Util.log.logVerbose(getInf(), 3);
@@ -148,6 +154,12 @@ public class AES128Packet extends Packet
             tdata[i] = data[i + m];
         }
         encrypt(buf, 0);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; ++i)
+        {
+            sb.append(String.format("%x ", buf[i]));
+        }
+        Util.log.logVerbose("Raw header: " + sb, 3);
         encrypt(tdata, 0);
         os.write(buf);
         os.write(tdata);
