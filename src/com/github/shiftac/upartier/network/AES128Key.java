@@ -39,6 +39,7 @@ public class AES128Key
         key[1] = lfsr113_Bits(id, sa, tl, th);
         key[2] = lfsr113_Bits(tl, th, id, sa);
         key[3] = lfsr113_Bits(th, tl, sa, id);
+        byte[] test = new byte[16];
 
         seed = new byte[16];
         for (int i = 0; i < 4; ++i)
@@ -47,13 +48,17 @@ public class AES128Key
             seed[(i << 2) + 1] = (byte)(key[i] >> 16);
             seed[(i << 2) + 2] = (byte)(key[i] >> 8);
             seed[(i << 2) + 3] = (byte)key[i];
+            test[(i << 2) + 0] = 0;
+            test[(i << 2) + 1] = 0;
+            test[(i << 2) + 2] = 0;
+            test[(i << 2) + 3] = 0;
         }
         try
         {
             KeyGenerator gen = KeyGenerator.getInstance("AES");
-            gen.init(128, new SecureRandom(seed));
+            gen.init(128, new SecureRandom(test));
             this.key = gen.generateKey();
-            spec = new IvParameterSpec(seed);
+            spec = new IvParameterSpec(test);
         }
         catch(Exception e)
         {
