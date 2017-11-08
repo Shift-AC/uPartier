@@ -2,6 +2,17 @@
 
 ## Common data structure
 
+- `Prefetchable` interface
+
+    ```java
+    public interface Prefetchable
+    {
+        public void prefetch();
+        public void fetchAll();
+    }
+    ```
+
+
 - For login operation:
 
     ```java
@@ -77,3 +88,46 @@
         String path;
     }
     ```
+
+- For messages
+
+    ```java
+    class Message
+    {
+        byte type;
+        Object content;
+    }
+    ```
+
+### Cross-layer methods
+
+- `register/login`
+
+    Item | Detail
+    :---:|:-----:
+    From | UI layer  
+    Dest | Server Database  
+    Type | Fetch
+    Data layer API | Bypass
+    Net layer API | `UserProfile Client.login(LoginInf inf)`
+    
+    API detail:
+    ```java
+    // class Client
+    /**
+     * Attempts to login(or register) use the given { @code LoginInf },
+     * try to fetch { @code UserProfile } for the user if login succeeded.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws AuthenticateException if no such user exists or wrong 
+     * password is given.
+     *
+     * @return 
+     */
+    UserProfile login(LoginInf inf)
+        throws IOException, AuthenticateException
+    {
+
+    }
+    ```
+
