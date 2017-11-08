@@ -3,19 +3,24 @@
 
 TARGET := .
 JAVAC := javac
-PACKAGES := com.github.shiftac.upartier;com.github.shiftac.upartier.network;com.github.shiftac.upartier.network.server;com.github.shiftac.upartier.network.app;com.github.shiftac.upartier.network.demo;
-PROG := 
+PACKAGES := \
+com.github.shiftac.upartier;\
+com.github.shiftac.upartier.network;\
+com.github.shiftac.upartier.network.server;\
+com.github.shiftac.upartier.network.app;\
+com.github.shiftac.upartier.network.demo;\
+com.github.shiftac.upartier.data;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
-JAVALIBWIN := test:bin:lib/org.json.jar:../lib/jce.jar:../lib/sunjce_provider.jar
-JAVALIBLINUX := $(subst :,;,$(JAVALIBWIN))
-JAVALIB := $(JAVALIBWIN);$(JAVALIBLINUX)
+LIB := ../lib
+JAVALIBLINUX := $(LIB)/org.json.jar:$(LIB)/jce.jar:$(LIB)/sunjce_provider.jar:
+JAVALIBWIN := $(subst :,;,$(JAVALIBLINUX))
+JAVALIB := $(JAVALIBWIN):$(JAVALIBLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
 
 .PHONY: all
 all:
-	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)" 
-# -sourcepath "$(JAVASRCPATH)"
+	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)"
 
 .PHONY: clean
 clean:
