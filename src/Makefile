@@ -7,7 +7,7 @@ PACKAGES := com.github.shiftac.upartier;com.github.shiftac.upartier.network;com.
 PROG := 
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
-JAVALIB := ../lib/org.json.jar:../lib/jce.jar:../lib/sunjce_provider.jar
+JAVALIB := ../lib/org.json.jar:../lib/jce.jar:../lib/sunjce_provider.jar;../lib/org.json.jar;../lib/jce.jar;../lib/sunjce_provider.jar;
 JAVAFLAGS := -encoding utf8 -Xlint:all
 
 .PHONY: all
