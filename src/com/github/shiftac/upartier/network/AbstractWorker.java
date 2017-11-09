@@ -169,14 +169,15 @@ public abstract class AbstractWorker
     }
 
     public void terminate()
+        throws IOException
     {
-        try
+        if (s == null)
         {
-            Socket ts = s;
-            s = null;
-            ts.close();
+            return;
         }
-        catch (Exception e) {}
+        Socket ts = s;
+        s = null;
+        ts.close();
         Util.joinIgnoreInterrupt(ot);
     }
 }

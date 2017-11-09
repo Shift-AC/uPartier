@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,11 +29,27 @@ public abstract class AbstractClient extends AbstractWorker
     protected int ip = 0;
     protected AES128Key key = null;
 
+    public AbstractClient() {}
+
     public AbstractClient(int userID)
     {
         super();
         id = userID;
     }
+
+    public synchronized setID(int id)
+        throws IOException
+    {
+        if (this.id == id)
+        {
+            return;
+        }
+
+        terminate();
+        this.id = id;
+    }
+
+    
 
     @Override
     public void init(Socket s)

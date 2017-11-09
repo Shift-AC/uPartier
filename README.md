@@ -16,12 +16,6 @@
 - For user profile fetch/modify:
 
     ```java
-    interface Gender
-    {
-        public static final int male = 0;
-        public static final int female = 1;
-        public static final int unknown = 2;
-    }
     
     class User
     {
@@ -99,7 +93,7 @@
 
     API for client UI:
     ```java
-    // class com.github.shiftac.upartier.network.app.Client
+    // class com.github.shiftac.upartier.network.app.User
     /**
      * Attempts to login(or register) use the given { @code LoginInf }, try to 
      * fetch { @code User } for the user if login succeeded.
@@ -112,6 +106,20 @@
      * @throws NoSuchUserException if no such user exists or wrong password is given.
      */
     static User login(LoginInf inf)
+        throws IOException, SocketTimeoutException, NoSuchUserException;
+
+    // class com.github.shiftac.upartier.network.app.User
+    /**
+     * Attempts to log out the current user.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists or wrong password is given.
+     */
+    void logout()
         throws IOException, SocketTimeoutException, NoSuchUserException;
 
     // class com.github.shiftac.upartier.data.User
@@ -139,7 +147,7 @@
      * { @code Client.NETWORK_TIMEOUT } milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchPostUserProfile();
+    void fetchPostUserProfile()
         throws IOException, SocketTimeoutException, NoSuchUserException;
 
     // class com.github.shiftac.upartier.data.User

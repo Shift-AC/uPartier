@@ -29,4 +29,14 @@ public interface ByteArrayIO
     {
         write(buf, 0, buf.length);
     }
+
+    public default void checkLen(int len, int need)
+        throws IOException
+    {
+        if (need < len)
+        {
+            throw new IOException(String.format(
+                "No enough buffer space(%d), expected %d.", len, need));
+        }
+    }
 }
