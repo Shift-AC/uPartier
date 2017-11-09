@@ -17,7 +17,8 @@ public class LoginInf implements ByteArrayIO
     {
         checkLen(len, getLength());
         id = Util.getInt(buf, off);
-        passwd = new String(buf, off + 4, len - 4);
+        len = buf[off + 4];
+        passwd = new String(buf, off + 5, len);
     }
 
     @Override
@@ -27,6 +28,8 @@ public class LoginInf implements ByteArrayIO
         checkLen(len, getLength());
         int tid = isNewUser ? -id : id;
         Util.setInt(buf, off, tid);
+        buf[off + 4] = (byte)passwd.length();
+        off += 5;
         for (int i = 0; i < passwd.length(); ++i)
         {
             buf[off++] = (byte)(passwd.charAt(i));
@@ -36,13 +39,6 @@ public class LoginInf implements ByteArrayIO
     @Override
     public int getLength()
     {
-        if (passwd == null)
-        {
-            return 4;
-        }
-        else
-        {
-            return 4 + passwd.length();
-        }
+        return 5 + passwd.length();
     }
 }

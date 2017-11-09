@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-public class Post
+import com.github.shiftac.upartier.network.ByteArrayIO;
+
+public class Post implements ByteArrayIO
 {
     int id = 0;
     int blockID = 0;

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-public class User
+import com.github.shiftac.upartier.network.ByteArrayIO;
+
+public class User implements ByteArrayIO
 {
     public static interface Gender
     {
@@ -17,12 +19,25 @@ public class User
     int age = 0;
     int gender = Gender.unknown;
     String mailAccount = null;
+    protected byte[] bmail = null;
     String nickname = null;
+    protected byte[] bname = null;
     Image profile = null;
     int postCount = 0;
     ArrayList<Post> myPosts = null;
 
-    // class com.github.shiftac.upartier.network.app.User
+    void setMailAccount(String mail)
+    {
+        this.mailAccount = mail;
+        this.bmail = mail.getBytes();
+    }
+
+    void setNickname(String name)
+    {
+        this.nickname = name;
+        this.bname = name.getBytes();
+    }
+
     /**
      * Attempts to login(or register) use the given { @code LoginInf }, try to 
      * fetch { @code User } for the user if login succeeded.
@@ -137,6 +152,36 @@ public class User
     void sendMessage(Post post, Message message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException
+    {
+
+    }
+
+    @Override
+    public int getLength()
+    {
+        return 16 + profile.getLength();
+    }
+
+    @Override
+    public void read(byte[] buf, int off, int len)
+        throws IOException
+    {
+        checkLen(len, 11);
+        id = Util.getInt(buf, off);
+        age = Util.getInt(buf, off += 4);
+        gender = buf[off += 4];
+        int nlen = Util.getShort(buf, ++off);
+        checkLen(len -= 11, nlen + 1);
+        setMailAccount(new String(buf, off += 2, nlen));
+        len -= nlen + 1;
+        nlen = buf[off += nlen];
+        checkLen(len, nlen);
+        setNickname(new String(buf, ++off, len));
+    }
+
+    @Override
+    public void write(byte[] buf, int off, int len)
+        throws IOException
     {
 
     }
