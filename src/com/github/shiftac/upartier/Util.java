@@ -136,56 +136,6 @@ public class Util
         catch (Exception e) {}
     }
 
-    public static long getNumber(byte[] buf, int off, int len)
-    {
-        long res = 0;
-        for (int i = 0; i < len; ++i)
-        {
-            res <<= 8;
-            res |= (long)buf[off + i] & 0xFF;
-        }
-        return res;
-    }
-
-    public static long getLong(byte[] buf, int off)
-    {
-        return getNumber(buf, off, 8);
-    }
-
-    public static int getInt(byte[] buf, int off)
-    {
-        return (int)getNumber(buf, off, 4);
-    }
-
-    public static short getShort(byte[] buf, int off)
-    {
-        return (short)getNumber(buf, off, 2);
-    }
-
-    public static void setNumber(byte[] buf, int off, int len, long val)
-    {
-        for (int i = len - 1; i > -1; --i)
-        {
-            buf[off + i] = (byte)val;
-            val >>= 8;
-        }
-    }
-
-    public static void setLong(byte[] buf, int off, long val)
-    {
-        setNumber(buf, off, 8, val);
-    }
-
-    public static void setInt(byte[] buf, int off, long val)
-    {
-        setNumber(buf, off, 4, val);
-    }
-
-    public static void setShort(byte[] buf, int off, long val)
-    {
-        setNumber(buf, off, 2, val);
-    }
-
     public static void joinIgnoreInterrupt(Thread t)
     {
         while (true)

@@ -5,6 +5,6 @@ public class Image extends AbstractFile
     @Override
     public int getType()
     {
-        return ContentTypes.AUDIO;
+        return ContentTypes.IMAGE;
     }
 }

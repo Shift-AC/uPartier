@@ -45,12 +45,12 @@ public final class EchoWorker extends Worker
         switch (pak.type)
         {
         case PacketType.TYPE_PUSH | PacketType.DATA_MESSAGE_PLAIN:
-            System.out.printf("Client #%d says: %s\n", userID, 
+            System.out.printf("Client #%d says: %s\n", obj.id, 
                 new PlainMessage(pak.data).toString());
             break;
         case PacketType.TYPE_TRIGGER | PacketType.DATA_MESSAGE_PLAIN:
             PlainMessage msg = new PlainMessage(pak.data);
-            System.out.printf("Client #%d(trigger) says: %s\n", userID, 
+            System.out.printf("Client #%d(trigger) says: %s\n", obj.id, 
                 msg.toString());
             AES128Packet tpak = new AES128Packet(msg);
             tpak.type = 

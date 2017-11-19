@@ -9,8 +9,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
 
 public abstract class AbstractFile implements ByteArrayIO
 {
-    public String name = null;
-    protected byte[] bname = null;
+    public BString name = null;
     public byte[] payload = null;
 
     abstract public int getType();
@@ -19,54 +18,32 @@ public abstract class AbstractFile implements ByteArrayIO
     public void write(byte[] buf, int off, int len)
         throws IOException
     {
-        if (name == null)
-        {
-            return;
-        }
-        checkLen(len, getLength());
-        Util.setShort(buf, off, bname.length);
-        off += 2;
-        for (int i = 0; i < bname.length; ++i)
-        {
-            buf[off++] = bname[i];
-        }
-        Util.setInt(buf, off, payload.length);
-        off += 4;
-        for (int i = 0; i < payload.length; ++i)
-        {
-            buf[off++] = payload[i];
-        }
+        name.write(buf, off, len);
+        int nlen = name.getLength();
+        checkLen(len -= nlen, SIZE_INT);
+        setInt(buf, off += nlen, payload.length);
+        memcpy(buf, off += SIZE_INT, payload, 0, payload.length);
     }
 
     @Override
     public void read(byte[] buf, int off, int len)
         throws IOException
     {
-        checkLen(len, 2);
-        int nlen = Util.getShort(buf, off);
-        off += 2;
-        checkLen(len -= 2, nlen);
-        setName(new String(buf, off, nlen));
-        off += nlen;
-        checkLen(len -= nlen, 4);
-        nlen = Util.getInt(buf, off);
-        off += nlen;
-        checkLen(len -= 4, nlen);
-        payload = new byte[nlen];
-        for (int i = 0; i < nlen; ++i)
-        {
-            payload[i] = buf[off++];
-        }
+        name.write(buf, off, len);
+        int nlen = name.getLength();
+        checkLen(len -= nlen, SIZE_INT);
+        int blen = getInt(buf, off += nlen);
+        payload = new byte[blen];
+        memcpy(payload, 0, buf, off += SIZE_INT, blen);
     }
 
     public void setName(String name)
     {
-        this.name = name;
-        this.bname = name.getBytes();
+        this.name.setContent(name);
     }
 
     public int getLength()
     {
-        return 6 + bname.length + payload.length;
+        return SIZE_INT + name.getLength() + payload.length;
     }
 }

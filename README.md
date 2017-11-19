@@ -8,7 +8,7 @@
     class LoginInf
     {
         long id;
-        String passwd;
+        BString passwd;
         boolean isNewUser;
     }
     ```
@@ -22,8 +22,8 @@
         int id;
         int age;
         int gender;
-        String mailAccount;
-        String nickname;
+        BString mailAccount;
+        BString nickname;
         Image profile;
         int postCount;
         ArrayList<Post> myPosts;
@@ -36,7 +36,7 @@
     class Block
     {
         int id;
-        String name;
+        BString name;
         int postCount;
         ArrayList<Post> posts;
     }
@@ -49,13 +49,13 @@
     {
         int id;
         int blockID;
-        String name;
+        BString name;
         long time;
-        String label;
-        String location;
-        String note;
+        BString label;
+        BString place;
+        BString note;
         User postUser;
-        ArrayList<Message> messages;
+        ArrayList<ByteArrayIO> messages;
         int userCount;
         ArrayList<User> users;
     }
@@ -79,7 +79,7 @@
 - For messages
 
     ```java
-    class Message
+    class ByteArrayIO
     {
         byte type;
         long time;
@@ -372,7 +372,7 @@
      * @throws IOException if IOException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
-    Message[] fetchMessage(long id, int count, long time)
+    ByteArrayIO[] fetchMessage(long id, int count, long time)
         throws IOException, NoSuchPostException;
     ```
 
@@ -407,7 +407,7 @@
      * @throws NoSuchUserException if no such user exists.
      * @throws NoSuchPostException if no such post exists.
      */
-    void sendMessage(Post post, Message message)
+    void sendMessage(Post post, ByteArrayIO message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException;
     ```
@@ -436,7 +436,7 @@
      * @throws NoSuchUserException if no such user exists.
      * @throws NoSuchPostException if no such post exists.
      */
-    User[] sendMessage(int userid, int postid, Message message)
+    User[] sendMessage(int userid, int postid, ByteArrayIO message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException;
     ```

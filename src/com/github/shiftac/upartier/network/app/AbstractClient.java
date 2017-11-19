@@ -16,17 +16,17 @@ import com.github.shiftac.upartier.SimpleWaitThread;
 import com.github.shiftac.upartier.network.AES128Key;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.AbstractWorker;
+import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
+import com.github.shiftac.upartier.network.SynObject;
 import com.github.shiftac.upartier.Util;
 
 public abstract class AbstractClient extends AbstractWorker
 {
-    protected int id = 0;
-    protected long mili = 0;
-    protected int ip = 0;
+    protected SynObject obj = new SynObject();
     protected AES128Key key = null;
 
     public AbstractClient() {}
@@ -34,22 +34,20 @@ public abstract class AbstractClient extends AbstractWorker
     public AbstractClient(int userID)
     {
         super();
-        id = userID;
+        obj.id = userID;
     }
 
     public synchronized void setID(int id)
         throws IOException
     {
-        if (this.id == id)
+        if (obj.id == id)
         {
             return;
         }
 
         terminate();
-        this.id = id;
+        obj.id = id;
     }
-
-    
 
     @Override
     public void init(Socket s)
@@ -66,34 +64,31 @@ public abstract class AbstractClient extends AbstractWorker
         Util.log.logVerbose("Synchronizing with server...", 1);
         try
         {
-            byte[] buf = new byte[16];
-            mili = LogManager.calendar.getTimeInMillis();
-            Util.setInt(buf, 0, id);
-            Util.setLong(buf, 4, mili);
+            obj.mili = LogManager.calendar.getTimeInMillis();
+            long mili = obj.mili;
+            byte[] buf = obj.toByteArray();
             Util.log.logVerbose(String.format(
-                "Set userID=%d, timestamp=%d", id, mili), 2);
+                "Set userID=%d, timestamp=%d", obj.id, obj.mili), 2);
             String host = Util.getStringConfig("/network/server/Server/host");
             int port = Util.getIntConfig("/network/server/Server/port");
             init(new Socket(host, port));
             os.write(buf);
             os.flush();
             is.read(buf);
-            int tid = Util.getInt(buf, 0);
-            long tts = Util.getLong(buf, 4);
-            int tip = Util.getInt(buf, 12);
+            obj.read(buf);
             Util.log.logVerbose(String.format(
-                "Got userID=%d, timestamp=%d, ip=%d", tid, tts, tip), 2);
-            if (id != tid || mili != tts)
+                "Got userID=%d, timestamp=%d, ip=%d", obj.id, obj.mili,
+                obj.ip), 2);
+            if (obj.id != obj.id || mili != obj.mili)
             {
                 s.close();
                 throw new IOException("Synchronization failed.");
             }
-            ip = tip;
             os.write(buf);
             os.flush();
             is.read();
             Util.log.logMessage("Synchronize completed.");
-            key = new AES128Key(ip, id, mili);
+            key = new AES128Key(obj.ip, obj.id, obj.mili);
             AES128Packet.setKey(key);
         }
         catch (Exception e)
