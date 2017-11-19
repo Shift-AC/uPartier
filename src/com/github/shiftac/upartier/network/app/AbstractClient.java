@@ -37,7 +37,7 @@ public abstract class AbstractClient extends AbstractWorker
         id = userID;
     }
 
-    public synchronized setID(int id)
+    public synchronized void setID(int id)
         throws IOException
     {
         if (this.id == id)

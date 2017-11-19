@@ -3,21 +3,27 @@ package com.github.shiftac.upartier.network.app;
 import java.io.IOException;
 
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.data.LoginInf;
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 
 public class Client extends AbstractClient
 {
     public static final Client client;
+    public LoginInf inf;
 
     private Client()
     {
         super();
     }
 
-    private Client(int userID)
+    public static void init(LoginInf inf)
     {
-        super(userID);
+        synchronized(client)
+        {
+            client.inf = inf;
+        }
     }
 
     @Override
@@ -43,7 +49,16 @@ public class Client extends AbstractClient
             return syn;
         }
 
-        parseOut(new LoginPacket());
+        try
+        {
+            parseOut(new AES128Packet(inf));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return 1;
+        }
+        return 0;
     }
 
     static

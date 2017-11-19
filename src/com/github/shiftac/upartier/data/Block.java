@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 public class Block implements ByteArrayIO
@@ -51,7 +52,7 @@ public class Block implements ByteArrayIO
     {
         checkLen(len, getLength());
         Util.setInt(buf, off, id);
-        buf[off += 4] = (int)bname.length;
+        buf[off += 4] = (byte)bname.length;
         for (int i = 0; i < bname.length; ++i)
         {
             buf[++off] = bname[i];

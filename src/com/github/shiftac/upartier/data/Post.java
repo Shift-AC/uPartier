@@ -20,6 +20,26 @@ public class Post implements ByteArrayIO
     int userCount = 0;
     ArrayList<User> users = null;
 
+    @Override
+    public int getLength()
+    {
+        return 0;
+    }
+
+    @Override
+    public void write(byte[] buf, int off, int len)
+        throws IOException
+    {
+
+    }
+
+    @Override
+    public void read(byte[] buf, int off, int len)
+        throws IOException
+    {
+
+    }
+
     /**
      * Attempts to fetch profile of user who issued current post.
      * <p>
