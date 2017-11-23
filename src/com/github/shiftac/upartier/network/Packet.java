@@ -5,6 +5,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import com.github.shiftac.upartier.Util;
 
+/**
+ * When transferring on network:
+ * <code>
+ * struct Packet
+ * {
+ *     byte version: 3;
+ *     byte type :5;
+ *     byte subtype;
+ *     byte padding;
+ *     byte sequence;
+ *     int len;
+ *     byte[len] data;
+ * }
+ * </code>
+ * We use the representing method mentioned in { @link ByteArrayIO }.
+ */
 public abstract class Packet
 {
     static int sleepInterval;
@@ -12,6 +28,7 @@ public abstract class Packet
     static int attemptPerKB;
     public byte version = 0;
     public byte type = 0;
+    public byte subtype = 0;
     public byte padding = 0;
     public int sequence = 0;
     public int len = 0;
@@ -37,8 +54,9 @@ public abstract class Packet
     {
         version = (byte)(buf[0] >> (byte)5);
         type = (byte)(buf[0] & (byte)0x1F);
-        padding = buf[1];
-        sequence = ((int)buf[2] << 8) + (int)buf[3];
+        subtype = buf[1];
+        padding = buf[2];
+        sequence =(int)buf[3] & 0xFF;
         len = ((int)buf[4] << 24) + (((int)buf[5] & 0xFF) << 16) + 
             (((int)buf[6] & 0xFF) << 8) + ((int)buf[7] & 0xFF);
     }
@@ -46,8 +64,8 @@ public abstract class Packet
     protected void fillHeader(byte[] buf)
     {
         buf[0] = (byte)((version << (byte)5) | type);
-        buf[1] = padding;
-        buf[2] = (byte)(sequence >> 8);
+        buf[1] = subtype;
+        buf[2] = padding;
         buf[3] = (byte)sequence;
         buf[4] = (byte)(len >> 24);
         buf[5] = (byte)(len >> 16);

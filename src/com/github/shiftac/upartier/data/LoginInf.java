@@ -3,9 +3,10 @@ package com.github.shiftac.upartier.data;
 import java.io.IOException;
 
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
-public class LoginInf implements ByteArrayIO
+public class LoginInf implements ByteArrayIO, PacketGenerator
 {
     int id = 0;
     BString passwd = new BString();
@@ -36,5 +37,11 @@ public class LoginInf implements ByteArrayIO
     public int getLength()
     {
         return SIZE_INT + passwd.getLength();
+    }
+
+    @Override
+    public AES128Packet toPacket()
+    {
+        return new AES128Packet(this, PacketType.TYPE_LOGIN, 0);
     }
 }

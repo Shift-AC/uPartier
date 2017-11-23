@@ -35,6 +35,13 @@ public class AES128Packet extends Packet
         catch (Exception e) {}
     }
 
+    public AES128Packet(ByteArrayIO payload, int type, int subtype)
+    {
+        this(payload);
+        this.type = (byte)type;
+        this.subtype = (byte)subtype;
+    }
+
     static synchronized AES128Key accessKey(
         AES128Key nkey, boolean read)
     {

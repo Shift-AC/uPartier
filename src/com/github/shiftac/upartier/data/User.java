@@ -5,6 +5,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 /**
@@ -24,7 +25,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * }
  * </code>
  */
-public class User implements ByteArrayIO
+public class User implements ByteArrayIO, PacketGenerator
 {
     public static interface Gender
     {
@@ -67,6 +68,7 @@ public class User implements ByteArrayIO
     static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
+
         return null;
     }
 
@@ -211,5 +213,11 @@ public class User implements ByteArrayIO
             len -= mailAccount.getLength());
         profile.write(buf, off += nickname.getLength(), 
             len -= nickname.getLength());
+    }
+
+    @Override
+    public AES128Packet toPacket()
+    {
+        return new AES128Packet(this, PacketType.TYPE_USER_MODIFY, 0);
     }
 }

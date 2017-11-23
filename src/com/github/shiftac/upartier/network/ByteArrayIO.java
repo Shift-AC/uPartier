@@ -33,17 +33,19 @@ import com.github.shiftac.upartier.data.User;
  * the names of the members. For fields that are not, there's no constraint 
  * on which names should be used. We also give a possible list of types:
  * 
- * { @code byte }: 8-bit integer;
- * { @code short }: 16-bit integer;
- * { @code int }: 32-bit integer;
- * { @code long }: 64-bit integer;
+ * { @code byte }: 8-bit integer;<br>
+ * { @code short }: 16-bit integer;<br>
+ * { @code int }: 32-bit integer;<br>
+ * { @code long }: 64-bit integer;<br>
  * { @code byte[len] }: Byte block with length { @code == len }. { @code len }
- * can either be a integer value defined previously or a constant.
+ * can either be a integer value defined previously or a constant.<br>
  * { @code byte[] }: Byte block with unknown length. Length of it can be 
  * decided when calling { @code read() } with { @code len } specified: its 
  * length is { @code len - } buffer length used by previous fields. This field
- * can only be the last field of a object.
- * { @code Classname }: An object that implements ByteArrayIO.
+ * can only be the last field of a object.<br>
+ * { @code Classname }: An object that implements ByteArrayIO.<br>
+ * Bitfield: we use Big-Endian represent here.<br>
+ * 
  * 
  * @see User
  * @see PlainMessage

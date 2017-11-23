@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 /**
@@ -24,7 +25,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * }
  * </code>
  */
-public class Post implements ByteArrayIO
+public class Post implements ByteArrayIO, PacketGenerator
 {
     int id = 0;
     int blockID = 0;
@@ -74,6 +75,12 @@ public class Post implements ByteArrayIO
         label.read(buf, off += name.getLength(), len -= name.getLength());
         place.read(buf, off += label.getLength(), len -= label.getLength());
         note.read(buf, off += place.getLength(), len -= place.getLength());
+    }
+
+    @Override
+    public AES128Packet toPacket()
+    {
+        return new AES128Packet(this, PacketType.TYPE_POST_MODIFY, 0);
     }
 
     /**
