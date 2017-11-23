@@ -3,6 +3,7 @@
 
 TARGET := .
 JAVAC := javac
+MAIN_PACKAGE := com.github.shiftac.upartier
 PACKAGES := \
 com.github.shiftac.upartier;\
 com.github.shiftac.upartier.network;\
@@ -17,10 +18,15 @@ JAVALIBLINUX := $(LIB)/org.json.jar:$(LIB)/jce.jar:$(LIB)/sunjce_provider.jar:
 JAVALIBWIN := $(subst :,;,$(JAVALIBLINUX))
 JAVALIB := $(JAVALIBWIN):$(JAVALIBLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
+#MANIFEST := "Class-Path: lib/org.json.jar lib/jce.jar lib/sunjce_provider.jar"
 
 .PHONY: all
 all:
 	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)"
+
+.PHONY: jar
+jar:
+	jar cf $(TARGET)/$(MAIN_PACKAGE).jar $(TARGET)/*
 
 .PHONY: clean
 clean:

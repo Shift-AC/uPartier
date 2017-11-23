@@ -8,17 +8,17 @@ import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 /**
- *  Information about post block.
- *  
- *  when transferring as bytes using ByteArrayIO:
- *  <code>
- *  struct Block
- *  {
- *      int id;
- *      int postCount;
- *      BString name;
- *  }
- *  </code>
+ * Information about post block.
+ * 
+ * when transferring as bytes using ByteArrayIO:
+ * <code>
+ * struct Block
+ * {
+ *     int id;
+ *     int postCount;
+ *     BString name;
+ * }
+ * </code>
  */
 public class Block implements ByteArrayIO
 {
@@ -28,14 +28,14 @@ public class Block implements ByteArrayIO
     ArrayList<Post> posts = null;
 
     /**
-     *  Try to fetch all existing post blocks, the { @code Block } objects 
-     *  returned in this call will in <i>prefetched</i> state.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * Try to fetch all existing post blocks, the { @code Block } objects 
+     * returned in this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
      */
     static Block[] fetchBlocks()
         throws IOException, SocketTimeoutException
@@ -44,7 +44,7 @@ public class Block implements ByteArrayIO
     }
 
     /**
-     *  @param name the name to set
+     * @param name the name to set
      */
     public void setName(String name)
     {

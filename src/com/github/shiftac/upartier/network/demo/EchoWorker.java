@@ -12,7 +12,6 @@ import com.github.shiftac.upartier.network.AES128Key;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
-import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
 import com.github.shiftac.upartier.network.server.Worker;
 import com.github.shiftac.upartier.Util;

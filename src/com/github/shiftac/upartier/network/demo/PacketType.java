@@ -1,10 +1,9 @@
-package com.github.shiftac.upartier.network;
+package com.github.shiftac.upartier.network.demo;
 
-public interface PacketType
+import com.github.shiftac.upartier.network.PacketVersion;
+
+public interface PacketType extends PacketVersion
 {
-    public static final int VER_RAW = 0x0;
-    public static final int VER_AES128 = 0x1;
-
     public static final int TYPE_CTRL = 0x0;
     public static final int TYPE_PULL = 0x08;
     public static final int TYPE_PUSH = 0x10;

@@ -19,7 +19,7 @@ import com.github.shiftac.upartier.network.AbstractWorker;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
-import com.github.shiftac.upartier.network.PacketType;
+import com.github.shiftac.upartier.network.PacketVersion;
 import com.github.shiftac.upartier.network.PlainMessage;
 import com.github.shiftac.upartier.network.SynObject;
 import com.github.shiftac.upartier.Util;

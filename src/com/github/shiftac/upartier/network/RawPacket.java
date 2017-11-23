@@ -49,6 +49,6 @@ public class RawPacket extends Packet
     @Override
     public byte getVersion()
     {
-        return (byte)PacketType.VER_RAW;
+        return (byte)PacketVersion.VER_RAW;
     }
 }

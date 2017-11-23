@@ -8,21 +8,21 @@ import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 /**
- *  Information about a single user.
- *  
- *  when transferring as bytes using ByteArrayIO:
- *  <code>
- *  struct User
- *  {
- *      int id;
- *      int age;
- *      int postCount;
- *      byte gender;
- *      BString mailAccount;
- *      BString nickname;
- *      Image profile;
- *  }
- *  </code>
+ * Information about a single user.
+ * 
+ * when transferring as bytes using ByteArrayIO:
+ * <code>
+ * struct User
+ * {
+ *     int id;
+ *     int age;
+ *     int postCount;
+ *     byte gender;
+ *     BString mailAccount;
+ *     BString nickname;
+ *     Image profile;
+ * }
+ * </code>
  */
 public class User implements ByteArrayIO
 {
@@ -53,16 +53,16 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Attempts to login(or register) use the given { @code LoginInf }, try to 
-     *  fetch { @code User } for the user if login succeeded.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists or wrong password is 
-     *  given.
+     * Attempts to login(or register) use the given { @code LoginInf }, try to 
+     * fetch { @code User } for the user if login succeeded.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists or wrong password is 
+     * given.
      */
     static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
@@ -71,14 +71,14 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Attempts to log out the current user.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists or wrong password is given.
+     * Attempts to log out the current user.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists or wrong password is given.
      */
     void logout()
         throws IOException, SocketTimeoutException, NoSuchUserException
@@ -87,14 +87,14 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Attempts to fetch user profile for a given user ID.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
+     * Attempts to fetch user profile for a given user ID.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
      *
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists.
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
      */
     static User fetchProfile(int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
@@ -103,14 +103,14 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Attempts to modify user profile.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
+     * Attempts to modify user profile.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
      *
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't get reply from server after
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists.
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't get reply from server after
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
      */
     void modify()
         throws IOException, SocketTimeoutException, NoSuchUserException
@@ -119,17 +119,17 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Try to fetch last { @code count } posts with time before { @code time } 
-     *  issued by current user, or fetch all remaining posts if there're not so 
-     *  many. The { @code Post } objects returned by this call will in 
-     *  <i>prefetched</i> state.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists.
+     * Try to fetch last { @code count } posts with time before { @code time } 
+     * issued by current user, or fetch all remaining posts if there're not so 
+     * many. The { @code Post } objects returned by this call will in 
+     * <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
      */
     void fetchMyPosts(int count, long time)
         throws IOException, SocketTimeoutException, NoSuchUserException
@@ -138,15 +138,15 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Try to issue a new post. The { @code id }, { @code time }, 
-     *  { @code postUser } field of the parameter { @code Post } will be
-     *  properly set on successful returns.
+     * Try to issue a new post. The { @code id }, { @code time }, 
+     * { @code postUser } field of the parameter { @code Post } will be
+     * properly set on successful returns.
      *
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists.
-     *  @throws NoSucBlockException if no such block exists.
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSucBlockException if no such block exists.
      */
     void issue(Post post)
         throws IOException, NoSuchUserException, NoSuchBlockException,
@@ -156,16 +156,16 @@ public class User implements ByteArrayIO
     }
 
     /**
-     *  Try to send a reply message under a given post. This also modify 
-     *  { @code messages } field of the parameter { @code Post }. On successful 
-     *  returns { @code time } field of parameter { @code message } will be
-     *  properly set.
+     * Try to send a reply message under a given post. This also modify 
+     * { @code messages } field of the parameter { @code Post }. On successful 
+     * returns { @code time } field of parameter { @code message } will be
+     * properly set.
      *
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists.
-     *  @throws NoSuchPostException if no such post exists.
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSuchPostException if no such post exists.
      */
     void sendMessage(Post post, ByteArrayIO message)
         throws IOException, NoSuchUserException, NoSuchPostException,

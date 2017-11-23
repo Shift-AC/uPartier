@@ -7,22 +7,22 @@ import java.util.ArrayList;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 /**
- *  Information about post.
- *  
- *  when transferring as bytes using ByteArrayIO:
- *  <code>
- *  struct Post
- *  {
- *      int id;
- *      int blockID;
- *      long time;
- *      int userCount;
- *      BString name;
- *      BString label;
- *      BString place;
- *      BString note;
- *  }
- *  </code>
+ * Information about post.
+ * 
+ * when transferring as bytes using ByteArrayIO:
+ * <code>
+ * struct Post
+ * {
+ *     int id;
+ *     int blockID;
+ *     long time;
+ *     int userCount;
+ *     BString name;
+ *     BString label;
+ *     BString place;
+ *     BString note;
+ * }
+ * </code>
  */
 public class Post implements ByteArrayIO
 {
@@ -77,14 +77,14 @@ public class Post implements ByteArrayIO
     }
 
     /**
-     *  Attempts to fetch profile of user who issued current post.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
+     * Attempts to fetch profile of user who issued current post.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
      *
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchUserException if no such user exists.
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchUserException if no such user exists.
      */
     void fetchPostUserProfile()
         throws IOException, SocketTimeoutException, NoSuchUserException
@@ -93,17 +93,17 @@ public class Post implements ByteArrayIO
     }
 
     /**
-     *  Try to fetch last { @code count } posts with time before { @code time } 
-     *  for current block, or fetch all remaining posts if there're not so 
-     *  many. The { @code Post } objects returned by this call will in 
-     *  <i>prefetched</i> state.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchBlockException if no such block exists.
+     * Try to fetch last { @code count } posts with time before { @code time } 
+     * for current block, or fetch all remaining posts if there're not so 
+     * many. The { @code Post } objects returned by this call will in 
+     * <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchBlockException if no such block exists.
      */
     void fetchPosts(int count, long time)
         throws IOException, SocketTimeoutException, NoSuchBlockException
@@ -112,16 +112,16 @@ public class Post implements ByteArrayIO
     }
 
     /**
-     *  Try to fetch user list and last { @code Post.FETCH_COUNT } messages 
-     *  for current post. The messages will be stored in { @code messages} 
-     *  in reverse order.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchPostException if no such post exists.
+     * Try to fetch user list and last { @code Post.FETCH_COUNT } messages 
+     * for current post. The messages will be stored in { @code messages} 
+     * in reverse order.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchPostException if no such post exists.
      */
     void fetchBase()
         throws IOException, SocketTimeoutException, NoSuchPostException
@@ -130,15 +130,15 @@ public class Post implements ByteArrayIO
     }
 
     /**
-     *  Try to fetch { @code Post.FETCH_COUNT } messages for current post, 
-     *  the messages will be stored in { @code messages} in reverse order.
-     *  <p>
-     *  Current thread will <b>block</b> inside this call.
-     *  
-     *  @throws IOException if network exceptions occured.
-     *  @throws SocketTimeoutException if can't hear from server for
-     *  { @code Client.NETWORK_TIMEOUT } milliseconds.
-     *  @throws NoSuchPostException if no such post exists.
+     * Try to fetch { @code Post.FETCH_COUNT } messages for current post, 
+     * the messages will be stored in { @code messages} in reverse order.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * @throws NoSuchPostException if no such post exists.
      */
     void fetchMessage()
         throws IOException, SocketTimeoutException, NoSuchPostException

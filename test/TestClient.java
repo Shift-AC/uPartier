@@ -1,8 +1,8 @@
 import com.github.shiftac.upartier.network.AES128Packet;
-import com.github.shiftac.upartier.network.PacketType;
 import com.github.shiftac.upartier.network.PlainMessage;
 import com.github.shiftac.upartier.network.app.AbstractClient;
 import com.github.shiftac.upartier.network.demo.EchoClient;
+import com.github.shiftac.upartier.network.demo.PacketType;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

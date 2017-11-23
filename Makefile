@@ -1,6 +1,6 @@
 # Auto generated file, modify if you want to add functions.
 
-JAVALIBWIN := test:bin:lib/org.json.jar:../lib/jce.jar:../lib/sunjce_provider.jar
+JAVALIBWIN := test:bin/upartier.jar:lib/org.json.jar:/lib/jce.jar:/lib/sunjce_provider.jar
 JAVALIBLINUX := $(subst :,;,$(JAVALIBWIN))
 JAVALIB := $(JAVALIBWIN);$(JAVALIBLINUX)
 
@@ -13,9 +13,14 @@ all: clean init
 init:
 	-mkdir bin
 
+.PHONY: jar
+jar:
+	make -C src jar TARGET=../bin
+
 .PHONY: clean
 clean:
 	-rm -r bin/*
+	-rm upartier.jar
 	make -C src clean
 	
 README: README.md

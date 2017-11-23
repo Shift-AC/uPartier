@@ -16,8 +16,8 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * <code>
  * struct BString
  * {
- *     dword mlen;
- *     byte[mlen] mybytes;
+ *    dword mlen;
+ *    byte[mlen] mybytes;
  * }
  */
 public class BString implements ByteArrayIO
