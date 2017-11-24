@@ -34,8 +34,8 @@ public class Client extends AbstractClient
     }
 
     /**
-     * Issue a packet and then enter { @code wait() } mode, current thread
-     * will be later { @code notify() }ed when reply comes.
+     * Issue a packet and then enter {@code wait()} mode, current thread
+     * will be later {@code notify()}ed when reply comes.
      */
     public Packet issueWait(Packet pak)
     {
