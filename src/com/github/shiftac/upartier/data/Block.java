@@ -41,7 +41,7 @@ public class Block implements ByteArrayIO, PacketGenerator
     static Block[] fetchBlocks()
         throws IOException, SocketTimeoutException
     {
-        return null;
+        throw new SocketTimeoutException();
     }
 
     /**

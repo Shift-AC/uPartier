@@ -69,7 +69,7 @@ public class User implements ByteArrayIO, PacketGenerator
     static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        return null;
+        throw new IOException();
         //Client.client.issue(inf.toPacket());
     }
 
@@ -86,7 +86,7 @@ public class User implements ByteArrayIO, PacketGenerator
     void logout()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
+        
     }
 
     /**
@@ -102,7 +102,7 @@ public class User implements ByteArrayIO, PacketGenerator
     static User fetchProfile(int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        return null;
+        throw new NoSuchUserException();
     }
 
     /**
@@ -118,7 +118,7 @@ public class User implements ByteArrayIO, PacketGenerator
     void modify()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
+        throw new SocketTimeoutException();
     }
 
     /**
@@ -137,7 +137,7 @@ public class User implements ByteArrayIO, PacketGenerator
     void fetchMyPosts(int count, long time)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
+        throw new SocketTimeoutException();
     }
 
     /**
@@ -155,7 +155,7 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchBlockException,
         SocketTimeoutException
     {
-
+        throw new NoSuchBlockException();
     }
 
     /**
@@ -174,7 +174,7 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException
     {
-
+        throw new SocketTimeoutException();
     }
 
     @Override

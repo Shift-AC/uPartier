@@ -96,7 +96,7 @@ public class Post implements ByteArrayIO, PacketGenerator
     void fetchPostUserProfile()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
+        throw new IOException();
     }
 
     /**
@@ -115,7 +115,7 @@ public class Post implements ByteArrayIO, PacketGenerator
     void fetchPosts(int count, long time)
         throws IOException, SocketTimeoutException, NoSuchBlockException
     {
-
+        throw new SocketTimeoutException();
     }
 
     /**
@@ -133,7 +133,7 @@ public class Post implements ByteArrayIO, PacketGenerator
     void fetchBase()
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
-
+        throw new NoSuchPostException();
     }
 
     /**
@@ -150,6 +150,6 @@ public class Post implements ByteArrayIO, PacketGenerator
     void fetchMessage()
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
-
+        throw new SocketTimeoutException();
     }
 }
