@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.app.Client;
 
 /**
  * Information about a single user.
@@ -68,8 +69,8 @@ public class User implements ByteArrayIO, PacketGenerator
     static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
         return null;
+        //Client.client.issue(inf.toPacket());
     }
 
     /**
@@ -218,6 +219,6 @@ public class User implements ByteArrayIO, PacketGenerator
     @Override
     public AES128Packet toPacket()
     {
-        return new AES128Packet(this, PacketType.TYPE_USER_MODIFY, 0);
+        return new AES128Packet(this, PacketType.TYPE_USER_MODIFY);
     }
 }

@@ -81,6 +81,6 @@ public class Block implements ByteArrayIO, PacketGenerator
     @Override
     public AES128Packet toPacket()
     {
-        return new AES128Packet(this, PacketType.TYPE_BLOCK_MODIFY, 0);
+        return new AES128Packet(this, PacketType.TYPE_BLOCK_MODIFY);
     }
 }

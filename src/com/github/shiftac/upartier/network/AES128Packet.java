@@ -20,13 +20,13 @@ public class AES128Packet extends Packet
     public AES128Packet() 
     {
         version = getVersion();
-        sequence = nowSeq.addAndGet(1) & 0xFFFF;
+        sequence = (byte)nowSeq.addAndGet(1);
     }
 
     public AES128Packet(ByteArrayIO payload)
     {
         version = getVersion();
-        sequence = nowSeq.addAndGet(1) & 0xFFFF;
+        sequence = (byte)nowSeq.addAndGet(1);
         setLen(payload.getLength());
         try
         {
@@ -35,11 +35,10 @@ public class AES128Packet extends Packet
         catch (Exception e) {}
     }
 
-    public AES128Packet(ByteArrayIO payload, int type, int subtype)
+    public AES128Packet(ByteArrayIO payload, int type)
     {
         this(payload);
         this.type = (byte)type;
-        this.subtype = (byte)subtype;
     }
 
     static synchronized AES128Key accessKey(

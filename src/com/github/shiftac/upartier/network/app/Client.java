@@ -1,6 +1,7 @@
 package com.github.shiftac.upartier.network.app;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.data.LoginInf;
@@ -13,9 +14,15 @@ public class Client extends AbstractClient
     public static final Client client;
     public LoginInf inf;
 
+    protected AtomicBoolean bufLock = new AtomicBoolean(false);
+    public Thread[] waitBuf;
+    public Packet[] recvBuf;
+
     private Client()
     {
         super();
+        waitBuf = new Thread[256];
+        recvBuf = new Packet[256];
     }
 
     public static void init(LoginInf inf)
@@ -26,6 +33,14 @@ public class Client extends AbstractClient
         }
     }
 
+    /*public Packet issueWait(Packet pak)
+    {
+        synchronized (this.bufLock)
+        {
+            
+        }
+    }*/
+    
     @Override
     protected void parseOut(Packet pak)
         throws IOException, PacketFormatException

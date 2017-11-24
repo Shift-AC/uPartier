@@ -80,7 +80,7 @@ public class Post implements ByteArrayIO, PacketGenerator
     @Override
     public AES128Packet toPacket()
     {
-        return new AES128Packet(this, PacketType.TYPE_POST_MODIFY, 0);
+        return new AES128Packet(this, PacketType.TYPE_POST_MODIFY);
     }
 
     /**

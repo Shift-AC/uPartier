@@ -57,6 +57,6 @@ public abstract class FetchInf implements ByteArrayIO, PacketGenerator
     @Override
     public AES128Packet toPacket()
     {
-        return new AES128Packet(this, getOperationType(), 0);
+        return new AES128Packet(this, getOperationType());
     }
 }

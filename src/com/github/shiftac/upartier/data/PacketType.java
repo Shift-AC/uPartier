@@ -42,4 +42,9 @@ public interface PacketType extends PacketVersion
      * no one in charge to handle a { @code TYPE_BLOCK_MODIFY } packet.
      */
     public static final int TYPE_BLOCK_MODIFY = 0x7;
+
+    /**
+     * { @link AckInf } is transferred.
+     */
+    public static final int TYPE_SERVER_ACK = 0x8;
 }

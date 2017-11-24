@@ -42,6 +42,6 @@ public class LoginInf implements ByteArrayIO, PacketGenerator
     @Override
     public AES128Packet toPacket()
     {
-        return new AES128Packet(this, PacketType.TYPE_LOGIN, 0);
+        return new AES128Packet(this, PacketType.TYPE_LOGIN);
     }
 }

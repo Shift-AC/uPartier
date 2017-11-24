@@ -12,9 +12,9 @@ import com.github.shiftac.upartier.Util;
  * {
  *     byte version: 3;
  *     byte type :5;
- *     byte subtype;
  *     byte padding;
  *     byte sequence;
+ *     byte ack;
  *     int len;
  *     byte[len] data;
  * }
@@ -28,9 +28,9 @@ public abstract class Packet
     static int attemptPerKB;
     public byte version = 0;
     public byte type = 0;
-    public byte subtype = 0;
     public byte padding = 0;
-    public int sequence = 0;
+    public byte sequence = 0;
+    public byte ack = 0;
     public int len = 0;
     public byte[] data = null;
 
@@ -54,9 +54,9 @@ public abstract class Packet
     {
         version = (byte)(buf[0] >> (byte)5);
         type = (byte)(buf[0] & (byte)0x1F);
-        subtype = buf[1];
-        padding = buf[2];
-        sequence =(int)buf[3] & 0xFF;
+        padding = buf[1];
+        sequence = buf[2];
+        ack = buf[3];
         len = ((int)buf[4] << 24) + (((int)buf[5] & 0xFF) << 16) + 
             (((int)buf[6] & 0xFF) << 8) + ((int)buf[7] & 0xFF);
     }
@@ -64,9 +64,9 @@ public abstract class Packet
     protected void fillHeader(byte[] buf)
     {
         buf[0] = (byte)((version << (byte)5) | type);
-        buf[1] = subtype;
-        buf[2] = padding;
-        buf[3] = (byte)sequence;
+        buf[1] = padding;
+        buf[2] = sequence;
+        buf[3] = ack;
         buf[4] = (byte)(len >> 24);
         buf[5] = (byte)(len >> 16);
         buf[6] = (byte)(len >> 8);

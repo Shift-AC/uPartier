@@ -14,7 +14,7 @@ com.github.shiftac.upartier.data;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 LIB := ../lib
-JAVALIBLINUX := $(LIB)/org.json.jar:$(LIB)/jce.jar:$(LIB)/sunjce_provider.jar:
+JAVALIBLINUX := $(LIB)/org.json.jar:#$(LIB)/jce.jar:$(LIB)/sunjce_provider.jar:
 JAVALIBWIN := $(subst :,;,$(JAVALIBLINUX))
 JAVALIB := $(JAVALIBWIN):$(JAVALIBLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
