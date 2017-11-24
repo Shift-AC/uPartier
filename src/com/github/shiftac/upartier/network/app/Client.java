@@ -27,19 +27,43 @@ public class Client extends AbstractClient
 
     public static void init(LoginInf inf)
     {
-        synchronized(client)
+        synchronized (client)
         {
             client.inf = inf;
         }
     }
 
-    /*public Packet issueWait(Packet pak)
+    /**
+     * Issue a packet and then enter { @code wait() } mode, current thread
+     * will be later { @code notify() }ed when reply comes.
+     */
+    public Packet issueWait(Packet pak)
     {
+        int seq = pak.sequence;
+        Thread current = Thread.currentThread();
         synchronized (this.bufLock)
         {
-            
+            waitBuf[seq] = current;
         }
-    }*/
+
+        super.issue(pak);
+
+        synchronized (current)
+        {
+            try
+            {
+                current.wait();
+            }
+            catch (Exception e) {}
+        }
+
+        Packet res;
+        synchronized (this.bufLock)
+        {
+            res = recvBuf[seq];
+        }
+        return res;
+    }
     
     @Override
     protected void parseOut(Packet pak)
@@ -52,7 +76,11 @@ public class Client extends AbstractClient
     protected void parseIn(Packet pak)
         throws IOException, PacketFormatException
     {
-
+        /*
+        switch (pak.type)
+        {
+        case 
+        }*/
     }
 
     @Override

@@ -29,7 +29,7 @@ public class WorkerManager
                 if (pool[i] == null || !pool[i].isAlive())
                 {
                     rec = i;
-                    synchronized(this)
+                    synchronized (this)
                     {
                         pool[i] = 
                             cworker.getDeclaredConstructor().newInstance();

@@ -9,19 +9,19 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * We notice that some kind of ID number will be enough for the server to know
  * what to fetch. Transferring such a short message as long as 8 bytes is neat: 
  * we only need to transfer one AES encryped block. 
- * 
+ * <p>
  * class extending this class should explain the meanings of their 
- * { @code type }.
- * 
+ * {@code type}.
+ * <p>
  * When transferring as byte array:
- * <code>
+ * <pre>
  * struct FetchInf
  * {
  *     byte type;
  *     byte[3] reserved;
  *     int id;
  * }
- * </code>
+ * </pre>
  */
 public abstract class FetchInf implements ByteArrayIO, PacketGenerator
 {

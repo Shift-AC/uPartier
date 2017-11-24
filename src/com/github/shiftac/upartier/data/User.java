@@ -13,7 +13,7 @@ import com.github.shiftac.upartier.network.app.Client;
  * Information about a single user.
  * 
  * when transferring as bytes using ByteArrayIO:
- * <code>
+ * <pre>
  * struct User
  * {
  *     int id;
@@ -24,7 +24,7 @@ import com.github.shiftac.upartier.network.app.Client;
  *     BString nickname;
  *     Image profile;
  * }
- * </code>
+ * </pre>
  */
 public class User implements ByteArrayIO, PacketGenerator
 {
@@ -55,21 +55,21 @@ public class User implements ByteArrayIO, PacketGenerator
     }
 
     /**
-     * Attempts to login(or register) use the given { @code LoginInf }, try to 
-     * fetch { @code User } for the user if login succeeded.
+     * Attempts to login(or register) use the given {@code LoginInf}, try to 
+     * fetch {@code User} for the user if login succeeded.
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't hear from server for
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists or wrong password is 
      * given.
      */
     static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        return null;
+        throw new IOException();
         //Client.client.issue(inf.toPacket());
     }
 
@@ -80,13 +80,13 @@ public class User implements ByteArrayIO, PacketGenerator
      * 
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't hear from server for
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists or wrong password is given.
      */
     void logout()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
+        
     }
 
     /**
@@ -96,13 +96,13 @@ public class User implements ByteArrayIO, PacketGenerator
      *
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't hear from server for
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
     static User fetchProfile(int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        return null;
+        throw new NoSuchUserException();
     }
 
     /**
@@ -112,42 +112,44 @@ public class User implements ByteArrayIO, PacketGenerator
      *
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't get reply from server after
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
+     * @throws PermissionException if {@code this} is not current user.
      */
     void modify()
-        throws IOException, SocketTimeoutException, NoSuchUserException
+        throws IOException, SocketTimeoutException, NoSuchUserException,
+        PermissionException
     {
-
+        throw new SocketTimeoutException();
     }
 
     /**
-     * Try to fetch last { @code count } posts with time before { @code time } 
+     * Try to fetch last {@code count} posts with time before {@code time} 
      * issued by current user, or fetch all remaining posts if there're not so 
-     * many. The { @code Post } objects returned by this call will in 
+     * many. The {@code Post} objects returned by this call will in 
      * <i>prefetched</i> state.
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't hear from server for
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
     void fetchMyPosts(int count, long time)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-
+        throw new SocketTimeoutException();
     }
 
     /**
-     * Try to issue a new post. The { @code id }, { @code time }, 
-     * { @code postUser } field of the parameter { @code Post } will be
+     * Try to issue a new post. The {@code id}, {@code time}, 
+     * {@code postUser} field of the parameter {@code Post} will be
      * properly set on successful returns.
      *
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't hear from server for
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      * @throws NoSucBlockException if no such block exists.
      */
@@ -155,26 +157,28 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchBlockException,
         SocketTimeoutException
     {
-
+        throw new NoSuchBlockException();
     }
 
     /**
      * Try to send a reply message under a given post. This also modify 
-     * { @code messages } field of the parameter { @code Post }. On successful 
-     * returns { @code time } field of parameter { @code message } will be
+     * {@code messages} field of the parameter {@code Post}. On successful 
+     * returns {@code time} field of parameter {@code message} will be
      * properly set.
      *
      * @throws IOException if network exceptions occured.
      * @throws SocketTimeoutException if can't hear from server for
-     * { @code Client.NETWORK_TIMEOUT } milliseconds.
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      * @throws NoSuchPostException if no such post exists.
+     * @throws PermissionException if current user can't send message on this 
+     * post.
      */
     void sendMessage(Post post, ByteArrayIO message)
         throws IOException, NoSuchUserException, NoSuchPostException,
-        SocketTimeoutException
+        SocketTimeoutException, PermissionException
     {
-
+        throw new SocketTimeoutException();
     }
 
     @Override

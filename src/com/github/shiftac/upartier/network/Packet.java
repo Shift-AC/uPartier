@@ -7,7 +7,7 @@ import com.github.shiftac.upartier.Util;
 
 /**
  * When transferring on network:
- * <code>
+ * <pre>
  * struct Packet
  * {
  *     byte version: 3;
@@ -18,8 +18,8 @@ import com.github.shiftac.upartier.Util;
  *     int len;
  *     byte[len] data;
  * }
- * </code>
- * We use the representing method mentioned in { @link ByteArrayIO }.
+ * </pre>
+ * We use the representing method mentioned in {@link ByteArrayIO}.
  */
 public abstract class Packet
 {

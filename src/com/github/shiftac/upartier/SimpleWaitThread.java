@@ -33,7 +33,8 @@ public class SimpleWaitThread extends Thread
             try 
             {  
                 this.wait.wait();  
-            } catch (InterruptedException e) {}  
+            } 
+            catch (InterruptedException e) {}  
             
             return true;  
         }  

@@ -13,7 +13,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * efficient calls of getBytes().
  * 
  * When transferring as bytes:
- * <code>
+ * <pre>
  * struct BString
  * {
  *    dword mlen;
@@ -94,7 +94,7 @@ public class BString implements ByteArrayIO
 
     public void setContent(String str)
     {
-        synchronized(this)
+        synchronized (this)
         {
             content = str;
             mybytes = str.getBytes();
@@ -103,7 +103,7 @@ public class BString implements ByteArrayIO
 
     public byte[] getBytes()
     {
-        synchronized(this)
+        synchronized (this)
         {
             return mybytes;
         }
@@ -112,7 +112,7 @@ public class BString implements ByteArrayIO
     @Override
     public int getLength()
     {
-        synchronized(this)
+        synchronized (this)
         {
             if (mybytes == null)
             {
@@ -129,7 +129,7 @@ public class BString implements ByteArrayIO
     public void read(byte[] buf, int off, int len)
         throws IOException
     {
-        synchronized(this)
+        synchronized (this)
         {
             checkLen(len, 4);
             int slen = getInt(buf, off);
@@ -142,7 +142,7 @@ public class BString implements ByteArrayIO
     public void write(byte[] buf, int off, int len)
         throws IOException
     {
-        synchronized(this)
+        synchronized (this)
         {
             int mlen = getLength();
             checkLen(len, mlen);
@@ -157,7 +157,7 @@ public class BString implements ByteArrayIO
     @Override
     public String toString()
     {
-        synchronized(this)
+        synchronized (this)
         {
             return content;
         }
