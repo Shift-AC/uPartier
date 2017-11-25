@@ -27,6 +27,7 @@ public class ACKInf implements ByteArrayIO
     public static int RET_ERRPOST = 3;
     public static int RET_ERRBLOCK = 4;
     public static int RET_ERRPERMISSION = 5;
+    public static int RET_ERRIO = 6;
 
     int retval;
 

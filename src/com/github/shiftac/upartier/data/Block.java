@@ -62,10 +62,10 @@ public class Block implements ByteArrayIO, PacketGenerator
     public void write(byte[] buf, int off, int len)
         throws IOException
     {
-        checkLen(len, getLength());
+        checkLen(len, SIZE_INT + SIZE_INT);
         setInt(buf, off, id);
-        setInt(buf, off += 4, postCount);
-        name.read(buf, off += 4, len -= SIZE_INT + SIZE_INT);
+        setInt(buf, off += SIZE_INT, postCount);
+        name.write(buf, off += SIZE_INT, len -= SIZE_INT + SIZE_INT);
     }
 
     @Override
@@ -74,8 +74,8 @@ public class Block implements ByteArrayIO, PacketGenerator
     {
         checkLen(len, SIZE_INT + SIZE_INT);
         id = getInt(buf, off);
-        postCount = getInt(buf, off += 4);
-        name.read(buf, off += 4, len -= SIZE_INT + SIZE_INT);
+        postCount = getInt(buf, off += SIZE_INT);
+        name.read(buf, off += SIZE_INT, len -= SIZE_INT + SIZE_INT);
     }
 
     @Override

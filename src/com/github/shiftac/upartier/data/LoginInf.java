@@ -27,7 +27,7 @@ public class LoginInf implements ByteArrayIO, PacketGenerator
     public void write(byte[] buf, int off, int len)
         throws IOException
     {
-        checkLen(len, getLength());
+        checkLen(len, SIZE_INT);
         int tid = isNewUser ? -id : id;
         setInt(buf, off, tid);
         passwd.write(buf, off += SIZE_INT, len -= SIZE_INT);
