@@ -9,7 +9,7 @@ import com.github.shiftac.upartier.network.AES128Packet;
  * 2. Fetching a user who issued a specified post.<br>
  * 3. Fetching a list of users belong to a post.<br>
  */
-public class UserFetchInf extends FetchInf
+public class UserFetchInf extends IDFetchInf
 {
     public static final int ID = 0;
     public static final int POST_ISSUE = 1;

@@ -45,6 +45,24 @@ public class Block implements ByteArrayIO, PacketGenerator
     }
 
     /**
+     * Try to fetch last {@code count} posts with id less then {@code id} for 
+     * current block, or fetch all remaining posts if there're not so many. The 
+     * {@code Post} objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
+     * @throws NoSuchBlockException if no such block exists.
+     */
+    void fetchPosts(int count, int id)
+        throws IOException, SocketTimeoutException, NoSuchBlockException
+    {
+        throw new IOException();
+    }
+
+    /**
      * @param name the name to set
      */
     public void setName(String name)

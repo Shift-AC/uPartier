@@ -19,7 +19,7 @@ import com.github.shiftac.upartier.network.AES128Packet;
  * }
  * </pre>
  */
-public class MessageInf implements ByteArrayIO, PacketGenerator
+public class MessageInf implements ByteArrayIO
 {
     public static final int TYPE_TEXT = 0;
     public static final int TYPE_IMAGE = 1;
@@ -76,11 +76,5 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
         setNumber(buf, ++off, SIZE_LONG - SIZE_BYTE, time);
         content.write(buf, off += SIZE_LONG - SIZE_BYTE, 
             len -= SIZE_INT * 2 + SIZE_LONG);
-    }
-
-    @Override
-    public AES128Packet toPacket()
-    {
-        return new AES128Packet(this, PacketType.TYPE_MESSAGE);
     }
 }

@@ -47,14 +47,19 @@ public interface PacketType extends PacketVersion
      * handle a {@code TYPE_BLOCK_MODIFY} packet now.
      */
     public static final int TYPE_BLOCK_MODIFY = 0x7;
+    /**
+     * Client: {@link MsgFetchInf} id transferred.<br>
+     * Server: (On success){@link MessageInf} is transferred.
+     */
+    public static final int TYPE_MESSAGE_FETCH = 0x8;    
+    /**
+     * Server: {@link MessageInf} is transferred.
+     */
+    public static final int TYPE_MESSAGE_PURGE = 0x9;
 
     /**
      * Server: {@link AckInf} is transferred.
      */
-    public static final int TYPE_SERVER_ACK = 0x8;
+    public static final int TYPE_SERVER_ACK = 0x1F;
 
-    /**
-     * Server: {@link MessageInf} is transferred.
-     */
-    public static final int TYPE_MESSAGE = 0x9;
 }

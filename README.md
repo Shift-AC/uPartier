@@ -254,7 +254,7 @@
     ```java
     // class com.github.shiftac.upartier.data.User
     /**
-     * Try to fetch last {@code count} posts with time before {@code time} issued
+     * Try to fetch last {@code count} posts with id less than {@code id} issued
      * by current user, or fetch all remaining posts if there're not so many. The 
      * {@code Post} objects returned by this call will in <i>prefetched</i> state.
      * <p>
@@ -265,12 +265,12 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchMyPosts(int count, long time)
+    void fetchMyPosts(int count, int id)
         throws IOException, SocketTimeoutException, NoSuchUserException;
 
     // class com.github.shiftac.upartier.data.Block
     /**
-     * Try to fetch last {@code count} posts with time before {@code time} for 
+     * Try to fetch last {@code count} posts with id less then {@code id} for 
      * current block, or fetch all remaining posts if there're not so many. The 
      * {@code Post} objects returned by this call will in <i>prefetched</i> state.
      * <p>
@@ -281,7 +281,7 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchBlockException if no such block exists.
      */
-    void fetchPosts(int count, long time)
+    void fetchPosts(int count, int id)
         throws IOException, SocketTimeoutException, NoSuchBlockException;
     ```
 
@@ -289,7 +289,7 @@
     ```java
     // class ?
     /**
-     * Try to fetch last {@code count} posts with time before {@code time} for a
+     * Try to fetch last {@code count} posts with id less than {@code id} for a
      * given user id, or fetch all remaining posts if there're not so many. The 
      * {@code Post} objects returned by this call will in <i>prefetched</i> state.
      * <p>
@@ -298,12 +298,12 @@
      * @throws IOException if IOException occured when accessing database files.
      * @throws NoSuchUserException if no such user exists.
      */
-    Post[] fetchPostForUser(int id, int count, long time)
+    Post[] fetchPostForUser(int id, int count, int id)
         throws IOException, NoSuchUserException;
 
     // class ?
     /**
-     * Try to fetch last {@code count} posts with time before {@code time} for a
+     * Try to fetch last {@code count} posts with id less than {@code id} for a
      * given block id, or fetch all posts if there're not so many. The {@code Post}
      * objects returned by this call will in <i>prefetched</i> state.
      * <p>
@@ -312,7 +312,7 @@
      * @throws IOException if IOException occured when accessing database files.
      * @throws NoSuchBlockException if no such block exists.
      */
-    Post[] fetchPostForBlock(int id, int count, long time)
+    Post[] fetchPostForBlock(int id, int count, int id)
         throws IOException, NoSuchBlockException;
     ```
 
@@ -322,9 +322,8 @@
     ```java
     // class com.github.shiftac.upartier.data.Post
     /**
-     * Try to fetch user list and last {@code Post.FETCH_COUNT} messages 
-     * for current post. The messages will be stored in {@code messages} 
-     * in reverse order.
+     * Try to fetch user list and last {@code count} messages for current 
+     * post. The messages will be stored in {@code messages} in reverse order.
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
@@ -333,13 +332,13 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
      */
-    void fetchBase()
+    void fetchBase(int count)
         throws IOException, SocketTimeoutException, NoSuchPostException;
 
     // class com.github.shiftac.upartier.data.Post
     /**
-     * Try to fetch {@code Post.FETCH_COUNT} messages for current post, 
-     * the messages will be stored in {@code messages} in reverse order.
+     * Try to fetch {@code count} messages for current post, the messages will 
+     * be stored in {@code messages} in reverse order.
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
@@ -348,7 +347,7 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
      */
-    void fetchMessage()
+    void fetchMessage(int count)
         throws IOException, SocketTimeoutException, NoSuchPostException;
     ```
 
@@ -363,20 +362,21 @@
      * @throws IOException if IOException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
-    User[] fetchPostUserList(long id)
+    User[] fetchPostUserList(int id)
         throws IOException, NoSuchPostException;
 
     // class ?
     /**
-     * Try to fetch last {@code count} messages before {@code time} for a given 
-     * post id. The messages should be stored in {@code messages} in reverse order.
+     * Try to fetch last {@code count} messages issued before {@code time} for
+     * a given post id. The messages should be stored in {@code messages} in 
+     * reverse order.
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
      * @throws IOException if IOException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
-    MessageInf[] fetchMessage(long id, int count, long time)
+    MessageInf[] fetchMessage(int id, int count, long time)
         throws IOException, NoSuchPostException;
     ```
 

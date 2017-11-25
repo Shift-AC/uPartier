@@ -6,9 +6,12 @@ package com.github.shiftac.upartier.data;
  * 1. Fetching posts from its ID(We think this is needed but it is not being 
  * used by now).<br>
  * 2. Fetching posts belong to a specified block.<br>
- * 2. Fetching posts posted by a specified user.<br>
+ * 3. Fetching posts posted by a specified user.<br>
+ * 
+ * For 2. and 3., {@code count} will be valid and {@code token} will be id of 
+ * last item.
  */
-public class PostFetchInf extends FetchInf
+public class PostFetchInf extends CountFetchInf
 {
     public static final int ID = 0;
     public static final int BLOCK = 1;

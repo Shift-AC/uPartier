@@ -80,7 +80,7 @@ public class Client extends AbstractClient
         case PacketType.TYPE_BLOCK_FETCH:
         case PacketType.TYPE_USER_MODIFY:
         case PacketType.TYPE_POST_MODIFY:
-        case PacketType.TYPE_MESSAGE:
+        case PacketType.TYPE_MESSAGE_FETCH:
             pak.write(os);
             break;
         default:
@@ -98,6 +98,7 @@ public class Client extends AbstractClient
         case PacketType.TYPE_LOGIN:
         case PacketType.TYPE_USER_FETCH:
         case PacketType.TYPE_POST_FETCH:
+        case PacketType.TYPE_MESSAGE_FETCH:
         case PacketType.TYPE_SERVER_ACK:
             int ack = pak.ack;
             Thread waiting;
@@ -112,7 +113,7 @@ public class Client extends AbstractClient
                 waiting.notify();
             }
             break;
-        case PacketType.TYPE_MESSAGE:
+        case PacketType.TYPE_MESSAGE_PURGE:
             // someone should provide me a way to notify the app that 
             // theres's an incoming message.
             break;
