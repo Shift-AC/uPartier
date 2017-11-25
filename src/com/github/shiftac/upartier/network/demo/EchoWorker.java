@@ -13,10 +13,10 @@ import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 import com.github.shiftac.upartier.network.PlainMessage;
-import com.github.shiftac.upartier.network.server.Worker;
+import com.github.shiftac.upartier.network.server.ServerWorker;
 import com.github.shiftac.upartier.Util;
 
-public final class EchoWorker extends Worker
+public final class EchoWorker extends ServerWorker
 {
     @Override
     protected void parseOut(Packet pak)

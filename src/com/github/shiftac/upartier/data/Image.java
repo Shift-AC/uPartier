@@ -1,10 +1,9 @@
 package com.github.shiftac.upartier.data;
 
-public class Image extends AbstractFile
+public class Image extends GenericFile
 {
-    @Override
-    public int getType()
+    public Image()
     {
-        return ContentTypes.IMAGE;
+        type = ContentTypes.IMAGE;
     }
 }

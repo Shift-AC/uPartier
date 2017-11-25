@@ -174,7 +174,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * @throws PermissionException if current user can't send message on this 
      * post.
      */
-    void sendMessage(Post post, ByteArrayIO message)
+    void sendMessage(Post post, MessageInf message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException, PermissionException
     {

@@ -131,10 +131,10 @@ public class BString implements ByteArrayIO
     {
         synchronized (this)
         {
-            checkLen(len, 4);
+            checkLen(len, SIZE_INT);
             int slen = getInt(buf, off);
-            checkLen(len -= 4, slen);
-            setContent(new String(buf, off += 4, slen));
+            checkLen(len -= SIZE_INT, slen);
+            setContent(new String(buf, off += SIZE_INT, slen));
         }
     }
 

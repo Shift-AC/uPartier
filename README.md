@@ -442,7 +442,7 @@
      * @throws PermissionException if current user can't send message on this 
      * post.
      */
-    User[] sendMessage(int userid, int postid, ByteArrayIO message)
+    User[] sendMessage(int userid, int postid, MessageInf message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         PermissionException;
     ```

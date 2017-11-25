@@ -6,7 +6,8 @@
             "Server":
             {
                 "host": "127.0.0.1",
-                "port": 2333
+                "port": 2333,
+                "maxWorker": 32
             },
             "WorkerManager":
             {
