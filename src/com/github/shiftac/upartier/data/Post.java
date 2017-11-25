@@ -35,7 +35,7 @@ public class Post implements ByteArrayIO, PacketGenerator
     BString place = null;
     BString note = null;
     User postUser = null;
-    ArrayList<ByteArrayIO> messages = null;
+    ArrayList<MessageInf> messages = null;
     int userCount = 0;
     ArrayList<User> users = null;
 

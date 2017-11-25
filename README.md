@@ -79,11 +79,13 @@
 - For messages
 
     ```java
-    class ByteArrayIO
+    class MessageInf
     {
+        int userID;
+        int postID;
         byte type;
         long time;
-        Object content;
+        ByteArrayIO content;
     }
     ```
 
@@ -374,7 +376,7 @@
      * @throws IOException if IOException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
-    ByteArrayIO[] fetchMessage(long id, int count, long time)
+    MessageInf[] fetchMessage(long id, int count, long time)
         throws IOException, NoSuchPostException;
     ```
 
@@ -412,7 +414,7 @@
      * @throws PermissionException if current user can't send message on this 
      * post.
      */
-    void sendMessage(Post post, ByteArrayIO message)
+    void sendMessage(Post post, MessageInf message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException, PermissionException;
     ```
