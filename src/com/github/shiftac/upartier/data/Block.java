@@ -22,10 +22,10 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  */
 public class Block implements ByteArrayIO, PacketGenerator
 {
-    int id = 0;
-    BString name = null;
-    int postCount = 0;
-    ArrayList<Post> posts = null;
+    public int id = 0;
+    public BString name = null;
+    public int postCount = 0;
+    public ArrayList<Post> posts = null;
 
     /**
      * Try to fetch all existing post blocks, the {@code Block} objects 
@@ -37,7 +37,7 @@ public class Block implements ByteArrayIO, PacketGenerator
      * @throws SocketTimeoutException if can't hear from server for
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      */
-    static Block[] fetchBlocks()
+    public static Block[] fetchBlocks()
         throws IOException, SocketTimeoutException
     {
         throw new SocketTimeoutException();
@@ -55,7 +55,7 @@ public class Block implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchBlockException if no such block exists.
      */
-    void fetchPosts(int count, int id)
+    public void fetchPosts(int count, int id)
         throws IOException, SocketTimeoutException, NoSuchBlockException
     {
         throw new IOException();

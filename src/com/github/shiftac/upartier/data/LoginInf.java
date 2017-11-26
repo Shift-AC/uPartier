@@ -7,9 +7,9 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
 
 public class LoginInf implements ByteArrayIO, PacketGenerator
 {
-    int id = 0;
-    BString passwd = new BString();
-    boolean isNewUser = false;
+    public int id = 0;
+    public BString passwd = new BString();
+    public boolean isNewUser = false;
 
     @Override
     public void read(byte[] buf, int off, int len)

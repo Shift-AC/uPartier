@@ -25,11 +25,11 @@ public class MessageInf implements ByteArrayIO
     public static final int TYPE_AUDIO = 2;
     public static final int TYPE_FILE = 3;
 
-    int userID = 0;
-    int postID = 0;;
-    byte type = 0;
-    long time = 0;
-    ByteArrayIO content = null;
+    public int userID = 0;
+    public int postID = 0;;
+    public byte type = 0;
+    public long time = 0;
+    public ByteArrayIO content = null;
 
     @Override
     public int getLength()

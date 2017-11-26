@@ -21,15 +21,15 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  */
 public class ACKInf implements ByteArrayIO
 {
-    public static int RET_SUCC = 0;
-    public static int RET_ERRDATABASE = 1;
-    public static int RET_ERRUSER = 2;
-    public static int RET_ERRPOST = 3;
-    public static int RET_ERRBLOCK = 4;
-    public static int RET_ERRPERMISSION = 5;
-    public static int RET_ERRIO = 6;
+    public static final int RET_SUCC = 0;
+    public static final int RET_ERRDATABASE = 1;
+    public static final int RET_ERRUSER = 2;
+    public static final int RET_ERRPOST = 3;
+    public static final int RET_ERRBLOCK = 4;
+    public static final int RET_ERRPERMISSION = 5;
+    public static final int RET_ERRIO = 6;
 
-    int retval;
+    public int retval;
 
     @Override
     public int getLength()

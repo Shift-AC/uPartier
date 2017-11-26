@@ -33,21 +33,21 @@ public class User implements ByteArrayIO, PacketGenerator
         public static final int unknown = 2;
     }
 
-    int id = 0;
-    int age = 0;
-    int gender = Gender.unknown;
-    BString mailAccount = null;
-    BString nickname = null;
-    Image profile = null;
-    int postCount = 0;
-    ArrayList<Post> myPosts = null;
+    public int id = 0;
+    public int age = 0;
+    public int gender = Gender.unknown;
+    public BString mailAccount = null;
+    public BString nickname = null;
+    public Image profile = null;
+    public int postCount = 0;
+    public ArrayList<Post> myPosts = null;
 
-    void setMailAccount(String mail)
+    public void setMailAccount(String mail)
     {
         this.mailAccount.setContent(mail);
     }
 
-    void setNickname(String name)
+    public void setNickname(String name)
     {
         this.nickname.setContent(name);
     }
@@ -64,7 +64,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * @throws NoSuchUserException if no such user exists or wrong password is 
      * given.
      */
-    static User login(LoginInf inf)
+    public static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         throw new IOException();
@@ -81,7 +81,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists or wrong password is given.
      */
-    void logout()
+    public void logout()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         
@@ -97,7 +97,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    static User fetchProfile(int id)
+    public static User fetchProfile(int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         throw new NoSuchUserException();
@@ -114,7 +114,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * @throws NoSuchUserException if no such user exists.
      * @throws PermissionException if {@code this} is not current user.
      */
-    void modify()
+    public void modify()
         throws IOException, SocketTimeoutException, NoSuchUserException,
         PermissionException
     {
@@ -133,7 +133,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchMyPosts(int count, int id)
+    public void fetchMyPosts(int count, int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         throw new SocketTimeoutException();
@@ -150,7 +150,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * @throws NoSuchUserException if no such user exists.
      * @throws NoSucBlockException if no such block exists.
      */
-    void issue(Post post)
+    public void issue(Post post)
         throws IOException, NoSuchUserException, NoSuchBlockException,
         SocketTimeoutException
     {
@@ -171,7 +171,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * @throws PermissionException if current user can't send message on this 
      * post.
      */
-    void sendMessage(Post post, MessageInf message)
+    public void sendMessage(Post post, MessageInf message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException, PermissionException
     {

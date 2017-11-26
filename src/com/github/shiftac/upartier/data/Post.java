@@ -27,17 +27,17 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  */
 public class Post implements ByteArrayIO, PacketGenerator
 {
-    int id = 0;
-    int blockID = 0;
-    BString name = null;
-    long time = 0;
-    BString label = null;
-    BString place = null;
-    BString note = null;
-    User postUser = null;
-    ArrayList<MessageInf> messages = null;
-    int userCount = 0;
-    ArrayList<User> users = null;
+    public int id = 0;
+    public int blockID = 0;
+    public BString name = null;
+    public long time = 0;
+    public BString label = null;
+    public BString place = null;
+    public BString note = null;
+    public User postUser = null;
+    public ArrayList<MessageInf> messages = null;
+    public int userCount = 0;
+    public ArrayList<User> users = null;
 
     @Override
     public int getLength()
@@ -93,7 +93,7 @@ public class Post implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchPostUserProfile()
+    public void fetchPostUserProfile()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         throw new IOException();
@@ -110,7 +110,7 @@ public class Post implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
      */
-    void fetchBase(int count)
+    public void fetchBase(int count)
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
         throw new SocketTimeoutException();
@@ -127,7 +127,7 @@ public class Post implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
      */
-    void fetchMessage(int count)
+    public void fetchMessage(int count)
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
         throw new SocketTimeoutException();
