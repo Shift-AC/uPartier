@@ -124,10 +124,9 @@ public class User implements ByteArrayIO, PacketGenerator
     }
 
     /**
-     * Try to fetch last {@code count} posts with time before {@code time} 
-     * issued by current user, or fetch all remaining posts if there're not so 
-     * many. The {@code Post} objects returned by this call will in 
-     * <i>prefetched</i> state.
+     * Try to fetch last {@code count} posts with id less than {@code id} issued
+     * by current user, or fetch all remaining posts if there're not so many. The 
+     * {@code Post} objects returned by this call will in <i>prefetched</i> state.
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
@@ -136,7 +135,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchMyPosts(int count, long time)
+    void fetchMyPosts(int count, int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         throw new SocketTimeoutException();

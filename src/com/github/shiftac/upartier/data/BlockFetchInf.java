@@ -6,7 +6,7 @@ package com.github.shiftac.upartier.data;
  * 1. Fetching a block from its ID.(not currently used)<br>
  * 2. Fetching all blocks.<br>
  */
-public class BlockFetchInf extends FetchInf
+public class BlockFetchInf extends IDFetchInf
 {
     public static final int ID = 0;
     public static final int ALL = 1;
