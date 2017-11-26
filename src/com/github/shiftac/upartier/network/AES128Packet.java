@@ -3,12 +3,9 @@ package com.github.shiftac.upartier.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Key;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-
 import com.github.shiftac.upartier.Util;
 
 public class AES128Packet extends Packet

@@ -1,13 +1,6 @@
 package com.github.shiftac.upartier;
 
-import java.io.FileInputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONPointer;
-import org.json.JSONPointerException;
-import org.json.JSONTokener;
 
 public class SimpleWaitThread extends Thread
 {

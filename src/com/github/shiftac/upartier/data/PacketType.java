@@ -1,7 +1,6 @@
 package com.github.shiftac.upartier.data;
 
 import com.github.shiftac.upartier.network.PacketVersion;
-import com.github.shiftac.upartier.network.PlainMessage;
 
 /**
  * Protocol implement for real uPartier program.

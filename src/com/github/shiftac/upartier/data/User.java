@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
-import com.github.shiftac.upartier.network.app.Client;
 
 /**
  * Information about a single user.

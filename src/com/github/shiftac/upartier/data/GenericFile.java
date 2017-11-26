@@ -1,10 +1,6 @@
 package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 public class GenericFile implements ByteArrayIO

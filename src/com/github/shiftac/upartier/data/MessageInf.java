@@ -3,7 +3,6 @@ package com.github.shiftac.upartier.data;
 import java.io.IOException;
 
 import com.github.shiftac.upartier.network.ByteArrayIO;
-import com.github.shiftac.upartier.network.AES128Packet;
 
 /**
  * Information about the message transferred.

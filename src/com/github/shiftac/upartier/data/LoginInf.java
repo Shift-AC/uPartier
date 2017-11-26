@@ -2,7 +2,6 @@ package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
 
-import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 

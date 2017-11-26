@@ -1,9 +1,6 @@
 package com.github.shiftac.upartier.network;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import com.github.shiftac.upartier.data.User;
 
 /**

@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import com.github.shiftac.upartier.LogManager;
 import com.github.shiftac.upartier.SimpleWaitThread;
 import com.github.shiftac.upartier.Util;
 

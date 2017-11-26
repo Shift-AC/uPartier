@@ -3,10 +3,8 @@ package com.github.shiftac.upartier.network.app;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.data.LoginInf;
 import com.github.shiftac.upartier.data.PacketType;
-import com.github.shiftac.upartier.data.User;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;

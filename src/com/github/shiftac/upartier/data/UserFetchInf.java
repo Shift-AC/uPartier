@@ -1,7 +1,5 @@
 package com.github.shiftac.upartier.data;
 
-import com.github.shiftac.upartier.network.AES128Packet;
-
 /**
  * When fetching user information, following situations are possible to occur:
  * <p>

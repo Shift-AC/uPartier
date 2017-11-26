@@ -1,7 +1,5 @@
 package com.github.shiftac.upartier.network;
 
-import java.net.InetAddress;
-import java.net.Socket;
 import java.security.SecureRandom;
 
 import javax.crypto.SecretKey;
