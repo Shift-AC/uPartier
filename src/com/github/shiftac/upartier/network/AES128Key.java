@@ -49,7 +49,7 @@ public class AES128Key
         try
         {
             KeyGenerator gen = KeyGenerator.getInstance("AES");
-            SecureRandom sr = SecureRandom.getInstance("DRBG");
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
             sr.setSeed(seed);
             gen.init(128, sr);
             this.key = gen.generateKey();
