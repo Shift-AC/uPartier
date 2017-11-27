@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
+import com.github.shiftac.upartier.network.app.Client;
 
 /**
  * Information about a single user.
@@ -67,8 +69,14 @@ public class User implements ByteArrayIO, PacketGenerator
     public static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
+        /*
+        Packet pak = inf.toPacket();
+        Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case 
+        }*/
         throw new IOException();
-        //Client.client.issue(inf.toPacket());
     }
 
     /**

@@ -19,7 +19,7 @@ public class Worker extends ServerWorker
         case PacketType.TYPE_POST_FETCH:
         case PacketType.TYPE_SERVER_ACK:
         case PacketType.TYPE_MESSAGE_FETCH:
-        case PacketType.TYPE_MESSAGE_PURGE:
+        case PacketType.TYPE_MESSAGE_PUSH:
             pak.write(os);
             break;
         default:

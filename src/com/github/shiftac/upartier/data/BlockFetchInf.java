@@ -3,7 +3,7 @@ package com.github.shiftac.upartier.data;
 /**
  * When fetching block information, following situations are possible to occur:
  * <p>
- * 1. Fetching a block from its ID.(not currently used)<br>
+ * 1. Fetching a block from its ID.<br>
  * 2. Fetching all blocks.<br>
  */
 public class BlockFetchInf extends IDFetchInf
