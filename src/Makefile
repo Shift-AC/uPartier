@@ -3,6 +3,7 @@
 
 TARGET := .
 JAVAC := javac
+#JAVAC := /usr/share/jdk1.8.0_152/bin/javac
 MAIN_PACKAGE := com.github.shiftac.upartier
 PACKAGES := \
 com.github.shiftac.upartier;\

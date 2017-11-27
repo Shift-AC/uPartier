@@ -55,7 +55,7 @@ public class Block implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchBlockException if no such block exists.
      */
-    public void fetchPosts(int count, int id)
+    public void fetchPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchBlockException
     {
         throw new IOException();

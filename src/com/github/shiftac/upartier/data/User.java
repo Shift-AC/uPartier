@@ -133,7 +133,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    public void fetchMyPosts(int count, int id)
+    public void fetchMyPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         throw new SocketTimeoutException();

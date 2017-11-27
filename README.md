@@ -265,7 +265,7 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchMyPosts(int count, int id)
+    void fetchMyPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchUserException;
 
     // class com.github.shiftac.upartier.data.Block
@@ -281,7 +281,7 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchBlockException if no such block exists.
      */
-    void fetchPosts(int count, int id)
+    void fetchPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchBlockException;
     ```
 
