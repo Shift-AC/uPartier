@@ -15,7 +15,9 @@ init:
 
 .PHONY: jar
 jar:
-	make -C src jar TARGET=../bin
+	cp bin/com . -r
+	jar cf upartier.jar com/
+	rm com -r
 
 .PHONY: clean
 clean:

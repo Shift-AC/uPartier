@@ -24,10 +24,6 @@ JAVAFLAGS := -encoding utf8 -Xlint:all
 all:
 	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)"
 
-.PHONY: jar
-jar:
-	jar cf $(TARGET)/$(MAIN_PACKAGE).jar $(TARGET)/*
-
 .PHONY: clean
 clean:
 	-rm *.class *~
