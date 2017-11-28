@@ -12,7 +12,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * <p>
  * When transferring as byte array:
  * <pre>
- * struct ACKInf
+ * class ACKInf
  * {
  *     long retval;
  * }

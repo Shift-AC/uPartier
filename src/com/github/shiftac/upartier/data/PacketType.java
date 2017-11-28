@@ -3,84 +3,165 @@ package com.github.shiftac.upartier.data;
 import com.github.shiftac.upartier.network.PacketVersion;
 
 /**
- * Protocol implement for real uPartier program.
- * <p>
- * We use <b>only</b> packets to transfer information between client and
+ * <p>Protocol implement for real uPartier program.</p>
+ * <p>We use <strong>only</strong> packets to transfer information between client and
  * server. For each possible situations that the programs should talk to
- * each other, we define the actions & return values as below:
- * <p>
- * <pre>
- * 1. client login:
- *   client->server: TYPE_LOGIN, transfer LoginInf
- *   server->client:
- *     success: TYPE_LOGIN, transfer User
- *     permission denied: TYPE_SERVER_ACK, transfer ACKInf, return 
- *       RET_ERRPERMISSION
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- * 2. client fetch user profile: 
- *   client->server: TYPE_USER_FETCH, transfer UserFetchInf, type =
- *     fetch for ID: ID
- *     fetch user issued a post: POST_ISSUE
- *     fetch user list belong to a post: POST_LIST
- *   server->client:
- *     success: TYPE_USER_FETCH, if type == ID || POST_ISSUE: transfer
- *       User, if type == POST_LIST: transfer ByteArrayIOList<User>
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- *     no such user(type == ID only): TYPE_SERVER_ACK, transfer ACKInf,
- *       return RET_ERRUSER
- *     no such post(type == POST_* only): TYPE_SERVER_ACK, transfer ACKInf,
- *       return RET_ERRPOST
- * 3. client fetch block:
- *   client->server: TYPE_BLOCK_FETCH, transfer BlockFetchInf, type = 
- *     fetch for ID: ID
- *     fetch all blocks: ALL
- *   server->client:
- *     success: TYPE_BLOCK_FETCH, if type == ID, transfer Block, if type ==
- *     ALL, transfer ByteArrayIOList<Block>
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- *     no such block(type == ID only): TYPE_SERVER_ACK, transfer ACKInf,
- *     return RET_ERRBLOCK
- * 4. client fetch post:
- *   client->server: TYPE_POST_FETCH, transfer PostFetchInf, type = 
- *     fetch for ID: ID
- *     fetch posts belong to a block: BLOCK
- *     fetch posts belong to a user: USER
- *   server->client: 
- *     success: TYPE_POST_FETCH, if type == ID, transfer Post, if type ==
- *     BLOCK || USER, transfer ByteArrayIOList<Post>
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- *     no such post(type == ID only): TYPE_SERVER_ACK, transfer ACKInf, 
- *     return RET_ERRPOST
- *     no such user(type == USER only): TYPE_SERVER_ACK, transfer ACKInf,
- *     return RET_ERRUSER
- *     no such block(type == BLOCK only): TYPE_SERVER_ACK, transfer ACKInf,
- *     return RET_ERRBLOCK
- * 5. client logout
- *   client->server: TYPE_LOGOUT, transfer nothing.
- *   server->client:
- *     success: TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- *     not current ID: TYPE_SERVER_ACK, transfer ACKInf, return 
- *     RET_ERRPERMISSION
- * 6. client issue post
- *   client->server: TYPE_POST_MODIFY, transfer Post
- *   server->client: 
- *     success: TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- *     no such block: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRBLOCK
- *     not current user: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER
- * 7. client issue message
- *   client->server: TYPE_MESSAGE_PUSH, transfer MessageInf
- *   server->client:
- *     success: TYPE_SERVER_ACK, transfer ACKInf, return timestamp of message
- *     IO error: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO
- *     no such post: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPOST
- *     no such user: TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER
- *     permission denied: TYPE_SERVER_ACK, transfer ACKInf, return 
- *     RET_ERRPERMISSION
- * 8. server push message
- *   server->client: TYPE_MESSAGE_PUSH, transfer MessageInf
- * </pre>
+ * each other, we define the actions and return values as below:</p>
+ * <ul>
+ * <li>Client login:
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_LOGIN, transfer LoginInf</li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_LOGIN, transfer User</li>
+ *     <li>Permission denied:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client fetch user profile:
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_USER_FETCH, transfer UserFetchInf, type =
+ *     <ul>
+ *     <li>Fetch for ID: ID</li>
+ *     <li>Fetch user issued a post: POST_ISSUE</li>
+ *     <li>Fetch user list belong to a post: POST_LIST</li>
+ *     </ul>
+ *   </li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_USER_FETCH,<br>
+ *       if type == ID or POST_ISSUE: transfer User,<br>
+ *       if type == POST_LIST: transfer ByteArrayIOList&lt;User&gt;</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such user(type == ID only):<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER</li>
+ *     <li>No such post(type == POST_* only):<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPOST</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client fetch block:
+ *   <ul>
+ *   <li>Client to Server:<br> 
+ *     TYPE_BLOCK_FETCH, transfer BlockFetchInf, type =
+ *     <ul>
+ *     <li>Fetch for ID: ID</li>
+ *     <li>Fetch all blocks: ALL</li>
+ *     </ul>
+ *   </li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_BLOCK_FETCH,<br>
+ *       if type == ID, transfer Block,<br>
+ *       if type == ALL, transfer ByteArrayIOList&lt;Block&gt;</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such block(type == ID only):<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRBLOCK</li>
+ *   </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client fetch post:
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_POST_FETCH, transfer PostFetchInf, type =
+ *     <ul>
+ *     <li>Fetch for ID: ID</li>
+ *     <li>Fetch posts belong to a block: BLOCK</li>
+ *     <li>Fetch posts belong to a user: USER</li>
+ *     </ul>
+ *   </li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_POST_FETCH,<br>
+ *       if type == ID, transfer Post,<br>
+ *       if type == BLOCK or USER, transfer ByteArrayIOList&lt;Post&gt;</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such post(type == ID only):<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPOST</li>
+ *     <li>No such user(type == USER only):<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER</li>
+ *     <li>No such block(type == BLOCK only):<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRBLOCK</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client logout
+ * <ul>
+ * <li>Client to Server:<br>
+ *   TYPE_LOGOUT, transfer nothing.</li>
+ * <li>Server to Client:
+ *   <ul>
+ *   <li>Success:<br>
+ *     TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC</li>
+ *   <li>IO error:<br>
+ *     TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *   <li>Not current user:<br>
+ *     TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
+ *   </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client issue post
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_POST_MODIFY, transfer Post</li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such block:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRBLOCK</li>
+ *     <li>Not current user:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client issue message
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_MESSAGE_PUSH, transfer MessageInf</li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return timestamp of message</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such post:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPOST</li>
+ *     <li>No such user:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER</li>
+ *     <li>Permission denied:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Server push message
+ *   <ul>
+ *   <li>Server to Client:<br>
+ *     TYPE_MESSAGE_PUSH, transfer MessageInf</li>
+ *   </ul>
+ * </li>
+ * </ul>
  */
 public interface PacketType extends PacketVersion
 {
@@ -135,7 +216,7 @@ public interface PacketType extends PacketVersion
     public static final int TYPE_MESSAGE_PUSH = 0x9;
 
     /**
-     * Server: {@link AckInf} is transferred.
+     * Server: {@link ACKInf} is transferred.
      */
     public static final int TYPE_SERVER_ACK = 0x1F;
 

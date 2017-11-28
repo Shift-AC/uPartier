@@ -8,7 +8,7 @@ import com.github.shiftac.upartier.Util;
 /**
  * When transferring on network:
  * <pre>
- * struct Packet
+ * class Packet
  * {
  *     byte version: 3;
  *     byte type :5;

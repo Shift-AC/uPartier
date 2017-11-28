@@ -12,7 +12,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * 
  * when transferring as bytes using ByteArrayIO:
  * <pre>
- * struct Post
+ * class Post
  * {
  *     int id;
  *     int blockID;

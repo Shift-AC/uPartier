@@ -14,7 +14,7 @@ import com.github.shiftac.upartier.network.app.Client;
  * 
  * when transferring as bytes using ByteArrayIO:
  * <pre>
- * struct User
+ * class User
  * {
  *     int id;
  *     int age;
@@ -156,7 +156,7 @@ public class User implements ByteArrayIO, PacketGenerator
      * @throws SocketTimeoutException if can't hear from server for
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
-     * @throws NoSucBlockException if no such block exists.
+     * @throws NoSuchBlockException if no such block exists.
      */
     public void issue(Post post)
         throws IOException, NoSuchUserException, NoSuchBlockException,

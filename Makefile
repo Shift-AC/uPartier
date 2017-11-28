@@ -13,12 +13,17 @@ all: clean init
 .PHONY: init
 init:
 	-mkdir bin
+	-mkdir doc
 
 .PHONY: jar
 jar:
 	cp bin/com . -r
 	jar cf upartier.jar com/
 	rm com -r
+
+.PHONY: javadoc
+javadoc:
+	make -C src javadoc TARGET=../doc
 
 .PHONY: clean
 clean:

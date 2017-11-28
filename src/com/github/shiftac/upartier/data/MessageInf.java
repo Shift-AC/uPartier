@@ -9,7 +9,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * <p>
  * When transferring as byte array:
  * <pre>
- * struct MessageInf
+ * class MessageInf
  * {
  *     int userID;
  *     int postID;
