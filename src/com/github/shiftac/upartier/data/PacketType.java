@@ -124,13 +124,29 @@ import com.github.shiftac.upartier.network.PacketVersion;
  *   <li>Server to Client:
  *     <ul>
  *     <li>Success:<br>
- *       TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC</li>
+ *       TYPE_POST_MODIFY, transfer Post</li>
  *     <li>IO error:<br>
  *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
  *     <li>No such block:<br>
  *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRBLOCK</li>
  *     <li>Not current user:<br>
- *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRUSER</li>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client modify user profile
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_USER_MODIFY, transfer User</li>
+ *   <li>Server to Client:
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>Not current user:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
  *     </ul>
  *   </li>
  *   </ul>

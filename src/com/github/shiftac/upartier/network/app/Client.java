@@ -1,6 +1,7 @@
 package com.github.shiftac.upartier.network.app;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.data.LoginInf;
@@ -25,12 +26,14 @@ public class Client extends AbstractClient
         recvBuf = new Packet[256];
     }
 
-    public static void init(LoginInf inf)
+    public void init(LoginInf inf)
+        throws IOException
     {
-        synchronized (client)
+        synchronized (this)
         {
-            client.inf = inf;
+            this.inf = inf;
         }
+        restart();
     }
 
     /**
@@ -38,6 +41,7 @@ public class Client extends AbstractClient
      * will be later {@code notify()}ed when reply comes.
      */
     public Packet issueWait(Packet pak)
+        throws SocketTimeoutException
     {
         int seq = pak.sequence;
         Thread current = Thread.currentThread();

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.SimpleWaitThread;
 import com.github.shiftac.upartier.Util;
@@ -17,8 +18,9 @@ public abstract class AbstractWorker
     protected static Class<? extends Object> cpak = null;
     protected ConcurrentLinkedDeque<Packet> sendQueue = 
         new ConcurrentLinkedDeque<Packet>();
+    protected AtomicBoolean started = new AtomicBoolean(false);
 
-    protected SimpleWaitThread ot = new SimpleWaitThread()
+    protected class OutputThread extends SimpleWaitThread
     {
         @Override
         public void run()
@@ -82,9 +84,10 @@ public abstract class AbstractWorker
                 e.printStackTrace(Util.log.dest);
             }
         }
-    };
+    }
+    protected SimpleWaitThread ot = new OutputThread();
 
-    protected SimpleWaitThread it = new SimpleWaitThread()
+    protected class InputThread extends SimpleWaitThread
     {
         @Override
         public void run()
@@ -104,8 +107,9 @@ public abstract class AbstractWorker
             }
             ot.doNotify();
         }
-    };
-    
+    }
+    protected InputThread it = new InputThread();
+
     public AbstractWorker() {}
 
     public abstract void init(Socket s) 
@@ -121,11 +125,6 @@ public abstract class AbstractWorker
 
     protected abstract void parseOut(Packet pak)
         throws IOException, PacketFormatException;
-
-    public void start()
-    {
-        ot.start();
-    }
 
     public boolean isAlive()
     {
@@ -167,16 +166,58 @@ public abstract class AbstractWorker
         return pak;
     }
 
-    public void terminate()
-        throws IOException
+    public void start()
     {
-        if (s == null)
+        synchronized (started)
         {
-            return;
+            if (started.get() == false)
+            {
+                started.set(true);
+                ot.start();
+            }
         }
-        Socket ts = s;
-        s = null;
-        ts.close();
-        Util.joinIgnoreInterrupt(ot);
+    }
+
+    public void terminate()
+    {
+        try
+        {
+            synchronized (started)
+            {
+                if (started.get() == true)
+                {
+                    Socket ts = s;
+                    s = null;
+                    ts.close();
+                    Util.joinIgnoreInterrupt(ot);
+                }
+                it = new InputThread();
+                ot = new OutputThread();
+                started.set(false);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void restart()
+    {
+        try
+        {
+            synchronized (started)
+            {
+                if (started.get() == true)
+                {
+                    terminate();
+                }
+                start();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

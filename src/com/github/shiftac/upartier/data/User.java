@@ -3,9 +3,11 @@ package com.github.shiftac.upartier.data;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.ByteArrayIOList;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.app.Client;
 
@@ -69,14 +71,36 @@ public class User implements ByteArrayIO, PacketGenerator
     public static User login(LoginInf inf)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        /*
+        Client.client.init(inf);
         Packet pak = inf.toPacket();
-        Client.client.issueWait(pak);
+        pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
-        case 
-        }*/
-        throw new IOException();
+        case PacketType.TYPE_LOGIN:
+        {
+            User res = new User();
+            res.read(pak);
+            return res;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {            
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRPERMISSION:
+                throw new NoSuchUserException("User ID & password not match.");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -92,7 +116,31 @@ public class User implements ByteArrayIO, PacketGenerator
     public void logout()
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        
+        Packet pak = new AES128Packet();
+        ((AES128Packet)pak).setLen(8);
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_SERVER_ACK:
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_SUCC:
+                Client.client.terminate();
+                return;
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRPERMISSION:
+                throw new NoSuchUserException("Attempting to logout other's ID!");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -108,7 +156,38 @@ public class User implements ByteArrayIO, PacketGenerator
     public static User fetchProfile(int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        throw new NoSuchUserException();
+        UserFetchInf inf = new UserFetchInf();
+        inf.id = id;
+        inf.type = UserFetchInf.ID;
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_USER_FETCH:
+        {
+            User res = new User();
+            res.read(pak);
+            return res;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRUSER:
+                throw new NoSuchUserException("User #" + id + " not found.");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -126,7 +205,31 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchUserException,
         PermissionException
     {
-        throw new SocketTimeoutException();
+        Packet pak = this.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_SUCC:
+                return;
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRPERMISSION:
+                throw new PermissionException("Modifying other's profile!");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -144,7 +247,49 @@ public class User implements ByteArrayIO, PacketGenerator
     public void fetchMyPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        throw new SocketTimeoutException();
+        PostFetchInf inf = new PostFetchInf();
+        inf.count = count;
+        if (myPosts == null)
+        {
+            inf.token = 2147483647;
+        }
+        else
+        {
+            inf.token = myPosts.get(myPosts.size() - 1).id;
+        }
+        inf.user = this.id;
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_POST_FETCH:
+        {
+            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>();
+            res.read(pak);
+            synchronized (myPosts)
+            {
+                myPosts.addAll(Arrays.asList(res.arr));
+            }
+            break;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf();
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRUSER:
+                throw new NoSuchUserException("User #" + id + " not found.");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -162,7 +307,55 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchBlockException,
         SocketTimeoutException
     {
-        throw new NoSuchBlockException();
+        Packet pak = post.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_POST_MODIFY:
+        {
+            post.read(pak);
+            if (post.userID == this.id)
+            {
+                synchronized (myPosts)
+                {
+                    if (myPosts == null)
+                    {
+                        myPosts = new ArrayList<Post>();
+                    }
+                    myPosts.add(0, post);
+                }
+                return;
+            }
+            else
+            {
+                throw new IOException(String.format(
+                    "Mysterious userID %d!(expected %d)", 
+                    this.id, post.userID));
+            }
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRBLOCK:
+                throw new NoSuchBlockException("Block #" + post.blockID +
+                    " not found.");
+            // We don't expect this to happen here since the server instead
+            // of us decides the ID of the user who's issuing this post.
+            //case ACKInf.RET_ERRPERMISSION:
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -183,7 +376,57 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException, PermissionException
     {
-        throw new SocketTimeoutException();
+        message.postID = post.id;
+        message.userID = this.id;
+        Packet pak = message.toPacket();
+        pak.type = PacketType.TYPE_MESSAGE_PUSH;
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRPOST:
+                throw new NoSuchPostException("Post #" + message.postID
+                    + " not found.");
+            case ACKInf.RET_ERRUSER:
+                throw new NoSuchUserException("User #" + message.userID
+                    + " not found.");
+            case ACKInf.RET_ERRPERMISSION:
+                throw new PermissionException(String.format(
+                    "User #%d have no permission to issue message to post #%d!",
+                    message.userID, message.postID));
+            default:
+                if (res.retval > 0)
+                {
+                    message.time = res.retval;
+                    synchronized (post.messages)
+                    {
+                        if (post.messages == null)
+                        {
+                            post.messages = new ArrayList<MessageInf>();
+                        }
+                        // this is ugly and inefficient. fix this later.
+                        post.messages.add(0, message);
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new IOException("Server returning unknown ack value("
+                        + res.retval + ")!");
+                }
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     @Override

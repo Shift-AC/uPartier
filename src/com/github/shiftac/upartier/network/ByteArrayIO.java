@@ -82,6 +82,12 @@ public interface ByteArrayIO
         read(buf, 0, buf.length);
     }
 
+    public default void read(Packet pak)
+        throws IOException
+    {
+        read(pak.data);
+    }
+
     public default void write(byte[] buf)
         throws IOException
     {
