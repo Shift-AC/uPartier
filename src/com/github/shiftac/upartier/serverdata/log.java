@@ -3,6 +3,7 @@ import  com.github.shiftac.upartier.data.LoginInf;
 import  com.github.shiftac.upartier.serverdata.*;
 
 public class log {
+	
 	public void login(LoginInf inf) throws Exception {
 		if(inf.isNewUser==true) {
 			InsertUsers u1=new InsertUsers();
