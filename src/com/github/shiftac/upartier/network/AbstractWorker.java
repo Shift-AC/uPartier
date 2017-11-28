@@ -133,6 +133,13 @@ public abstract class AbstractWorker
 
     public void issue(Packet pak)
     {
+        synchronized (started)
+        {
+            if (started.get() == false)
+            {
+                throw new IllegalStateException("Not started!");
+            }
+        }
         sendQueue.add(pak);
         Util.log.logVerbose(String.format(
             "Packet #%d issued. Protocol inf:(%s)", pak.sequence, 

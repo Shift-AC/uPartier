@@ -135,6 +135,42 @@ import com.github.shiftac.upartier.network.PacketVersion;
  *   </li>
  *   </ul>
  * </li>
+ * <li>Client join post
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_POST_JOIN, transfer PostJoinInf</li>
+ *   <li>Server to Client:<br>
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_SUCC</li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such post:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPOST</li>
+ *     <li>Not current user:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
+ * <li>Client fetch message
+ *   <ul>
+ *   <li>Client to Server:<br>
+ *     TYPE_MESSAGE_FETCH, transfer MsgJoinInf</li>
+ *   <li>Server to Client:<br>
+ *     <ul>
+ *     <li>Success:<br>
+ *       TYPE_MESSAGE_FETCH, transfer ByteArrayIOList<MessageInf></li>
+ *     <li>IO error:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
+ *     <li>No such post:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPOST</li>
+ *     <li>Permission denyed:<br>
+ *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRPERMISSION</li>
+ *     </ul>
+ *   </li>
+ *   </ul>
+ * </li>
  * <li>Client modify user profile
  *   <ul>
  *   <li>Client to Server:<br>
@@ -226,10 +262,15 @@ public interface PacketType extends PacketVersion
      */
     public static final int TYPE_MESSAGE_FETCH = 0x8;    
     /**
-     * Client: {@link MessageInf} is transferred.
+     * Client: {@link MessageInf} is transferred.<br>
      * Server: {@link MessageInf} is transferred.
      */
     public static final int TYPE_MESSAGE_PUSH = 0x9;
+    /**
+     * Client: {@link PostJoinInf} is transferred.<br>
+     * Server: {@link ACKInf} is transferred.
+     */
+    public static final int TYPE_POST_JOIN = 0xA;
 
     /**
      * Server: {@link ACKInf} is transferred.

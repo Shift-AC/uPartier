@@ -2,6 +2,8 @@ package com.github.shiftac.upartier.network.app;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Random;
+
 import com.github.shiftac.upartier.LogManager;
 import com.github.shiftac.upartier.network.AES128Key;
 import com.github.shiftac.upartier.network.AES128Packet;
@@ -14,24 +16,18 @@ public abstract class AbstractClient extends AbstractWorker
     protected SynObject obj = new SynObject();
     protected AES128Key key = null;
 
-    public AbstractClient() {}
+    public AbstractClient() 
+    {
+        Random rand = new Random(
+            LogManager.calendar.getTimeInMillis());
+
+        obj.id = rand.nextInt();
+    }
 
     public AbstractClient(int userID)
     {
         super();
         obj.id = userID;
-    }
-
-    public synchronized void setID(int id)
-        throws IOException
-    {
-        if (obj.id == id)
-        {
-            return;
-        }
-
-        terminate();
-        obj.id = id;
     }
 
     @Override

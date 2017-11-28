@@ -43,6 +43,13 @@ public class Client extends AbstractClient
     public Packet issueWait(Packet pak)
         throws SocketTimeoutException
     {
+        synchronized (started)
+        {
+            if (started.get() == false)
+            {
+                throw new IllegalStateException("Client not started!");
+            }
+        }
         int seq = pak.sequence;
         Thread current = Thread.currentThread();
         synchronized (this.bufLock)

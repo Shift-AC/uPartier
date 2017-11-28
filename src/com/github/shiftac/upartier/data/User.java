@@ -248,14 +248,18 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         PostFetchInf inf = new PostFetchInf();
+        inf.type = PostFetchInf.USER;
         inf.count = count;
-        if (myPosts == null)
+        synchronized (myPosts)
         {
-            inf.token = 2147483647;
-        }
-        else
-        {
-            inf.token = myPosts.get(myPosts.size() - 1).id;
+            if (myPosts == null)
+            {
+                inf.token = 2147483647;
+            }
+            else
+            {
+                inf.token = myPosts.get(myPosts.size() - 1).id;
+            }
         }
         inf.user = this.id;
         Packet pak = inf.toPacket();
@@ -268,9 +272,13 @@ public class User implements ByteArrayIO, PacketGenerator
             res.read(pak);
             synchronized (myPosts)
             {
+                if (myPosts == null)
+                {
+                    myPosts = new ArrayList<Post>();
+                }
                 myPosts.addAll(Arrays.asList(res.arr));
             }
-            break;
+            return;
         }
         case PacketType.TYPE_SERVER_ACK:
         {
@@ -413,6 +421,56 @@ public class User implements ByteArrayIO, PacketGenerator
                     throw new IOException("Server returning unknown ack value("
                         + res.retval + ")!");
                 }
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
+    }
+
+    /**
+     * Attempt to join a post, throw an error if after this operation
+     * current user doesn't belong to the post.
+     * 
+     * @throws IOException if network exceptions occured.
+     * @throws SocketTimeoutException if can't hear from server for
+     * {@code Client.NETWORK_TIMEOUT} milliseconds.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    public void join(Post post)
+        throws IOException, NoSuchUserException, NoSuchPostException,
+        SocketTimeoutException
+    {
+        PostJoinInf inf = new PostJoinInf();
+        inf.postID = post.id;
+        inf.userID = this.id;
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf();
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRPOST:
+                throw new NoSuchPostException("Post #" + inf.postID
+                    + " not found.");
+            case ACKInf.RET_ERRUSER:
+                throw new NoSuchPostException("User #" + inf.userID
+                    + " not found.");
+            /*
+            case ACKInf.RET_ERRPERMISSION:
+                throw new PermissionException("User #" + inf.userID + " have" +
+                    " no permission to join post #" + inf.postID + ".");*/
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
             }
         }
         default:
