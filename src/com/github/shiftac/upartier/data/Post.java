@@ -16,7 +16,6 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * {
  *     int id;
  *     int blockID;
- *     int userID;
  *     long time;
  *     int userCount;
  *     BString name;
@@ -30,7 +29,6 @@ public class Post implements ByteArrayIO, PacketGenerator
 {
     public int id = 0;
     public int blockID = 0;
-    public int userID = 0;
     public BString name = null;
     public long time = 0;
     public BString label = null;
@@ -56,7 +54,6 @@ public class Post implements ByteArrayIO, PacketGenerator
         checkLen(len, SIZE_INT * 4 + SIZE_LONG);
         setInt(buf, off, id);
         setInt(buf, off += SIZE_INT, blockID);
-        setInt(buf, off += SIZE_INT, userID);
         setLong(buf, off += SIZE_INT, time);
         setInt(buf, off += SIZE_LONG, userCount);
         name.write(buf, off += SIZE_INT, len -= SIZE_INT * 4 + SIZE_LONG);
@@ -72,7 +69,6 @@ public class Post implements ByteArrayIO, PacketGenerator
         checkLen(len, SIZE_INT * 4 + SIZE_LONG);
         id = getInt(buf, off);
         blockID = getInt(buf, off += SIZE_INT);
-        userID = getInt(buf, off += SIZE_INT);
         time = getLong(buf, off += SIZE_INT);
         userCount = getInt(buf, off += SIZE_LONG);
         name.read(buf, off += SIZE_INT, len -= SIZE_INT * 3 + SIZE_LONG);

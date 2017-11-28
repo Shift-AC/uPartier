@@ -49,7 +49,6 @@
     {
         int id;
         int blockID;
-        int userID;
         BString name;
         long time;
         BString label;

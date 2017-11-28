@@ -307,6 +307,7 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchBlockException,
         SocketTimeoutException
     {
+        post.postUser = this;
         Packet pak = post.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
@@ -314,24 +315,15 @@ public class User implements ByteArrayIO, PacketGenerator
         case PacketType.TYPE_POST_MODIFY:
         {
             post.read(pak);
-            if (post.userID == this.id)
+            synchronized (myPosts)
             {
-                synchronized (myPosts)
+                if (myPosts == null)
                 {
-                    if (myPosts == null)
-                    {
-                        myPosts = new ArrayList<Post>();
-                    }
-                    myPosts.add(0, post);
+                    myPosts = new ArrayList<Post>();
                 }
-                return;
+                myPosts.add(0, post);
             }
-            else
-            {
-                throw new IOException(String.format(
-                    "Mysterious userID %d!(expected %d)", 
-                    this.id, post.userID));
-            }
+            return;
         }
         case PacketType.TYPE_SERVER_ACK:
         {
