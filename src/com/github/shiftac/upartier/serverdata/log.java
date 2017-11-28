@@ -2,8 +2,15 @@ package com.github.shiftac.upartier.serverdata;
 import  com.github.shiftac.upartier.data.LoginInf;
 import  com.github.shiftac.upartier.serverdata.*;
 
+
 public class log {
-	
+	/**
+     * Attempts to login(or register) use the given {@code LoginInf}. Also sets 
+     * status field of users to {@code online} in database.
+     * 
+     * @throws SQLException if SQLException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists or wrong password is given.
+     */
 	public void login(LoginInf inf) throws Exception {
 		if(inf.isNewUser==true) {
 			InsertUsers u1=new InsertUsers();
@@ -16,6 +23,11 @@ public class log {
 		}
 	}
 	
+	/**
+     * Attempts to set the status field of user to {@code offline} in database.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     */
 	public void logout(int id)throws Exception {
 		new Update().Updateustate(0, id);
 	}

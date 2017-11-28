@@ -7,7 +7,14 @@ public class fetch {
 	static final String url ="jdbc:mysql://127.0.0.1:3306/upartier?useSSL=false"; 
 	static final String USER ="root";
 	static final String PASS="tyy971012";
-
+	/**
+     * Try to fetch all existing post blocks, the {@code Block} objects returned 
+     * in this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws SQLException if IOException occured when accessing database files.
+     */
 	public Block[] fetchBlocks() throws SQLException {
 		Connection conn = null;
 		Statement stmt=null;
@@ -34,6 +41,16 @@ public class fetch {
 			 return block;
 		}
 	
+	/**
+     * Try to fetch last {@code count} posts with id less than {@code id} for a
+     * given block id, or fetch all posts if there're not so many. The {@code Post}
+     * objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws SQLException if IOException occured when accessing database files.
+     * @throws NoSuchBlockException if no such block exists.
+     */
 	public Post[] fetchPostForBlock(int blockid,int count) throws SQLException {
 		Connection conn = null;
 		String sql;
@@ -64,6 +81,16 @@ public class fetch {
 			 return post;
 		}
 	
+	/**
+     * Try to fetch last {@code count} posts with id less than {@code id} for a
+     * given user id, or fetch all remaining posts if there're not so many. The 
+     * {@code Post} objects returned by this call will in <i>prefetched</i> state.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws SQLException if IOException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists.
+     */
 	public Post[] fetchPostForUser(int userid,int count) throws SQLException,NoSuchUserException {
 		Connection conn = null;
 		String sql,sql2;
@@ -103,6 +130,14 @@ public class fetch {
 			 return post;
 		}
 	
+	/**
+     * Try to fetch user list for a given post id.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws SQLException if IOException occured when accessing database files.
+     * @throws NoSuchPostException if no such post exists.
+     */
 	public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException{
 		User[] user=new User[20];
 		
@@ -152,6 +187,16 @@ public class fetch {
 		return user;
 	}
 	
+	/**
+     * Try to fetch last {@code count} messages issued before {@code time} for
+     * a given post id. The messages should be stored in {@code messages} in 
+     * reverse order.
+     * <p>
+     * Current thread will <b>block</b> inside this call.
+     * 
+     * @throws SQLException if IOException occured when accessing database files.
+     * @throws NoSuchPostException if no such post exists.
+     */
 	public MessageInf[] fetchMessage(int id,int count,long time) throws SQLException, NoSuchPostException {
 		MessageInf[] messageinf=new MessageInf[count];
 		Connection conn = null;
@@ -168,8 +213,7 @@ public class fetch {
 			 while(rs.next()) {
 				 messageinf[0].postID=rs.getInt("PostId");
 					messageinf[0].time=rs.getLong("Time");
-					Blob b;
-					//messageinf[0].type=new byte rs.getBlob("");
+					messageinf[0].type= rs.getByte("Type");
 				    messageinf[0].userID=rs.getInt("UserId");
 				 i++;
 				 }
