@@ -15,7 +15,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * <p>
  * When transferring as byte array:
  * <pre>
- * struct IDFetchInf
+ * class IDFetchInf
  * {
  *     byte type;
  *     byte[3] reserved;

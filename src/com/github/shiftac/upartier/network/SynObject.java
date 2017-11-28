@@ -15,7 +15,7 @@ public class SynObject implements ByteArrayIO
     }
 
     @Override
-    public void read(byte[] buf, int off, int len)
+    public void write(byte[] buf, int off, int len)
         throws IOException
     {
         checkLen(len, getLength());
@@ -25,7 +25,7 @@ public class SynObject implements ByteArrayIO
     }
 
     @Override
-    public void write(byte[] buf, int off, int len)
+    public void read(byte[] buf, int off, int len)
         throws IOException
     {
         checkLen(len, getLength());

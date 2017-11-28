@@ -9,7 +9,8 @@ package com.github.shiftac.upartier.data;
  * 3. Fetching posts posted by a specified user.<br>
  * 
  * For 2. and 3., {@code count} will be valid and {@code token} will be id of 
- * last item.
+ * last item, for 2., {@code user} will be block ID, for 3., {@code user} will
+ * be user ID.
  */
 public class PostFetchInf extends CountFetchInf
 {

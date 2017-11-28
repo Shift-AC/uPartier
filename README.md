@@ -1,5 +1,7 @@
 # uPartier
 
+__For UI developers: This document was deprecated! use `make javadoc` to view in-date API specification!__
+
 ## Common data structure
 
 - For login operation:
@@ -265,7 +267,7 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
      */
-    void fetchMyPosts(int count, int id)
+    void fetchMyPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchUserException;
 
     // class com.github.shiftac.upartier.data.Block
@@ -281,7 +283,7 @@
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchBlockException if no such block exists.
      */
-    void fetchPosts(int count, int id)
+    void fetchPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchBlockException;
     ```
 
@@ -447,4 +449,16 @@
     User[] sendMessage(int userid, int postid, MessageInf message)
         throws IOException, NoSuchUserException, NoSuchPostException,
         PermissionException;
+
+    // class ?
+    /**
+     * Attempt to join a post, throw an error if after this operation
+     * current user doesn't belong to the post.
+     * 
+     * @throws IOException if IOException occured when accessing database files.
+     * @throws NoSuchUserException if no such user exists.
+     * @throws NoSuchPostException if no such post exists.
+     */
+    public void join(int userid, int postid)
+        throws IOException, NoSuchUserException, NoSuchPostException
     ```

@@ -11,7 +11,7 @@ import com.github.shiftac.upartier.data.User;
  * is: 
  * 
  * <pre>
- * struct User
+ * class User
  * {
  *     int id;
  *     int age;
@@ -26,23 +26,23 @@ import com.github.shiftac.upartier.data.User;
  * </pre>
  * 
  * Fields are listed using their types and names. For fields that correspond
- * to a member in the object itself, their names should <b><exactly/b> match
+ * to a member in the object itself, their names should <b>exactly</b> match
  * the names of the members. For fields that are not, there's no constraint 
  * on which names should be used. We also give a possible list of types:
- * 
- * {@code byte}: 8-bit integer;<br>
- * {@code short}: 16-bit integer;<br>
- * {@code int}: 32-bit integer;<br>
- * {@code long}: 64-bit integer;<br>
- * {@code byte[len]}: Byte block with length {@code == len}. {@code len}
- * can either be a integer value defined previously or a constant.<br>
- * {@code byte[]}: Byte block with unknown length. Length of it can be 
+ * <ul>
+ * <li>{@code byte}: 8-bit integer;</li>
+ * <li>{@code short}: 16-bit integer;</li>
+ * <li>{@code int}: 32-bit integer;</li>
+ * <li>{@code long}: 64-bit integer;</li>
+ * <li>{@code type[len]}: Array with length {@code == len}. {@code len}
+ * can either be a integer value defined previously or a constant.</li>
+ * <li>{@code type[]}: Array with unknown length. Length of it can be 
  * decided when calling {@code read()} with {@code len} specified: its 
  * length is {@code len -} buffer length used by previous fields. This field
- * can only be the last field of a object.<br>
- * {@code Classname}: An object that implements ByteArrayIO.<br>
- * Bitfield: we use Big-Endian represent here.<br>
- * 
+ * can only be the last field of a object.</li>
+ * <li>{@code Classname}: An object that implements ByteArrayIO.</li>
+ * <li>Bitfield: we use Big-Endian represent here.</li>
+ * </ul>
  * 
  * @see User
  * @see PlainMessage
@@ -80,6 +80,12 @@ public interface ByteArrayIO
         throws IOException
     {
         read(buf, 0, buf.length);
+    }
+
+    public default void read(Packet pak)
+        throws IOException
+    {
+        read(pak.data);
     }
 
     public default void write(byte[] buf)
