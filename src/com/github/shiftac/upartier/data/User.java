@@ -314,6 +314,7 @@ public class User implements ByteArrayIO, PacketGenerator
         SocketTimeoutException
     {
         post.postUser = this;
+        post.userID = this.id;
         Packet pak = post.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)

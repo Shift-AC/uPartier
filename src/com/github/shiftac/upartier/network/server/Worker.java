@@ -19,6 +19,13 @@ public class Worker extends ServerWorker
 {
     static public final PacketParser loginHandler = (wk, pak) ->
     {
+        synchronized (wk.current)
+        {
+            if (wk.current != null)
+            {
+                wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            }
+        }
         LoginInf inf = null;
         Packet res = null;
         try
@@ -36,6 +43,10 @@ public class Worker extends ServerWorker
         {
             User user = null;
             Log.login(inf);
+            synchronized (wk.current)
+            {
+                wk.current = inf;
+            }
             
             // make javac happy...
             // fetch user here, then remove this
@@ -58,11 +69,42 @@ public class Worker extends ServerWorker
 
     static public final PacketParser logoutHandler = (wk, pak) ->
     {
-
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        try
+        {
+            synchronized (wk.current)
+            {
+                Log.logout(wk.current.id);
+                wk.current = null;
+            }
+        }
+        catch (SQLException e)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+        }
     };
 
     static public final PacketParser userFetchHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
         UserFetchInf inf = null;
         Packet res = null;
         try
@@ -77,13 +119,55 @@ public class Worker extends ServerWorker
             return;
         }
 
-        // fetch user here, then remove this
+        try
+        {
+            ByteArrayIO tmp;
+            switch (inf.type)
+            {
+            case UserFetchInf.ID:
+                // fetch user here and remove this
+                tmp = new User();
+                break;    
+            case UserFetchInf.POST_LIST:
+                tmp = new ByteArrayIOList<User>(
+                    Fetch.fetchPostUserList(inf.id));
+                break;
+            case UserFetchInf.POST_ISSUE:
+                // fetch user here and remove this
+                tmp = new User();
+                break;    
+            default:
+                return;
+            }
+            res = new AES128Packet(tmp);
+            res.type = PacketType.TYPE_POST_FETCH;
+        }
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchPostException nspe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
+            res = ack.toPacket();
+        }
 
         wk.issue(res);
     };
 
     static public final PacketParser postFetchHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
         PostFetchInf inf = null;
         Packet res = null;
         try
@@ -97,12 +181,22 @@ public class Worker extends ServerWorker
             wk.issue(res);
             return;
         }
+
+        synchronized (wk.current)
+        {
+            cur = wk.current.id != inf.user;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
         try
         {
             ByteArrayIO tmp;
             switch (inf.type)
             {
-            case PostFetchInf.ID:
+            //case PostFetchInf.ID:
             case PostFetchInf.BLOCK:
                 tmp = new ByteArrayIOList<Post>(
                     Fetch.fetchPostForBlock(inf.id, (int)inf.token, inf.count));
@@ -139,32 +233,361 @@ public class Worker extends ServerWorker
 
     static public final PacketParser blockFetchHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        BlockFetchInf inf = null;
+        Packet res = null;
+        try
+        {
+            inf = new BlockFetchInf(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        try
+        {
+            ByteArrayIO tmp;
+            switch (inf.type)
+            {
+            //case BlockFetchInf.ID:
+            case BlockFetchInf.ALL:
+                tmp = new ByteArrayIOList<Block>(Fetch.fetchBlocks());
+                break;
+            default:
+                return;
+            }
+            res = new AES128Packet(tmp);
+            res.type = PacketType.TYPE_POST_FETCH;
+        }
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
 
+        wk.issue(res);
     };
 
     static public final PacketParser msgFetchHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        MsgFetchInf inf = null;
+        Packet res = null;
+        try
+        {
+            inf = new MsgFetchInf(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        synchronized (wk.current)
+        {
+            cur = wk.current.id != inf.user;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        try
+        {
+            ByteArrayIO tmp;
+            switch (inf.type)
+            {
+            case MsgFetchInf.POST:
+                tmp = new ByteArrayIOList<MessageInf>(Fetch.fetchMessage(
+                    inf.id, inf.user, inf.count, inf.token));
+                break;
+            default:
+                return;
+            }
+            res = new AES128Packet(tmp);
+            res.type = PacketType.TYPE_POST_FETCH;
+        }
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchPostException nspe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
+            res = ack.toPacket();
+        }
+        catch (PermissionException pe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
+            res = ack.toPacket();
+        }
 
+        wk.issue(res);
     };
 
     static public final PacketParser userModifyHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        User user = null;
+        Packet res = null;
+        try
+        {
+            user = new User(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        synchronized (wk.current)
+        {
+            cur = wk.current.id != user.id;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        //try
+        //{
+            // modify user here
 
+            ACKInf tmp = new ACKInf(ACKInf.RET_SUCC);
+            res = tmp.toPacket();
+        //}
+        /*
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchUserException nsue)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
+            res = ack.toPacket();
+        }
+        catch (PermissionException pe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
+            res = ack.toPacket();
+        }*/
+
+        wk.issue(res);
     };
 
     static public final PacketParser postModifyHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        Post post = null;
+        Packet res = null;
+        try
+        {
+            post = new Post(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        synchronized (wk.current)
+        {
+            cur = wk.current.id != post.userID;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        try
+        {
+            Fetch.issuePost(post);
 
+            res = post.toPacket();
+        }
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchUserException nsue)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
+            res = ack.toPacket();
+        }
+        catch (NoSuchBlockException nsbe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRBLOCK);
+            res = ack.toPacket();
+        }
+
+        wk.issue(res);
     };
 
     static public final PacketParser msgPushHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        MessageInf inf = null;
+        Packet res = null;
+        try
+        {
+            inf = new MessageInf(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        synchronized (wk.current)
+        {
+            cur = wk.current.id != inf.userID;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        //try
+        //{
+            // push message here
 
+            ACKInf ack = new ACKInf(inf.time);
+            res = ack.toPacket();
+        //}
+        /*
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchPostException nspe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
+            res = ack.toPacket();
+        }
+        catch (PermissionException pe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
+            res = ack.toPacket();
+        }*/
+
+        wk.issue(res);
     };
 
     static public final PacketParser postJoinHandler = (wk, pak) ->
     {
+        boolean cur = false;
+        synchronized (wk.current)
+        {
+            cur = wk.current == null;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        PostJoinInf inf = null;
+        Packet res = null;
+        try
+        {
+            inf = new PostJoinInf(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        synchronized (wk.current)
+        {
+            cur = wk.current.id != inf.userID;
+        }
+        if (cur)
+        {
+            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            return;
+        }
+        //try
+        //{
+            // join post here
 
+            ACKInf ack = new ACKInf(ACKInf.RET_SUCC);
+            res = ack.toPacket();
+        //}
+        /*
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchPostException nspe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
+            res = ack.toPacket();
+        }
+        catch (PermissionException pe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
+            res = ack.toPacket();
+        }*/
+
+        wk.issue(res);
     };
 
     @Override

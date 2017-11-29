@@ -8,8 +8,8 @@ import com.github.shiftac.upartier.network.Packet;
 
 public class PostJoinInf implements ByteArrayIO, PacketGenerator
 {
-    int postID = 0;
-    int userID = 0;
+    public int postID = 0;
+    public int userID = 0;
 
     public PostJoinInf(Packet pak)
         throws IOException

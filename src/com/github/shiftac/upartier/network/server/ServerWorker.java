@@ -10,11 +10,13 @@ import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.SynObject;
 
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.data.LoginInf;
 
 public abstract class ServerWorker extends AbstractWorker
 {
     protected AES128Key key = null;
     protected SynObject obj = new SynObject();
+    protected LoginInf current = null;
 
     @Override
     public void init(Socket s)

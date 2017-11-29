@@ -199,8 +199,10 @@ public class Fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
+	 * @throws PermissionException if the user hasn't join the post.
      */
-	static public MessageInf[] fetchMessage(int id,int count,long time) throws SQLException, NoSuchPostException {
+	static public MessageInf[] fetchMessage(int id, int userID, int count, long time) 
+		throws SQLException, NoSuchPostException, PermissionException{
 		MessageInf[] messageinf=new MessageInf[count];
 		Connection conn = null;
 		String sql;

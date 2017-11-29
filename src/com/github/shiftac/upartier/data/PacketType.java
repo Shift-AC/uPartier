@@ -104,7 +104,7 @@ import com.github.shiftac.upartier.network.PacketVersion;
  * <li>Client logout
  * <ul>
  * <li>Client to Server:<br>
- *   TYPE_LOGOUT, transfer nothing.</li>
+ *   TYPE_LOGOUT, transfer id.</li>
  * <li>Server to Client:
  *   <ul>
  *   <li>Success:<br>
