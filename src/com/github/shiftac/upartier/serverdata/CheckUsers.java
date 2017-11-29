@@ -31,7 +31,7 @@ public class CheckUsers {
                  String inpassword=inf.passwd.toString();
                  if(password.equals(inpassword))
                  { 
-                	 new Update().Updateustate(1, inf.id); //1表示在线
+                	 new Update().Updateustate(1, inf.id); //1 for online
                  }
                  else 
                  {NoSuchUserException e=new NoSuchUserException();

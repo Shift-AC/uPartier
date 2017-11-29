@@ -12,8 +12,8 @@ com.github.shiftac.upartier.network;\
 com.github.shiftac.upartier.network.server;\
 com.github.shiftac.upartier.network.app;\
 com.github.shiftac.upartier.network.demo;\
-com.github.shiftac.upartier.data;
-#com.github.shiftac.upartier.serverdata;
+com.github.shiftac.upartier.data;\
+com.github.shiftac.upartier.serverdata;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 LIB := ../lib

@@ -160,7 +160,7 @@ import com.github.shiftac.upartier.network.PacketVersion;
  *   <li>Server to Client:<br>
  *     <ul>
  *     <li>Success:<br>
- *       TYPE_MESSAGE_FETCH, transfer ByteArrayIOList<MessageInf></li>
+ *       TYPE_MESSAGE_FETCH, transfer ByteArrayIOList&lt;MessageInf&gt;</li>
  *     <li>IO error:<br>
  *       TYPE_SERVER_ACK, transfer ACKInf, return RET_ERRIO</li>
  *     <li>No such post:<br>
