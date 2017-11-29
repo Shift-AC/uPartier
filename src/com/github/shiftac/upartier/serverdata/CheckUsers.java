@@ -1,5 +1,4 @@
 package com.github.shiftac.upartier.serverdata;
-import java.io.IOException;
 import java.sql.*;
 import  com.github.shiftac.upartier.data.LoginInf;
 import  com.github.shiftac.upartier.data.NoSuchUserException;
@@ -9,7 +8,7 @@ public class CheckUsers {
 	static final String USER ="root";
 	static final String PASS="tyy971012";
 	
-	public void checkusers(LoginInf inf) throws Exception {
+	public void checkusers(LoginInf inf) throws NoSuchUserException,SQLException {
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");

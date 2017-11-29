@@ -13,7 +13,7 @@ public class fetch {
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
-     * @throws SQLException if IOException occured when accessing database files.
+     * @throws SQLException if SQLException occured when accessing database files
      */
 	public Block[] fetchBlocks() throws SQLException {
 		Connection conn = null;
@@ -51,7 +51,7 @@ public class fetch {
      * @throws SQLException if IOException occured when accessing database files.
      * @throws NoSuchBlockException if no such block exists.
      */
-	public Post[] fetchPostForBlock(int blockid,int count) throws SQLException {
+	public Post[] fetchPostForBlock(int blockid,int count) throws SQLException, NoSuchBlockException {
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");
@@ -64,6 +64,9 @@ public class fetch {
 			ResultSet rs = stmt.executeQuery(sql);
 			Post[] post=new Post[10];
 			int i=0;
+			if(rs==null) {
+				throw new NoSuchBlockException();
+			}
 			 while(rs.next()) {
 				 post[i].id=rs.getInt("PostId");
 				 post[i].blockID=rs.getInt("BlockId");
