@@ -9,7 +9,7 @@ public class InsertUsers {
 	static final String USER ="root";
 	static final String PASS="tyy971012";
 	
-	public  void insert(LoginInf inf) throws SQLException {
+	static public  void insert(LoginInf inf) throws SQLException {
 	Connection conn = null;
 	String sql;
 	

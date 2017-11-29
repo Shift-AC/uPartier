@@ -15,7 +15,7 @@ public class fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files
      */
-	public Block[] fetchBlocks() throws SQLException {
+	static public Block[] fetchBlocks() throws SQLException {
 		Connection conn = null;
 		Statement stmt=null;
 		String sql;
@@ -51,7 +51,7 @@ public class fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchBlockException if no such block exists.
      */
-	public Post[] fetchPostForBlock(int blockid,int count) throws SQLException, NoSuchBlockException {
+	static public Post[] fetchPostForBlock(int blockid,int count) throws SQLException, NoSuchBlockException {
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");
@@ -94,7 +94,7 @@ public class fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchUserException if no such user exists.
      */
-	public Post[] fetchPostForUser(int userid,int count) throws SQLException,NoSuchUserException {
+	static public Post[] fetchPostForUser(int userid,int count) throws SQLException,NoSuchUserException {
 		Connection conn = null;
 		String sql,sql2;
 		System.out.println("connecting to database....");
@@ -141,7 +141,7 @@ public class fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
-	public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException{
+	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException{
 		User[] user=new User[20];
 		
 		Connection conn = null;
@@ -200,7 +200,7 @@ public class fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
-	public MessageInf[] fetchMessage(int id,int count,long time) throws SQLException, NoSuchPostException {
+	static public MessageInf[] fetchMessage(int id,int count,long time) throws SQLException, NoSuchPostException {
 		MessageInf[] messageinf=new MessageInf[count];
 		Connection conn = null;
 		String sql;
@@ -231,7 +231,7 @@ public class fetch {
 		return messageinf;
 	}
 	
-	public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
+	static public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
 		
 		
 	}

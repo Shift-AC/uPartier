@@ -11,7 +11,7 @@ public class Update {
 	static final String USER ="root";
 	static final String PASS="tyy971012";
 	
-	public void Updateustate(int state,int id) throws SQLException{
+	static public void Updateustate(int state,int id) throws SQLException{
 		Connection conn = null;
 		String sql;
 		try {

@@ -8,7 +8,7 @@ public class CheckUsers {
 	static final String USER ="root";
 	static final String PASS="tyy971012";
 	
-	public void checkusers(LoginInf inf) throws NoSuchUserException,SQLException {
+	static public void checkusers(LoginInf inf) throws NoSuchUserException,SQLException {
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");
@@ -31,7 +31,7 @@ public class CheckUsers {
                  String inpassword=inf.passwd.toString();
                  if(password.equals(inpassword))
                  { 
-                	 new Update().Updateustate(1, inf.id); //1 for online
+                	 Update.Updateustate(1, inf.id); //1 for online
                  }
                  else 
                  {NoSuchUserException e=new NoSuchUserException();

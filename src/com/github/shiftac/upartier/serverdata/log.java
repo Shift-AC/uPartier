@@ -12,14 +12,12 @@ public class log {
      * @throws SQLException if SQLException occured when accessing database files
      * @throws NoSuchUserException if no such user exists or wrong password is given.
      */
-	public void login(LoginInf inf) throws SQLException,NoSuchUserException {
+	static public void login(LoginInf inf) throws SQLException,NoSuchUserException {
 		if(inf.isNewUser==true) {
-			InsertUsers u1=new InsertUsers();
-			u1.insert(inf);
+			InsertUsers.insert(inf);
 		}
 		else {
-			CheckUsers u2=new CheckUsers();
-			u2.checkusers(inf);
+			CheckUsers.checkusers(inf);
 			
 		}
 	}
@@ -29,7 +27,7 @@ public class log {
      * 
      * @throws SQLException if SQLException occured when accessing database files.
      */
-	public void logout(int id)throws SQLException {
-		new Update().Updateustate(0, id);
+	static public void logout(int id)throws SQLException {
+		Update.Updateustate(0, id);
 	}
 }
