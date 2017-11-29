@@ -43,6 +43,14 @@ public class Post implements ByteArrayIO, PacketGenerator
     public int userCount = 0;
     public ArrayList<User> users = null;
 
+    public Post() {}
+
+    public Post(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
     @Override
     public int getLength()
     {
@@ -102,24 +110,20 @@ public class Post implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchUserException,
         NoSuchPostException
     {
-        UserFetchInf inf = new UserFetchInf();
-        inf.type = UserFetchInf.POST_ISSUE;
-        inf.id = this.id;
+        UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_ISSUE, this.id);
         Packet pak = inf.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_USER_FETCH:
         {
-            User res = new User();
-            res.read(pak);
+            User res = new User(pak);
             this.postUser = res;
             return;
         }
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_ERRIO:
@@ -151,17 +155,14 @@ public class Post implements ByteArrayIO, PacketGenerator
     public void fetchUserList(int count)
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
-        UserFetchInf inf = new UserFetchInf();
-        inf.type = UserFetchInf.POST_LIST;
-        inf.id = this.id;
+        UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_LIST, this.id);
         Packet pak = inf.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_USER_FETCH:
         {
-            ByteArrayIOList<User> res = new ByteArrayIOList<User>();
-            res.read(pak);
+            ByteArrayIOList<User> res = new ByteArrayIOList<User>(pak);
             synchronized (users)
             {
                 if (users == null)
@@ -174,8 +175,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         }
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
                 case ACKInf.RET_ERRIO:
@@ -211,21 +211,20 @@ public class Post implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchPostException,
         PermissionException
     {
-        MsgFetchInf inf = new MsgFetchInf();
-        inf.user = user.id;
-        inf.id = this.id;
-        inf.count = count;
+        long token;
         synchronized (messages)
         {
             if (messages == null)
             {
-                inf.token = 2147483647;
+                token = 2147483647;
             }
             else
             {
-                inf.token = messages.get(messages.size() - 1).time;
+                token = messages.get(messages.size() - 1).time;
             }
         }
+        MsgFetchInf inf = new MsgFetchInf(MsgFetchInf.POST, user.id, token,
+            this.id, count);
         Packet pak = inf.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
@@ -233,8 +232,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         case PacketType.TYPE_MESSAGE_FETCH:
         {
             ByteArrayIOList<MessageInf> res = 
-                new ByteArrayIOList<MessageInf>();
-            res.read(pak);
+                new ByteArrayIOList<MessageInf>(pak);
             synchronized (messages)
             {
                 if (messages == null)
@@ -247,8 +245,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         }
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
                 case ACKInf.RET_ERRIO:

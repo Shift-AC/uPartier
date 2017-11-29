@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 /**
  * Information about the message transferred.
@@ -27,10 +28,16 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
     public static final int TYPE_FILE = 3;
 
     public int userID = 0;
-    public int postID = 0;;
+    public int postID = 0;
     public byte type = 0;
     public long time = 0;
     public ByteArrayIO content = null;
+
+    public MessageInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
 
     @Override
     public int getLength()
@@ -56,7 +63,10 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
             content = new Image();
             break;
         case TYPE_AUDIO:
+            content = new Audio();
+            break;
         case TYPE_FILE:
+            content = new GenericFile();
             break;
         default:
             throw new IOException("Unrecognized message type " + type);

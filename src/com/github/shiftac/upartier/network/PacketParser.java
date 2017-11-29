@@ -5,6 +5,6 @@ import java.io.IOException;
 @FunctionalInterface
 public interface PacketParser
 {
-    public void parse(Packet pak)
+    public void parse(AbstractWorker worker, Packet pak)
         throws IOException, PacketFormatException;
 }

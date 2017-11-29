@@ -4,11 +4,24 @@ import java.io.IOException;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 public class PostJoinInf implements ByteArrayIO, PacketGenerator
 {
     int postID = 0;
     int userID = 0;
+
+    public PostJoinInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
+    public PostJoinInf(int postID, int userID)
+    {
+        this.postID = postID;
+        this.userID = userID;
+    }
 
     @Override
     public int getLength()

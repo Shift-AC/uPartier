@@ -1,5 +1,9 @@
 package com.github.shiftac.upartier.data;
 
+import java.io.IOException;
+
+import com.github.shiftac.upartier.network.Packet;
+
 /**
  * When fetching post information, following situations are possible to occur:
  * <p>
@@ -17,6 +21,22 @@ public class PostFetchInf extends CountFetchInf
     public static final int ID = 0;
     public static final int BLOCK = 1;
     public static final int USER = 2;
+
+    public PostFetchInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
+    public PostFetchInf(int type, 
+        int user, long token, int id, int count)
+    {
+        this.type = type;
+        this.user = user;
+        this.token = token;
+        this.count = count;
+        this.id = id;
+    }
 
     @Override 
     public int getOperationType()

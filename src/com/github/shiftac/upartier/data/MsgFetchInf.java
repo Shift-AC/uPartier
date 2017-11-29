@@ -1,5 +1,9 @@
 package com.github.shiftac.upartier.data;
 
+import java.io.IOException;
+
+import com.github.shiftac.upartier.network.Packet;
+
 /**
  * When fetching messages, following situations are possible to occur:
  * <p>
@@ -10,6 +14,22 @@ package com.github.shiftac.upartier.data;
 public class MsgFetchInf extends CountFetchInf
 {
     public static final int POST = 0;
+
+    public MsgFetchInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
+    public MsgFetchInf(int type, 
+        int user, long token, int id, int count)
+    {
+        this.type = type;
+        this.user = user;
+        this.token = token;
+        this.count = count;
+        this.id = id;
+}
 
     @Override 
     public int getOperationType()

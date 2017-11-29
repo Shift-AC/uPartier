@@ -7,6 +7,17 @@ public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
 {
     public T[] arr;
 
+    public ByteArrayIOList(T[] arr)
+    {
+        this.arr = arr;
+    }
+
+    public ByteArrayIOList(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
     @Override
     public int getLength()
     {

@@ -2,7 +2,9 @@ package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
 
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 /**
  * We notice that if the server wants to send an ACK, there's either a pending
@@ -18,7 +20,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * }
  * </pre> 
  */
-public class ACKInf implements ByteArrayIO
+public class ACKInf implements ByteArrayIO, PacketGenerator
 {
     public static final int RET_SUCC = 0;
     public static final int RET_ERRDATABASE = -1;
@@ -29,6 +31,17 @@ public class ACKInf implements ByteArrayIO
     public static final int RET_ERRIO = -6;
 
     public long retval;
+
+    public ACKInf(long retval)
+    {
+        this.retval = retval;
+    }
+
+    public ACKInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
 
     @Override
     public int getLength()
@@ -50,5 +63,11 @@ public class ACKInf implements ByteArrayIO
     {
         checkLen(len, getLength());
         setLong(buf, off, retval);
+    }
+
+    @Override
+    public AES128Packet toPacket()
+    {
+        return new AES128Packet(this, PacketType.TYPE_SERVER_ACK);
     }
 }

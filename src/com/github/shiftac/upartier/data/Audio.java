@@ -4,24 +4,24 @@ import java.io.IOException;
 
 import com.github.shiftac.upartier.network.Packet;
 
-public class Image extends GenericFile
+public class Audio extends GenericFile
 {
-    public Image() 
+    public Audio() 
     {
-        type = ContentTypes.IMAGE;
+        type = ContentTypes.AUDIO;
     }
-
-    public Image(Packet pak)
+    
+    public Audio(Packet pak)
         throws IOException
     {
         super(pak);
-        type = ContentTypes.IMAGE;
+        type = ContentTypes.AUDIO;
     }
 
-    public Image(String name)
+    public Audio(String name)
         throws IOException
     {
         super(name);
-        type = ContentTypes.IMAGE;
+        type = ContentTypes.AUDIO;
     }
 }

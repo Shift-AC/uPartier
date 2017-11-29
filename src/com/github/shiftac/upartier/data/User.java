@@ -46,6 +46,14 @@ public class User implements ByteArrayIO, PacketGenerator
     public int postCount = 0;
     public ArrayList<Post> myPosts = null;
 
+    public User() {}
+
+    public User(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
     public void setMailAccount(String mail)
     {
         this.mailAccount.setContent(mail);
@@ -78,14 +86,12 @@ public class User implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_LOGIN:
         {
-            User res = new User();
-            res.read(pak);
+            User res = new User(pak);
             return res;
         }
         case PacketType.TYPE_SERVER_ACK:
         {            
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_ERRIO:
@@ -122,8 +128,7 @@ public class User implements ByteArrayIO, PacketGenerator
         switch (pak.type)
         {
         case PacketType.TYPE_SERVER_ACK:
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_SUCC:
@@ -156,23 +161,19 @@ public class User implements ByteArrayIO, PacketGenerator
     public static User fetchProfile(int id)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        UserFetchInf inf = new UserFetchInf();
-        inf.id = id;
-        inf.type = UserFetchInf.ID;
+        UserFetchInf inf = new UserFetchInf(UserFetchInf.ID, id);
         Packet pak = inf.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_USER_FETCH:
         {
-            User res = new User();
-            res.read(pak);
+            User res = new User(pak);
             return res;
         }
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_ERRIO:
@@ -211,8 +212,7 @@ public class User implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_SUCC:
@@ -247,29 +247,27 @@ public class User implements ByteArrayIO, PacketGenerator
     public void fetchMyPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
-        PostFetchInf inf = new PostFetchInf();
-        inf.type = PostFetchInf.USER;
-        inf.count = count;
+        long token;
         synchronized (myPosts)
         {
             if (myPosts == null)
             {
-                inf.token = 2147483647;
+                token = 2147483647;
             }
             else
             {
-                inf.token = myPosts.get(myPosts.size() - 1).id;
+                token = myPosts.get(myPosts.size() - 1).id;
             }
         }
-        inf.user = this.id;
+        PostFetchInf inf = new PostFetchInf(PostFetchInf.USER, this.id, token,
+            0, count);
         Packet pak = inf.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_POST_FETCH:
         {
-            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>();
-            res.read(pak);
+            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
             synchronized (myPosts)
             {
                 if (myPosts == null)
@@ -282,7 +280,7 @@ public class User implements ByteArrayIO, PacketGenerator
         }
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_ERRIO:
@@ -335,7 +333,7 @@ public class User implements ByteArrayIO, PacketGenerator
         }
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
+            ACKInf res = new ACKInf(pak);
             res.read(pak);
             switch ((int)res.retval)
             {
@@ -385,8 +383,7 @@ public class User implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_ERRIO:
@@ -443,17 +440,14 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, NoSuchUserException, NoSuchPostException,
         SocketTimeoutException
     {
-        PostJoinInf inf = new PostJoinInf();
-        inf.postID = post.id;
-        inf.userID = this.id;
+        PostJoinInf inf = new PostJoinInf(post.id, this.id);
         Packet pak = inf.toPacket();
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_SERVER_ACK:
         {
-            ACKInf res = new ACKInf();
-            res.read(pak);
+            ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
             case ACKInf.RET_ERRIO:
