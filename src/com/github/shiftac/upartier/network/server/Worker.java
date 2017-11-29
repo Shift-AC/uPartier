@@ -11,34 +11,15 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.ByteArrayIOList;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
-import com.github.shiftac.upartier.network.PacketParser;
 import com.github.shiftac.upartier.serverdata.Fetch;
 import com.github.shiftac.upartier.serverdata.Log;
 
 public class Worker extends ServerWorker
 {
-    static public final PacketParser loginHandler = (wk, pak) ->
+    static public final PacketParser loginHandler = (wk, pak, obj) ->
     {
-        synchronized (wk.current)
-        {
-            if (wk.current != null)
-            {
-                wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            }
-        }
-        LoginInf inf = null;
+        LoginInf inf = (LoginInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new LoginInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
         try
         {
             User user = null;
@@ -67,58 +48,36 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser logoutHandler = (wk, pak) ->
+    static public final PacketParser logoutHandler = new PacketParser()
     {
-        boolean cur = false;
-        synchronized (wk.current)
+        public boolean generateObject(ServerWorker wk, Packet pak, 
+            ByteArrayIO obj)
         {
-            cur = wk.current == null;
+            return true;
         }
-        if (cur)
+
+        public void parseObject(ServerWorker wk, Packet pak, 
+            ByteArrayIO obj)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        try
-        {
-            synchronized (wk.current)
+            try
             {
-                Log.logout(wk.current.id);
-                wk.current = null;
+                synchronized (wk.current)
+                {
+                    Log.logout(wk.current.id);
+                    wk.current = null;
+                }
             }
-        }
-        catch (SQLException e)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            catch (SQLException e)
+            {
+                wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            }
         }
     };
 
-    static public final PacketParser userFetchHandler = (wk, pak) ->
+    static public final PacketParser userFetchHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        UserFetchInf inf = null;
+        UserFetchInf inf = (UserFetchInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new UserFetchInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
-
         try
         {
             ByteArrayIO tmp;
@@ -156,32 +115,11 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser postFetchHandler = (wk, pak) ->
+    static public final PacketParser postFetchHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        PostFetchInf inf = null;
+        PostFetchInf inf = (PostFetchInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new PostFetchInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
-
+        boolean cur = false;
         synchronized (wk.current)
         {
             cur = wk.current.id != inf.user;
@@ -231,31 +169,10 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser blockFetchHandler = (wk, pak) ->
+    static public final PacketParser blockFetchHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        BlockFetchInf inf = null;
+        BlockFetchInf inf = (BlockFetchInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new BlockFetchInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
         try
         {
             ByteArrayIO tmp;
@@ -280,31 +197,11 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser msgFetchHandler = (wk, pak) ->
+    static public final PacketParser msgFetchHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        MsgFetchInf inf = null;
+        MsgFetchInf inf = (MsgFetchInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new MsgFetchInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
+        boolean cur;
         synchronized (wk.current)
         {
             cur = wk.current.id != inf.user;
@@ -348,31 +245,11 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser userModifyHandler = (wk, pak) ->
+    static public final PacketParser userModifyHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        User user = null;
+        User user = (User)obj;
         Packet res = null;
-        try
-        {
-            user = new User(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
+        boolean cur = false;
         synchronized (wk.current)
         {
             cur = wk.current.id != user.id;
@@ -409,31 +286,11 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser postModifyHandler = (wk, pak) ->
+    static public final PacketParser postModifyHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        Post post = null;
+        Post post = (Post)obj;
         Packet res = null;
-        try
-        {
-            post = new Post(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
+        boolean cur = false;
         synchronized (wk.current)
         {
             cur = wk.current.id != post.userID;
@@ -468,31 +325,11 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser msgPushHandler = (wk, pak) ->
+    static public final PacketParser msgPushHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        MessageInf inf = null;
+        MessageInf inf = (MessageInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new MessageInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
+        boolean cur = false;
         synchronized (wk.current)
         {
             cur = wk.current.id != inf.userID;
@@ -529,31 +366,11 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser postJoinHandler = (wk, pak) ->
+    static public final PacketParser postJoinHandler = (wk, pak, obj) ->
     {
-        boolean cur = false;
-        synchronized (wk.current)
-        {
-            cur = wk.current == null;
-        }
-        if (cur)
-        {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
-            return;
-        }
-        PostJoinInf inf = null;
+        PostJoinInf inf = (PostJoinInf)obj;
         Packet res = null;
-        try
-        {
-            inf = new PostJoinInf(pak);
-        }
-        catch (IOException e)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
-            res = ack.toPacket();
-            wk.issue(res);
-            return;
-        }
+        boolean cur = false;
         synchronized (wk.current)
         {
             cur = wk.current.id != inf.userID;
@@ -616,34 +433,34 @@ public class Worker extends ServerWorker
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
-            loginHandler.parse(this, pak);
+            loginHandler.parse(this, pak, false, new LoginInf());
             break;
         case PacketType.TYPE_LOGOUT:
-            logoutHandler.parse(this, pak);
+            logoutHandler.parse(this, pak, true, null);
             break;
         case PacketType.TYPE_USER_FETCH:
-            userFetchHandler.parse(this, pak);
+            userFetchHandler.parse(this, pak, true, new UserFetchInf());
             break;
         case PacketType.TYPE_POST_FETCH:
-            postFetchHandler.parse(this, pak);
+            postFetchHandler.parse(this, pak, true, new PostFetchInf());
             break;
         case PacketType.TYPE_BLOCK_FETCH:
-            blockFetchHandler.parse(this, pak);
+            blockFetchHandler.parse(this, pak, true, new BlockFetchInf());
             break;
         case PacketType.TYPE_MESSAGE_FETCH:
-            msgFetchHandler.parse(this, pak);
+            msgFetchHandler.parse(this, pak, true, new MsgFetchInf());
             break;
         case PacketType.TYPE_MESSAGE_PUSH:
-            msgPushHandler.parse(this, pak);
+            msgPushHandler.parse(this, pak, true, new MessageInf());
             break;
         case PacketType.TYPE_USER_MODIFY:
-            userModifyHandler.parse(this, pak);
+            userModifyHandler.parse(this, pak, true, new User());
             break;
         case PacketType.TYPE_POST_MODIFY:
-            postModifyHandler.parse(this, pak);
+            postModifyHandler.parse(this, pak, true, new Post());
             break;
         case PacketType.TYPE_POST_JOIN:
-            postJoinHandler.parse(this, pak);
+            postJoinHandler.parse(this, pak, true, new PostJoinInf());
             break;
         default:
             throw new PacketFormatException("Invalid packet type " + pak.type);

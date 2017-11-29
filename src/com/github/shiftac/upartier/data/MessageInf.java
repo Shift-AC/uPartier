@@ -33,6 +33,8 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
     public long time = 0;
     public ByteArrayIO content = null;
 
+    public MessageInf() {}
+
     public MessageInf(Packet pak)
         throws IOException
     {

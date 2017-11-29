@@ -15,6 +15,8 @@ public class MsgFetchInf extends CountFetchInf
 {
     public static final int POST = 0;
 
+    public MsgFetchInf() {}
+
     public MsgFetchInf(Packet pak)
         throws IOException
     {

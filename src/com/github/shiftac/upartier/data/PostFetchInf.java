@@ -22,6 +22,8 @@ public class PostFetchInf extends CountFetchInf
     public static final int BLOCK = 1;
     public static final int USER = 2;
 
+    public PostFetchInf() {}
+
     public PostFetchInf(Packet pak)
         throws IOException
     {

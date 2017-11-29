@@ -16,6 +16,8 @@ public class BlockFetchInf extends IDFetchInf
     public static final int ID = 0;
     public static final int ALL = 1;
     
+    public BlockFetchInf() {}
+
     public BlockFetchInf(Packet pak)
         throws IOException
     {

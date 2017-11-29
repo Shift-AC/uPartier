@@ -18,6 +18,8 @@ public class UserFetchInf extends IDFetchInf
     public static final int POST_ISSUE = 1;
     public static final int POST_LIST = 2;
 
+    public UserFetchInf() {}
+    
     public UserFetchInf(Packet pak)
         throws IOException
     {

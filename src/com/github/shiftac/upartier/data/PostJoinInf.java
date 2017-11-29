@@ -11,6 +11,8 @@ public class PostJoinInf implements ByteArrayIO, PacketGenerator
     public int postID = 0;
     public int userID = 0;
 
+    public PostJoinInf() {}
+    
     public PostJoinInf(Packet pak)
         throws IOException
     {

@@ -13,6 +13,8 @@ public class GenericFile implements ByteArrayIO
     public byte[] payload = null;
     protected int type = ContentTypes.GENERAL;
 
+    public GenericFile() {}
+
     public GenericFile(String name)
         throws IOException
     {
@@ -26,8 +28,6 @@ public class GenericFile implements ByteArrayIO
     {
         this.read(pak);
     }
-
-    public GenericFile() {}
 
     @Override
     public void write(byte[] buf, int off, int len)

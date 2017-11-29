@@ -32,6 +32,8 @@ public class ACKInf implements ByteArrayIO, PacketGenerator
 
     public long retval;
 
+    public ACKInf() {}
+
     public ACKInf(long retval)
     {
         this.retval = retval;
