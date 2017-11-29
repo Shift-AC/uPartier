@@ -48,7 +48,7 @@ public class fetch {
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
-     * @throws SQLException if IOException occured when accessing database files.
+     * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchBlockException if no such block exists.
      */
 	public Post[] fetchPostForBlock(int blockid,int count) throws SQLException, NoSuchBlockException {
@@ -91,7 +91,7 @@ public class fetch {
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
-     * @throws SQLException if IOException occured when accessing database files.
+     * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchUserException if no such user exists.
      */
 	public Post[] fetchPostForUser(int userid,int count) throws SQLException,NoSuchUserException {
@@ -138,7 +138,7 @@ public class fetch {
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
-     * @throws SQLException if IOException occured when accessing database files.
+     * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
 	public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException{
@@ -197,7 +197,7 @@ public class fetch {
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
-     * @throws SQLException if IOException occured when accessing database files.
+     * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
      */
 	public MessageInf[] fetchMessage(int id,int count,long time) throws SQLException, NoSuchPostException {

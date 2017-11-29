@@ -27,9 +27,9 @@ public class log {
 	/**
      * Attempts to set the status field of user to {@code offline} in database
      * 
-     * @throws IOException if IOException occured when accessing database files.
+     * @throws SQLException if SQLException occured when accessing database files.
      */
-	public void logout(int id)throws Exception {
+	public void logout(int id)throws SQLException {
 		new Update().Updateustate(0, id);
 	}
 }
