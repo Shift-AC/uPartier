@@ -6,10 +6,11 @@ import com.github.shiftac.upartier.network.Packet;
 
 /**
  * When fetching user information, following situations are possible to occur:
- * <p>
- * 1. Fetching a user from its ID.<br>
- * 2. Fetching a user who issued a specified post.<br>
- * 3. Fetching a list of users belong to a post.<br>
+ * <ol>
+ * <li>Fetching a user from its ID.</li>
+ * <li>Fetching a user who issued a specified post.</li>
+ * <li>Fetching a list of users belong to a post.</li>
+ * </ol>
  */
 public class UserFetchInf extends IDFetchInf
 {

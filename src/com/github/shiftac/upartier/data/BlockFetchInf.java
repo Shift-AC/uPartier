@@ -6,9 +6,10 @@ import com.github.shiftac.upartier.network.Packet;
 
 /**
  * When fetching block information, following situations are possible to occur:
- * <p>
- * 1. Fetching a block from its ID.<br>
- * 2. Fetching all blocks.<br>
+ * <ol>
+ * <li>Fetching a block from its ID.</li>
+ * <li>Fetching all blocks.</li>
+ * </ol>
  */
 public class BlockFetchInf extends IDFetchInf
 {

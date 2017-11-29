@@ -3,16 +3,17 @@ package com.github.shiftac.upartier.network.server;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.github.shiftac.upartier.data.ACKInf;
-import com.github.shiftac.upartier.data.LoginInf;
-import com.github.shiftac.upartier.data.NoSuchUserException;
-import com.github.shiftac.upartier.data.PacketType;
-import com.github.shiftac.upartier.data.User;
-import com.github.shiftac.upartier.data.UserFetchInf;
+// We use this ugly import policy here because this class needs to use almost
+// everything in com.github.shiftac.upartier.data.
+import com.github.shiftac.upartier.data.*;
+import com.github.shiftac.upartier.network.AES128Packet;
+import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.ByteArrayIOList;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 import com.github.shiftac.upartier.network.PacketParser;
-import com.github.shiftac.upartier.serverdata.log;
+import com.github.shiftac.upartier.serverdata.Fetch;
+import com.github.shiftac.upartier.serverdata.Log;
 
 public class Worker extends ServerWorker
 {
@@ -28,11 +29,13 @@ public class Worker extends ServerWorker
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
+            wk.issue(res);
+            return;
         }
         try
         {
             User user = null;
-            log.login(inf);
+            Log.login(inf);
             
             // make javac happy...
             // fetch user here, then remove this
@@ -70,14 +73,68 @@ public class Worker extends ServerWorker
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
+            wk.issue(res);
+            return;
         }
+
+        // fetch user here, then remove this
 
         wk.issue(res);
     };
 
     static public final PacketParser postFetchHandler = (wk, pak) ->
     {
+        PostFetchInf inf = null;
+        Packet res = null;
+        try
+        {
+            inf = new PostFetchInf(pak);
+        }
+        catch (IOException e)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+            wk.issue(res);
+            return;
+        }
+        try
+        {
+            ByteArrayIO tmp;
+            switch (inf.type)
+            {
+            case PostFetchInf.ID:
+            case PostFetchInf.BLOCK:
+                tmp = new ByteArrayIOList<Post>(
+                    Fetch.fetchPostForBlock(inf.id, (int)inf.token, inf.count));
+                break;    
+            case PostFetchInf.USER:
+                tmp = new ByteArrayIOList<Post>(
+                    Fetch.fetchPostForUser(inf.user, (int)inf.token, 
+                    inf.count));
+                break;
+            default:
+                return;
+            }
+            res = new AES128Packet(tmp);
+            res.type = PacketType.TYPE_POST_FETCH;
+        }
+        catch (SQLException sqle)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchBlockException nsbe)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRBLOCK);
+            res = ack.toPacket();
+        }
+        catch (NoSuchUserException nsue)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
+            res = ack.toPacket();
+        }
 
+        wk.issue(res);
     };
 
     static public final PacketParser blockFetchHandler = (wk, pak) ->

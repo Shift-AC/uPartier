@@ -6,9 +6,9 @@ import com.github.shiftac.upartier.network.Packet;
 
 /**
  * When fetching messages, following situations are possible to occur:
- * <p>
- * 1. Fetching messages from a specified post.
- * <p>
+ * <ol>
+ * <li>Fetching messages from a specified post.</li>
+ * </ol>
  * {@code count} will be valid and {@code token} will be timestamp of last item.
  */
 public class MsgFetchInf extends CountFetchInf
