@@ -209,21 +209,28 @@ public class fetch {
 			stmt.setInt(1, id);
 			stmt.setInt(2, count);
 			ResultSet rs = stmt.executeQuery(sql);
-			int i=0;
-			 while(rs.next()) {
+			if(rs==null) {throw new NoSuchPostException(); }
+			else{
+				int i=0;
+		
+				while(rs.next()) {
 				 messageinf[0].postID=rs.getInt("PostId");
 					messageinf[0].time=rs.getLong("Time");
 					messageinf[0].type= rs.getByte("Type");
 				    messageinf[0].userID=rs.getInt("UserId");
 				 i++;
 				 }
-			 
+			}
 			 rs.close();
 			 stmt.close();
 			 conn.close();
 		
-		
 		return messageinf;
+	}
+	
+	public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
+		
+		
 	}
 
 		
