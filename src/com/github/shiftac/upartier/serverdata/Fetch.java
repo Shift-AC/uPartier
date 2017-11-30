@@ -312,12 +312,13 @@ public class Fetch {
 					rs=stmt.executeQuery(sql);
 					if(rs==null) {throw new NoSuchPostException(); }
 					sql="select * from upartier.userpost where UserId = ? and PostId = ?   ";
-					 stmt=conn.prepareStatement(sql);
+					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
-				 rs = stmt.executeQuery(sql);
+				    rs = stmt.executeQuery(sql);
 					if(rs==null) {throw new PermissionException(); }
-					else { while(rs.next()) {
+					else { 
+						while(rs.next()) {
 						user[i].age=rs.getInt("Age");
 		            	 user[i].gender=rs.getInt("Gender");
 		            	 user[i].id=rs.getInt("UserId");
@@ -325,9 +326,14 @@ public class Fetch {
 		            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 		            	 user[i].postCount=rs.getInt("PostCount");					
 					}
-					
-						
-					}
+		
+						sql="insert into upartier.messageinf(PostId,UserId,Type,Time) values(?,?,?,?)";
+						stmt = conn.prepareStatement(sql);
+						stmt.setInt(1, message.postID);
+						stmt.setInt(2, message.userID);
+						stmt.setByte(3, message.type);
+						stmt.setLong(4, message.time);
+					    }
 			 return user;
 		}
 
