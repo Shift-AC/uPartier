@@ -51,18 +51,20 @@ public class Fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchBlockException if no such block exists.
      */
-	static public Post[] fetchPostForBlock(int blockid, int id, int count) throws SQLException, NoSuchBlockException {
+	static public Post[] fetchPostForBlock(int blockid, int postid, int count) throws SQLException, NoSuchBlockException {
+
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select * from upartier.post where BlockId = ? order by PostId desc limit ? ";
+			sql="select * from upartier.post where BlockId = ? and PostId <? order by PostId desc limit ? ";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, blockid);
-			stmt.setInt(2, count);
+			stmt.setInt(2, postid);
+			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery(sql);
-			Post[] post=new Post[10];
+			Post[] post=new Post[count];
 			int i=0;
 			if(rs==null) {
 				throw new NoSuchBlockException();
@@ -94,7 +96,8 @@ public class Fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchUserException if no such user exists.
      */
-	static public Post[] fetchPostForUser(int userid, int id, int count) throws SQLException,NoSuchUserException {
+	static public Post[] fetchPostForUser(int userid, int postid, int count) throws SQLException,NoSuchUserException {
+
 		Connection conn = null;
 		String sql,sql2;
 		System.out.println("connecting to database....");
@@ -109,12 +112,13 @@ public class Fetch {
 			  throw e;
 			}
 			
-			sql="select * from upartier.post where PostId=(select PostId from upartier.userpost where UserId = ? order by PostId desc) limit ?";
+			sql="select * from upartier.post where PostId=(select PostId from upartier.userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
-			stmt.setInt(2, count);
+			stmt.setInt(2, postid);
+			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery(sql);
-			Post[] post=new Post[10];
+			Post[] post=new Post[count];
 			int i=0;
 			 while(rs.next()) {
 				 post[i].id=rs.getInt("PostId");
@@ -201,42 +205,91 @@ public class Fetch {
      * @throws NoSuchPostException if no such post exists.
 	 * @throws PermissionException if the user hasn't join the post.
      */
-	static public MessageInf[] fetchMessage(int id, int userID, int count, long time) 
-		throws SQLException, NoSuchPostException, PermissionException{
-		MessageInf[] messageinf=new MessageInf[count];
-		Connection conn = null;
-		String sql;
-		System.out.println("connecting to database....");
-			conn = DriverManager.getConnection(url,USER,PASS);	
-			System.out.println("Creating statement....");
-			sql="select * from upartier.messageinf where PostId = ? order by Time desc limit ? ";
-			PreparedStatement stmt=conn.prepareStatement(sql);
-			stmt.setInt(1, id);
-			stmt.setInt(2, count);
-			ResultSet rs = stmt.executeQuery(sql);
-			if(rs==null) {throw new NoSuchPostException(); }
-			else{
-				int i=0;
+	static public MessageInf[] fetchMessage(int id, int userID, int count, long time) throws SQLException, NoSuchPostException, PermissionException{
+			MessageInf[] messageinf=new MessageInf[count];
+			Connection conn = null;
+			String sql;
+			System.out.println("connecting to database....");
+				conn = DriverManager.getConnection(url,USER,PASS);	
+				System.out.println("Creating statement....");
+				sql="select * from upartier.messageinf where PostId = ? and Time <? order by Time desc limit ? ";
+				PreparedStatement stmt=conn.prepareStatement(sql);
+				stmt.setInt(1, id);
+				stmt.setLong(2, time);
+				stmt.setInt(3, count);
+				ResultSet rs = stmt.executeQuery(sql);
+				if(rs==null) {throw new NoSuchPostException(); }
+				else{
+					int i=0;
+			
+					while(rs.next()) {
+					 messageinf[i].postID=rs.getInt("PostId");
+						messageinf[i].time=rs.getLong("Time");
+						messageinf[i].type= rs.getByte("Type");
+					    messageinf[i].userID=rs.getInt("UserId");
+					   // messageinf[i].content=rs.getObject(arg0, arg1);
+					 i++;
+					 }
+				}
+				 rs.close();
+				 stmt.close();
+				 conn.close();
+			
+			return messageinf;
+		}
 		
-				while(rs.next()) {
-				 messageinf[0].postID=rs.getInt("PostId");
-					messageinf[0].time=rs.getLong("Time");
-					messageinf[0].type= rs.getByte("Type");
-				    messageinf[0].userID=rs.getInt("UserId");
-				 i++;
-				 }
+
+		/**
+	     * Try to issue a new post. The {@code id}, {@code time} field of the 
+	     * parameter {@code Post} will be properly set on successful returns.
+	     *
+	     * @throws SQLException if SQLException occured when accessing database files.
+	     * @throws NoSuchUserException if no such user exists.
+	     * @throws NoSucBlockException if no such block exists.
+	     */
+		static public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
+
 			}
-			 rs.close();
-			 stmt.close();
-			 conn.close();
-		
-		return messageinf;
-	}
 	
-	static public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
 		
-		
-	}
+		/**
+	     * Try to send a reply message under a given post id. Returns list of users of this
+	     * post.The number of a Post User must be below 30  
+	     *
+	     * @throws SQLException if SQLException occured when accessing database files.
+	     * @throws NoSuchUserException if no such user exists.
+	     * @throws NoSuchPostException if no such post exists.
+	     * @throws PermissionException if current user can't send message on this 
+	     * post.
+	     */
+		static public User[] sendMessage(int userid, int postid, MessageInf message) throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException{
+			 User[] user=new User[30];
+			 Connection conn = null;
+				String sql;
+				System.out.println("connecting to database....");
+					conn = DriverManager.getConnection(url,USER,PASS);	
+					System.out.println("Creating statement....");
+					sql="select * from upartier.user where UserId = ?  ";
+					PreparedStatement stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, userid);
+					ResultSet rs = stmt.executeQuery(sql);
+					if(rs==null) {throw new NoSuchUserException(); }
+					sql="select * from upartier.post where PostId = ? ";
+					stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, postid);
+					rs=stmt.executeQuery(sql);
+					if(rs==null) {throw new NoSuchPostException(); }
+					sql="select * from upartier.userpost where UserId = ? and PostId = ?   ";
+					 stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, userid);
+					stmt.setInt(2, postid);
+				 rs = stmt.executeQuery(sql);
+					if(rs==null) {throw new PermissionException(); }
+					else {
+						
+					}
+			 return user;
+		}
 
 		
 	}
