@@ -24,4 +24,18 @@ public class Server extends AbstractServer
         }
         catch (Exception e) {}
     }
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            Server s = new Server();
+            s.start();
+            s.join();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

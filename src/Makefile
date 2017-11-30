@@ -21,7 +21,7 @@ JAVALIBLINUX := $(LIB)/org.json.jar:#$(LIB)/jce.jar:$(LIB)/sunjce_provider.jar:
 JAVALIBWIN := $(subst :,;,$(JAVALIBLINUX))
 JAVALIB := $(JAVALIBWIN):$(JAVALIBLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
-JAVADOCFLAGS := -private
+JAVADOCFLAGS := -locale en_US -private 
 #MANIFEST := "Class-Path: lib/org.json.jar lib/jce.jar lib/sunjce_provider.jar"
 
 .PHONY: all
@@ -30,7 +30,7 @@ all:
 
 .PHONY: javadoc
 javadoc:
-	$(JAVADOC) $(JAVASRC) -d $(TARGET) $(JAVADOCFLAGS) -cp "$(JAVALIB)"
+	$(JAVADOC) $(JAVADOCFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)"
 
 .PHONY: clean
 clean:
