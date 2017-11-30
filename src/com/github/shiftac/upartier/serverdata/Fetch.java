@@ -128,6 +128,7 @@ public class Fetch {
 				 post[i].note=new BString(rs.getString("PostNote"));
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
+				 post[i].userID=rs.getInt("PostOwnerId");
 				 i++;
 				 }
 			 
@@ -253,7 +254,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);
 			System.out.println("Creating statement....");
-			sql="insert into upartier.post(PostId,BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount) values(?,?,?,?,?,?,?,?) ";
+			sql="insert into upartier.post(PostId,BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?,?) ";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, post.id);
 			stmt.setInt(2, post.blockID);
@@ -263,17 +264,18 @@ public class Fetch {
 			stmt.setString(6, post.place.toString());
 			stmt.setString(7, post.note.toString());
 			stmt.setInt(8, post.userCount);
+			stmt.setInt(9, post.userID);
 			//post.users
 			//post.messages
 			//post.users
-		    stmt.execute(sql);
+		    stmt.executeQuery(sql);
 		    for( User postuser:post.users)
 		    {
 		    	 sql="insert into upartier.userpost(UserId,PostId) value(?,?)";
 		    	 PreparedStatement stmt1=conn.prepareStatement(sql);
 		    	 stmt.setInt(1, postuser.id);
 		    	 stmt.setInt(2, post.id);
-		    	
+		    	 stmt.execute(sql);
 		    }
 		   
 		    
@@ -293,7 +295,8 @@ public class Fetch {
 	     * @throws PermissionException if current user can't send message on this 
 	     * post.
 	     */
-		static public User[] sendMessage(int userid, int postid, MessageInf message) throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException{
+		static public User[] sendMessage(int userid, int postid, MessageInf message) 
+				throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException{
 			 User[] user=new User[30];
 			 int i=0;
 			 Connection conn = null;
@@ -333,12 +336,132 @@ public class Fetch {
 						stmt.setInt(2, message.userID);
 						stmt.setByte(3, message.type);
 						stmt.setLong(4, message.time);
+						stmt.execute(sql);
 					    }
 			 return user;
 		}
 
+
 		
+		 /**
+	     * Attempt to join a post, throw an error if after this operation
+	     * current user doesn't belong to the post.
+	     * 
+	     * @throws SQLException if SQLException occured when accessing database files.
+	     * @throws NoSuchUserException if no such user exists.
+	     * @throws NoSuchPostException if no such post exists.
+	     */
+		static public void join(int userid,int postid) throws SQLException, NoSuchUserException, NoSuchPostException{
+			 Connection conn = null;
+				String sql;
+				System.out.println("connecting to database....");
+					conn = DriverManager.getConnection(url,USER,PASS);	
+					System.out.println("Creating statement....");
+					sql="insert into upartier.userpost(UserId,PostId) values(?,?)";
+					PreparedStatement stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, userid);
+					stmt.setInt(2, postid);
+					stmt.execute(sql);
+					sql="select PostCount from upartier.user where UserId=?";
+					stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, userid);
+					ResultSet rs = stmt.executeQuery(sql);
+					int mypostcount =rs.getInt("PostCount");
+					mypostcount=mypostcount+1;
+					sql="update upartier.user set PostCount=? where UserId=?";
+					stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, mypostcount);
+					stmt.setInt(2, userid);
+					stmt.execute(sql);
+		}
+	
+		 /**
+	     * Attempts to fetch user profile for a given user ID.
+	     * <p>
+	     * Current thread will <b>block</b> inside this call.
+	     *
+	     * @throws SQLException if SQLException occured when accessing database files.
+	     */
+	   public static User fetchProfile(int id) throws SQLException{
+	    	User user=new User();
+	    	 Connection conn = null;
+				String sql;
+				System.out.println("connecting to database....");
+					conn = DriverManager.getConnection(url,USER,PASS);	
+					System.out.println("Creating statement....");
+	    	 sql="select * from upartier.user where UserId=?";
+			 PreparedStatement stmt=conn.prepareStatement(sql);
+             stmt.setInt(1, id);
+             ResultSet rs = stmt.executeQuery(sql);
+             user.age=rs.getInt("Age");
+        	 user.gender=rs.getInt("Gender");
+        	 user.id=rs.getInt("UserId");
+        	 user.mailAccount=new BString(rs.getString("MailAccount"));
+        	 user.nickname=new BString(rs.getString("UserNickName"));
+        	 user.postCount=rs.getInt("PostCount");
+	    	
+		   return user;
+	    }
+		
+	   /**
+	     * Attempts to fetch user profile who issued the specified post.
+	     * <p>
+	     * Current thread will <b>block</b> inside this call.
+	     *
+	     * @throws SQLException if SQLException occured when accessing database files.
+	     */
+	   public static User fetchIssuerProfile(int id)throws SQLException{
+	    	User user = new User();
+	    	Connection conn = null;
+			String sql;
+			System.out.println("connecting to database....");
+				conn = DriverManager.getConnection(url,USER,PASS);	
+				System.out.println("Creating statement....");
+    	 sql="select PostOwnerId from upartier.post where PostId=?";
+		 PreparedStatement stmt=conn.prepareStatement(sql);
+         stmt.setInt(1, id);
+         ResultSet rs = stmt.executeQuery(sql);
+         int ownerid=rs.getInt("PostOwnerId");
+         sql="select * from upartier.user where UserId=?";
+		 stmt=conn.prepareStatement(sql);
+         stmt.setInt(1, ownerid);
+         rs = stmt.executeQuery(sql);
+         user.age=rs.getInt("Age");
+    	 user.gender=rs.getInt("Gender");
+    	 user.id=rs.getInt("UserId");
+    	 user.mailAccount=new BString(rs.getString("MailAccount"));
+    	 user.nickname=new BString(rs.getString("UserNickName"));
+    	 user.postCount=rs.getInt("PostCount");    	
+	    	return user;
+	    	}
+	   
+	   
+	   /**
+	     * Attempts to modify user profile.
+	     * <p>
+	     * Current thread will <b>block</b> inside this call.
+	     *
+	     * @throws SQLException if SQLException occured when accessing database files.
+	     */
+	    public static void renewProfile(User u) throws SQLException{
+	    	Connection conn = null;
+			String sql;
+			System.out.println("connecting to database....");
+				conn = DriverManager.getConnection(url,USER,PASS);	
+				System.out.println("Creating statement....");
+				sql="update upartier.user set Age=? Gender=? PostCount=? MailAccount=? NickName=? where UserId=?";
+				PreparedStatement stmt=conn.prepareStatement(sql);
+				stmt.setInt(1, u.age);
+				stmt.setInt(2, u.gender);
+				stmt.setInt(3, u.postCount);
+				stmt.setString(4,u.mailAccount.toString());
+				stmt.setString(5,u.nickname.toString());
+				stmt.setInt(6, u.id);
+				stmt.execute(sql);
+	    }
 	}
+
+
 
 
 
