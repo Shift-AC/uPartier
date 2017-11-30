@@ -16,8 +16,6 @@ public class InsertUsers {
 	try {
 		System.out.println("connecting to database....");
 		conn = DriverManager.getConnection(url,USER,PASS);
-		
-		
 		System.out.println("Creating statement....");
 		sql="insert into upartier.user(UserId,UserPassword) values(?,?) ";
 		PreparedStatement stmt = conn.prepareStatement(sql);

@@ -248,8 +248,39 @@ public class Fetch {
 	     * @throws NoSucBlockException if no such block exists.
 	     */
 		static public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
-
-			}
+			Connection conn = null;
+			String sql;
+			System.out.println("connecting to database....");
+			conn = DriverManager.getConnection(url,USER,PASS);
+			System.out.println("Creating statement....");
+			sql="insert into upartier.post(PostId,BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount) values(?,?,?,?,?,?,?,?) ";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, post.id);
+			stmt.setInt(2, post.blockID);
+			stmt.setString(3, post.name.toString());
+			stmt.setLong(4, post.time);
+			stmt.setString(5, post.label.toString());
+			stmt.setString(6, post.place.toString());
+			stmt.setString(7, post.note.toString());
+			stmt.setInt(8, post.userCount);
+			//post.users
+			//post.messages
+			//post.users
+		    stmt.execute(sql);
+		    for( User postuser:post.users)
+		    {
+		    	 sql="insert into upartier.userpost(UserId,PostId) value(?,?)";
+		    	 PreparedStatement stmt1=conn.prepareStatement(sql);
+		    	 stmt.setInt(1, postuser.id);
+		    	 stmt.setInt(2, post.id);
+		    	
+		    }
+		   
+		    
+			 stmt.close();
+			 conn.close();
+			
+		}
 	
 		
 		/**
@@ -264,6 +295,7 @@ public class Fetch {
 	     */
 		static public User[] sendMessage(int userid, int postid, MessageInf message) throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException{
 			 User[] user=new User[30];
+			 int i=0;
 			 Connection conn = null;
 				String sql;
 				System.out.println("connecting to database....");
@@ -285,7 +317,15 @@ public class Fetch {
 					stmt.setInt(2, postid);
 				 rs = stmt.executeQuery(sql);
 					if(rs==null) {throw new PermissionException(); }
-					else {
+					else { while(rs.next()) {
+						user[i].age=rs.getInt("Age");
+		            	 user[i].gender=rs.getInt("Gender");
+		            	 user[i].id=rs.getInt("UserId");
+		            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
+		            	 user[i].nickname=new BString(rs.getString("UserNickName"));
+		            	 user[i].postCount=rs.getInt("PostCount");					
+					}
+					
 						
 					}
 			 return user;
