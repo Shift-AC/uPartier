@@ -34,8 +34,11 @@ clean:
 README: README.md
 	pandoc README.md --latex-engine=xelatex -o README.pdf
 
-runServer:
+runServerDemo:
 	java -cp "$(JAVALIB)" TestServer
 
-runClient:
+runClientDemo:
 	java -cp "$(JAVALIB)" TestClient
+
+runServer:
+	java -cp "$(JAVALIB)" com.github.shiftac.upartier.network.server.Server

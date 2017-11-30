@@ -245,7 +245,7 @@ public class Fetch {
 	     *
 	     * @throws SQLException if SQLException occured when accessing database files.
 	     * @throws NoSuchUserException if no such user exists.
-	     * @throws NoSucBlockException if no such block exists.
+	     * @throws NoSuchBlockException if no such block exists.
 	     */
 		static public void issuePost(Post post)throws SQLException, NoSuchUserException, NoSuchBlockException {
 			Connection conn = null;
