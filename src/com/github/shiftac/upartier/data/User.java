@@ -457,7 +457,7 @@ public class User implements ByteArrayIO, PacketGenerator
                 throw new NoSuchPostException("Post #" + inf.postID
                     + " not found.");
             case ACKInf.RET_ERRUSER:
-                throw new NoSuchPostException("User #" + inf.userID
+                throw new NoSuchUserException("User #" + inf.userID
                     + " not found.");
             /*
             case ACKInf.RET_ERRPERMISSION:

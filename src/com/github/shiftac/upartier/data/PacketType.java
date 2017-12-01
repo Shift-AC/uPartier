@@ -224,6 +224,7 @@ public interface PacketType extends PacketVersion
     public static final int TYPE_LOGIN = 0x0;
     /**
      * Client: Nothing is transferred.
+     * Server: Nothing is transferred.
      */
     public static final int TYPE_LOGOUT = 0x1;
     /**
@@ -276,5 +277,4 @@ public interface PacketType extends PacketVersion
      * Server: {@link ACKInf} is transferred.
      */
     public static final int TYPE_SERVER_ACK = 0x1F;
-
 }

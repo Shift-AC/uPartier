@@ -1,25 +1,54 @@
 package com.github.shiftac.upartier.network.server;
 
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.shiftac.upartier.network.AbstractWorker;
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.network.Packet;
 
 public class WorkerManager
 {
-    private AbstractWorker[] pool;
-    private int probeGap = Util.getIntConfig(getClass(), "probeGapInms");
-    public Class<? extends AbstractWorker> cworker = null;
+    private ServerWorker[] pool;
+    //private int probeGap = Util.getIntConfig(getClass(), "probeGapInms");
+    public Class<? extends ServerWorker> cworker = null;
+    private long seq = 0;
+    private ConcurrentHashMap<Integer, ServerWorker> idMap = 
+        new ConcurrentHashMap<Integer, ServerWorker>();
 
     @SuppressWarnings("unchecked")
     public WorkerManager(int maxWorker, String name)
         throws ClassNotFoundException
     {
-        pool = new AbstractWorker[maxWorker];
-        cworker = (Class<? extends AbstractWorker>)(Class.forName(name));
+        pool = new ServerWorker[maxWorker];
+        cworker = (Class<? extends ServerWorker>)(Class.forName(name));
     }
 
-    public AbstractWorker delegate(Socket s)
+    public void setIDPos(ServerWorker worker, int id)
+    {
+        ServerWorker x = idMap.get(id);
+        if (x != null)
+        {
+            x.endSession();
+        }
+
+        idMap.put(id, worker);
+    }
+
+    public void removeIDPos(int id)
+    {
+        idMap.remove(id);
+    }
+
+    public void broadcast(Packet pak, int[] ids)
+    {
+        for (int i = 0; i < ids.length; ++i)
+        {
+            ServerWorker worker = idMap.get(ids[i]);
+            worker.issue(pak);
+        }
+    }
+
+    public ServerWorker delegate(Socket s)
     {
         int rec = 0;
         try
@@ -33,7 +62,7 @@ public class WorkerManager
                     {
                         pool[i] = 
                             cworker.getDeclaredConstructor().newInstance();
-                        pool[i].init(s);
+                        pool[i].init(s, this, seq++);
                         pool[i].start();
                     }
                     Util.log.logVerbose(String.format(

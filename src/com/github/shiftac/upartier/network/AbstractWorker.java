@@ -185,6 +185,14 @@ public abstract class AbstractWorker
         }
     }
 
+    protected void cleanup()
+        throws Exception
+    {
+        Socket ts = s;
+        s = null;
+        ts.close();
+    }
+
     public void terminate()
     {
         try
@@ -193,9 +201,7 @@ public abstract class AbstractWorker
             {
                 if (started.get() == true)
                 {
-                    Socket ts = s;
-                    s = null;
-                    ts.close();
+                    cleanup();
                     Util.joinIgnoreInterrupt(ot);
                 }
                 it = new InputThread();

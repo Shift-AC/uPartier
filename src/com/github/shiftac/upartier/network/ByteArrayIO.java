@@ -27,8 +27,8 @@ import com.github.shiftac.upartier.data.User;
  * 
  * Fields are listed using their types and names. For fields that correspond
  * to a member in the object itself, their names should <b>exactly</b> match
- * the names of the members. For fields that are not, there's no constraint 
- * on which names should be used. We also give a possible list of types:
+ * the names of the members. For fields that are not, their names should 
+ * <b>never</b> be the same of a mamber. We give a possible list of types here:
  * <ul>
  * <li>{@code byte}: 8-bit integer;</li>
  * <li>{@code short}: 16-bit integer;</li>

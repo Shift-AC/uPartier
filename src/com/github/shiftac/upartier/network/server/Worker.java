@@ -16,7 +16,7 @@ import com.github.shiftac.upartier.serverdata.Log;
 
 public class Worker extends ServerWorker
 {
-    static public final PacketParser loginHandler = (wk, pak, obj) ->
+    static public final PacketParser loginHandler = (wk, obj) ->
     {
         LoginInf inf = (LoginInf)obj;
         Packet res = null;
@@ -24,14 +24,13 @@ public class Worker extends ServerWorker
         {
             User user = null;
             Log.login(inf);
+            wk.manager.setIDPos(wk, inf.id);
             synchronized (wk.current)
             {
                 wk.current = inf;
             }
             
-            // make javac happy...
-            // fetch user here, then remove this
-            user = new User();
+            user = Fetch.fetchProfile(inf.id);
 
             res = user.toPacket();
         }
@@ -56,8 +55,7 @@ public class Worker extends ServerWorker
             return true;
         }
 
-        public void parseObject(ServerWorker wk, Packet pak, 
-            ByteArrayIO obj)
+        public void parseObject(ServerWorker wk, ByteArrayIO obj)
         {
             try
             {
@@ -65,6 +63,7 @@ public class Worker extends ServerWorker
                 {
                     Log.logout(wk.current.id);
                     wk.current = null;
+                    wk.manager.removeIDPos(wk.current.id);
                 }
             }
             catch (SQLException e)
@@ -74,7 +73,7 @@ public class Worker extends ServerWorker
         }
     };
 
-    static public final PacketParser userFetchHandler = (wk, pak, obj) ->
+    static public final PacketParser userFetchHandler = (wk, obj) ->
     {
         UserFetchInf inf = (UserFetchInf)obj;
         Packet res = null;
@@ -84,16 +83,14 @@ public class Worker extends ServerWorker
             switch (inf.type)
             {
             case UserFetchInf.ID:
-                // fetch user here and remove this
-                tmp = new User();
+                tmp = Fetch.fetchProfile(inf.id);
                 break;    
             case UserFetchInf.POST_LIST:
                 tmp = new ByteArrayIOList<User>(
                     Fetch.fetchPostUserList(inf.id));
                 break;
             case UserFetchInf.POST_ISSUE:
-                // fetch user here and remove this
-                tmp = new User();
+                tmp = Fetch.fetchIssuerProfile(inf.id);
                 break;    
             default:
                 return;
@@ -115,7 +112,7 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser postFetchHandler = (wk, pak, obj) ->
+    static public final PacketParser postFetchHandler = (wk, obj) ->
     {
         PostFetchInf inf = (PostFetchInf)obj;
         Packet res = null;
@@ -169,7 +166,7 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser blockFetchHandler = (wk, pak, obj) ->
+    static public final PacketParser blockFetchHandler = (wk, obj) ->
     {
         BlockFetchInf inf = (BlockFetchInf)obj;
         Packet res = null;
@@ -197,7 +194,7 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser msgFetchHandler = (wk, pak, obj) ->
+    static public final PacketParser msgFetchHandler = (wk, obj) ->
     {
         MsgFetchInf inf = (MsgFetchInf)obj;
         Packet res = null;
@@ -245,7 +242,7 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser userModifyHandler = (wk, pak, obj) ->
+    static public final PacketParser userModifyHandler = (wk, obj) ->
     {
         User user = (User)obj;
         Packet res = null;
@@ -259,34 +256,30 @@ public class Worker extends ServerWorker
             wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
             return;
         }
-        //try
-        //{
-            // modify user here
+        try
+        {
+            Fetch.renewProfile(user);
 
             ACKInf tmp = new ACKInf(ACKInf.RET_SUCC);
             res = tmp.toPacket();
-        //}
-        /*
+        }
         catch (SQLException sqle)
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
+        // let database check for user id, then use this
+        /*
         catch (NoSuchUserException nsue)
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
-            res = ack.toPacket();
-        }
-        catch (PermissionException pe)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
             res = ack.toPacket();
         }*/
 
         wk.issue(res);
     };
 
-    static public final PacketParser postModifyHandler = (wk, pak, obj) ->
+    static public final PacketParser postModifyHandler = (wk, obj) ->
     {
         Post post = (Post)obj;
         Packet res = null;
@@ -325,7 +318,7 @@ public class Worker extends ServerWorker
         wk.issue(res);
     };
 
-    static public final PacketParser msgPushHandler = (wk, pak, obj) ->
+    static public final PacketParser msgPushHandler = (wk, obj) ->
     {
         MessageInf inf = (MessageInf)obj;
         Packet res = null;
@@ -339,14 +332,21 @@ public class Worker extends ServerWorker
             wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
             return;
         }
-        //try
-        //{
-            // push message here
-
+        try
+        {
             ACKInf ack = new ACKInf(inf.time);
             res = ack.toPacket();
-        //}
-        /*
+            Fetch.sendMessage(inf.userID, inf.postID, inf);
+            // let database implement a function returns only id array.
+            User[] users = Fetch.fetchPostUserList(inf.postID);
+            int[] ids = new int[users.length];
+            for (int i = 0; i < users.length; ++i)
+            {
+                ids[i] = users[i].id;
+            }
+            Packet pak = inf.toPacket();
+            wk.manager.broadcast(pak, ids);
+        }
         catch (SQLException sqle)
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
@@ -357,16 +357,21 @@ public class Worker extends ServerWorker
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
         }
+        catch (NoSuchUserException nsue)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
+            res = ack.toPacket();
+        }
         catch (PermissionException pe)
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
             res = ack.toPacket();
-        }*/
+        }
 
         wk.issue(res);
     };
 
-    static public final PacketParser postJoinHandler = (wk, pak, obj) ->
+    static public final PacketParser postJoinHandler = (wk, obj) ->
     {
         PostJoinInf inf = (PostJoinInf)obj;
         Packet res = null;
@@ -380,17 +385,21 @@ public class Worker extends ServerWorker
             wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
             return;
         }
-        //try
-        //{
-            // join post here
+        try
+        {
+            Fetch.join(inf.userID, inf.postID);
 
             ACKInf ack = new ACKInf(ACKInf.RET_SUCC);
             res = ack.toPacket();
-        //}
-        /*
+        }
         catch (SQLException sqle)
         {
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
+        catch (NoSuchUserException nsue)
+        {
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
         }
         catch (NoSuchPostException nspe)
@@ -398,11 +407,6 @@ public class Worker extends ServerWorker
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
         }
-        catch (PermissionException pe)
-        {
-            ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
-            res = ack.toPacket();
-        }*/
 
         wk.issue(res);
     };
@@ -414,6 +418,7 @@ public class Worker extends ServerWorker
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
+        case PacketType.TYPE_LOGOUT:
         case PacketType.TYPE_USER_FETCH:
         case PacketType.TYPE_POST_FETCH:
         case PacketType.TYPE_SERVER_ACK:
@@ -465,5 +470,14 @@ public class Worker extends ServerWorker
         default:
             throw new PacketFormatException("Invalid packet type " + pak.type);
         }
+    }
+
+    @Override
+    protected void notifyClient() 
+    {
+        Packet pak = new AES128Packet();
+        pak.type = PacketType.TYPE_LOGOUT;
+        pak.setLen(8);
+        issue(pak);
     }
 }

@@ -21,7 +21,7 @@ public interface PacketParser
         {
             return;
         }
-        parseObject(worker, pak, obj);
+        parseObject(worker, obj);
     }
 
     // checkstate->generate object->parse object
@@ -56,6 +56,5 @@ public interface PacketParser
         }
     }
 
-    public void parseObject(ServerWorker worker, Packet pak, 
-        ByteArrayIO obj);
+    public void parseObject(ServerWorker worker, ByteArrayIO obj);
 }

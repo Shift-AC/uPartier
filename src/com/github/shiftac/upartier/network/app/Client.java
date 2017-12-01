@@ -123,6 +123,7 @@ public class Client extends AbstractClient
             }
             break;
         case PacketType.TYPE_MESSAGE_PUSH:
+        case PacketType.TYPE_LOGOUT:
             // someone should provide me a way to notify the app that 
             // theres's an incoming message.
             break;
