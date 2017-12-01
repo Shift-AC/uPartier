@@ -3,19 +3,24 @@ package com.github.shiftac.upartier.data;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.ByteArrayIOList;
+import com.github.shiftac.upartier.network.Packet;
+import com.github.shiftac.upartier.network.app.Client;
 
 /**
  * Information about post.
  * 
  * when transferring as bytes using ByteArrayIO:
  * <pre>
- * struct Post
+ * class Post
  * {
  *     int id;
  *     int blockID;
+ *     int userID;
  *     long time;
  *     int userCount;
  *     BString name;
@@ -29,6 +34,7 @@ public class Post implements ByteArrayIO, PacketGenerator
 {
     public int id = 0;
     public int blockID = 0;
+    public int userID = 0;
     public BString name = null;
     public long time = 0;
     public BString label = null;
@@ -39,10 +45,18 @@ public class Post implements ByteArrayIO, PacketGenerator
     public int userCount = 0;
     public ArrayList<User> users = null;
 
+    public Post() {}
+
+    public Post(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
     @Override
     public int getLength()
     {
-        return SIZE_INT + SIZE_INT + SIZE_LONG + SIZE_INT +
+        return SIZE_INT * 4 + SIZE_LONG +
             name.getLength() + label.getLength() + place.getLength() +
             note.getLength();
     }
@@ -51,9 +65,10 @@ public class Post implements ByteArrayIO, PacketGenerator
     public void write(byte[] buf, int off, int len)
         throws IOException
     {
-        checkLen(len, SIZE_INT * 3 + SIZE_LONG);
+        checkLen(len, SIZE_INT * 4 + SIZE_LONG);
         setInt(buf, off, id);
         setInt(buf, off += SIZE_INT, blockID);
+        setInt(buf, off += SIZE_INT, userID);
         setLong(buf, off += SIZE_INT, time);
         setInt(buf, off += SIZE_LONG, userCount);
         name.write(buf, off += SIZE_INT, len -= SIZE_INT * 4 + SIZE_LONG);
@@ -66,9 +81,10 @@ public class Post implements ByteArrayIO, PacketGenerator
     public void read(byte[] buf, int off, int len)
         throws IOException
     {
-        checkLen(len, SIZE_INT * 3 + SIZE_LONG);
+        checkLen(len, SIZE_INT * 4 + SIZE_LONG);
         id = getInt(buf, off);
         blockID = getInt(buf, off += SIZE_INT);
+        userID = getInt(buf, off += SIZE_INT);
         time = getLong(buf, off += SIZE_INT);
         userCount = getInt(buf, off += SIZE_LONG);
         name.read(buf, off += SIZE_INT, len -= SIZE_INT * 3 + SIZE_LONG);
@@ -92,16 +108,47 @@ public class Post implements ByteArrayIO, PacketGenerator
      * @throws SocketTimeoutException if can't hear from server for
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchUserException if no such user exists.
+     * @throws NoSuchPostException if no such user exists.
      */
     public void fetchPostUserProfile()
-        throws IOException, SocketTimeoutException, NoSuchUserException
+        throws IOException, SocketTimeoutException, NoSuchUserException,
+        NoSuchPostException
     {
-        throw new IOException();
+        UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_ISSUE, this.id);
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_USER_FETCH:
+        {
+            User res = new User(pak);
+            this.postUser = res;
+            this.userID = res.id;
+            return;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRPOST:
+                throw new NoSuchPostException("Post #" + inf.id + 
+                    " not found.");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
-     * Try to fetch user list and last {@code count} messages for current 
-     * post. The messages will be stored in {@code messages} in reverse order.
+     * Try to fetch user list for current post. 
      * <p>
      * Current thread will <b>block</b> inside this call.
      * 
@@ -110,10 +157,46 @@ public class Post implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
      */
-    public void fetchBase(int count)
+    public void fetchUserList(int count)
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
-        throw new SocketTimeoutException();
+        UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_LIST, this.id);
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_USER_FETCH:
+        {
+            ByteArrayIOList<User> res = new ByteArrayIOList<User>(pak);
+            synchronized (users)
+            {
+                if (users == null)
+                {
+                    users = new ArrayList<User>();
+                }
+                users.addAll(Arrays.asList(res.arr));
+            }
+            break;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf(pak);
+            switch ((int)res.retval)
+            {
+                case ACKInf.RET_ERRIO:
+                    throw new IOException("Server IO exception.");
+                case ACKInf.RET_ERRPOST:
+                    throw new NoSuchPostException("Post #" + inf.id + 
+                        " not found.");
+                default:
+                    throw new IOException("Server returning unknown ack value("
+                        + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -126,10 +209,67 @@ public class Post implements ByteArrayIO, PacketGenerator
      * @throws SocketTimeoutException if can't hear from server for
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
+     * @throws PermissionException if {@code user} is not current user or 
+     * {@code user} hasn't join the post.
      */
-    public void fetchMessage(int count)
-        throws IOException, SocketTimeoutException, NoSuchPostException
+    public void fetchMessage(User user, int count)
+        throws IOException, SocketTimeoutException, NoSuchPostException,
+        PermissionException
     {
-        throw new SocketTimeoutException();
+        long token;
+        synchronized (messages)
+        {
+            if (messages == null)
+            {
+                token = 2147483647;
+            }
+            else
+            {
+                token = messages.get(messages.size() - 1).time;
+            }
+        }
+        MsgFetchInf inf = new MsgFetchInf(MsgFetchInf.POST, user.id, token,
+            this.id, count);
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_MESSAGE_FETCH:
+        {
+            ByteArrayIOList<MessageInf> res = 
+                new ByteArrayIOList<MessageInf>(pak);
+            synchronized (messages)
+            {
+                if (messages == null)
+                {
+                    messages = new ArrayList<MessageInf>();
+                }
+                messages.addAll(Arrays.asList(res.arr));
+            }
+            return;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf(pak);
+            switch ((int)res.retval)
+            {
+                case ACKInf.RET_ERRIO:
+                    throw new IOException("Server IO exception.");
+                case ACKInf.RET_ERRPOST:
+                    throw new NoSuchPostException("Post #" + inf.id + 
+                        " not found.");
+                case ACKInf.RET_ERRPERMISSION:
+                    throw new PermissionException("User #" + inf.user + 
+                        " have no permission to get message on post #" +
+                        inf.id + ".");
+                default:
+                    throw new IOException("Server returning unknown ack value("
+                        + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 }

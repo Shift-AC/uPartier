@@ -2,7 +2,9 @@ package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
 
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 /**
  * We notice that if the server wants to send an ACK, there's either a pending
@@ -12,24 +14,36 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * <p>
  * When transferring as byte array:
  * <pre>
- * struct ACKInf
+ * class ACKInf
  * {
- *     int retval;
- *     byte[4] reserved;
+ *     long retval;
  * }
  * </pre> 
  */
-public class ACKInf implements ByteArrayIO
+public class ACKInf implements ByteArrayIO, PacketGenerator
 {
     public static final int RET_SUCC = 0;
-    public static final int RET_ERRDATABASE = 1;
-    public static final int RET_ERRUSER = 2;
-    public static final int RET_ERRPOST = 3;
-    public static final int RET_ERRBLOCK = 4;
-    public static final int RET_ERRPERMISSION = 5;
-    public static final int RET_ERRIO = 6;
+    public static final int RET_ERRDATABASE = -1;
+    public static final int RET_ERRUSER = -2;
+    public static final int RET_ERRPOST = -3;
+    public static final int RET_ERRBLOCK = -4;
+    public static final int RET_ERRPERMISSION = -5;
+    public static final int RET_ERRIO = -6;
 
-    public int retval;
+    public long retval;
+
+    public ACKInf() {}
+
+    public ACKInf(long retval)
+    {
+        this.retval = retval;
+    }
+
+    public ACKInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
 
     @Override
     public int getLength()
@@ -42,7 +56,7 @@ public class ACKInf implements ByteArrayIO
         throws IOException
     {
         checkLen(len, getLength());
-        retval = getInt(buf, off);
+        retval = getLong(buf, off);
     }
 
     @Override
@@ -50,6 +64,12 @@ public class ACKInf implements ByteArrayIO
         throws IOException
     {
         checkLen(len, getLength());
-        setInt(buf, off, retval);
+        setLong(buf, off, retval);
+    }
+
+    @Override
+    public AES128Packet toPacket()
+    {
+        return new AES128Packet(this, PacketType.TYPE_SERVER_ACK);
     }
 }

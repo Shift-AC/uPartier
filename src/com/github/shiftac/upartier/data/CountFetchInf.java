@@ -19,7 +19,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * <p>
  * When transferring as byte array:
  * <pre>
- * struct CountFetchInf
+ * class CountFetchInf
  * {
  *     byte type;
  *     byte[3] reserved;

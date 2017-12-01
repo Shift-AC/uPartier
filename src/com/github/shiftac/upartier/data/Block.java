@@ -3,16 +3,20 @@ package com.github.shiftac.upartier.data;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.ByteArrayIOList;
+import com.github.shiftac.upartier.network.Packet;
+import com.github.shiftac.upartier.network.app.Client;
 
 /**
  * Information about post block.
  * 
  * when transferring as bytes using ByteArrayIO:
  * <pre>
- * struct Block
+ * class Block
  * {
  *     int id;
  *     int postCount;
@@ -27,6 +31,14 @@ public class Block implements ByteArrayIO, PacketGenerator
     public int postCount = 0;
     public ArrayList<Post> posts = null;
 
+    public Block() {}
+
+    public Block(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
     /**
      * Try to fetch all existing post blocks, the {@code Block} objects 
      * returned in this call will in <i>prefetched</i> state.
@@ -40,7 +52,32 @@ public class Block implements ByteArrayIO, PacketGenerator
     public static Block[] fetchBlocks()
         throws IOException, SocketTimeoutException
     {
-        throw new SocketTimeoutException();
+        BlockFetchInf inf = new BlockFetchInf(BlockFetchInf.ALL, 0);
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_BLOCK_FETCH:
+        {
+            ByteArrayIOList<Block> res = new ByteArrayIOList<Block>(pak);
+            return res.arr;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**
@@ -55,10 +92,61 @@ public class Block implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchBlockException if no such block exists.
      */
-    public void fetchPosts(int count, int id)
+    public void fetchPosts(int count)
         throws IOException, SocketTimeoutException, NoSuchBlockException
     {
-        throw new IOException();
+        long token;
+        synchronized (posts)
+        {
+            if (posts == null)
+            {
+                token = 2147483647;
+            }
+            else
+            {
+                token = posts.get(posts.size() - 1).id;
+            }
+        }
+        PostFetchInf inf = new PostFetchInf(PostFetchInf.BLOCK, 0, token,
+            id, count);
+        Packet pak = inf.toPacket();
+        pak = Client.client.issueWait(pak);
+        switch (pak.type)
+        {
+        case PacketType.TYPE_POST_FETCH:
+        {
+            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
+            res.read(pak);
+            synchronized (posts)
+            {
+                if (posts == null)
+                {
+                    posts = new ArrayList<Post>();
+                }
+                posts.addAll(Arrays.asList(res.arr));
+            }
+            return;
+        }
+        case PacketType.TYPE_SERVER_ACK:
+        {
+            ACKInf res = new ACKInf(pak);
+            res.read(pak);
+            switch ((int)res.retval)
+            {
+            case ACKInf.RET_ERRIO:
+                throw new IOException("Server IO exception.");
+            case ACKInf.RET_ERRBLOCK:
+                throw new NoSuchBlockException("Block #" + inf.user +
+                    " not found.");
+            default:
+                throw new IOException("Server returning unknown ack value("
+                    + res.retval + ")!");
+            }
+        }
+        default:
+            throw new IOException("Server returning unknown packet("
+                + pak.type + ")!");
+        }
     }
 
     /**

@@ -4,12 +4,28 @@ import java.io.IOException;
 
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 public class LoginInf implements ByteArrayIO, PacketGenerator
 {
     public int id = 0;
     public BString passwd = new BString();
     public boolean isNewUser = false;
+
+    public LoginInf() {}
+
+    public LoginInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
+
+    public LoginInf(int id, String passwd, boolean isNewUser)
+    {
+        this.id = id;
+        this.passwd.setContent(passwd);
+        this.isNewUser = isNewUser;
+    }
 
     @Override
     public void read(byte[] buf, int off, int len)

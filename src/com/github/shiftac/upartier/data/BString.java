@@ -13,11 +13,12 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * 
  * When transferring as bytes:
  * <pre>
- * struct BString
+ * class BString
  * {
  *    dword mlen;
  *    byte[mlen] mybytes;
  * }
+ * </pre>
  */
 public class BString implements ByteArrayIO
 {

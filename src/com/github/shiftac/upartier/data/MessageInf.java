@@ -2,14 +2,16 @@ package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
 
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 /**
  * Information about the message transferred.
  * <p>
  * When transferring as byte array:
  * <pre>
- * struct MessageInf
+ * class MessageInf
  * {
  *     int userID;
  *     int postID;
@@ -18,7 +20,7 @@ import com.github.shiftac.upartier.network.ByteArrayIO;
  * }
  * </pre>
  */
-public class MessageInf implements ByteArrayIO
+public class MessageInf implements ByteArrayIO, PacketGenerator
 {
     public static final int TYPE_TEXT = 0;
     public static final int TYPE_IMAGE = 1;
@@ -26,10 +28,18 @@ public class MessageInf implements ByteArrayIO
     public static final int TYPE_FILE = 3;
 
     public int userID = 0;
-    public int postID = 0;;
+    public int postID = 0;
     public byte type = 0;
     public long time = 0;
     public ByteArrayIO content = null;
+
+    public MessageInf() {}
+
+    public MessageInf(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
 
     @Override
     public int getLength()
@@ -55,7 +65,10 @@ public class MessageInf implements ByteArrayIO
             content = new Image();
             break;
         case TYPE_AUDIO:
+            content = new Audio();
+            break;
         case TYPE_FILE:
+            content = new GenericFile();
             break;
         default:
             throw new IOException("Unrecognized message type " + type);
@@ -75,5 +88,14 @@ public class MessageInf implements ByteArrayIO
         setNumber(buf, ++off, SIZE_LONG - SIZE_BYTE, time);
         content.write(buf, off += SIZE_LONG - SIZE_BYTE, 
             len -= SIZE_INT * 2 + SIZE_LONG);
+    }
+
+    /**
+     * Notice: user should set type field of packet manually.
+     */
+    @Override
+    public AES128Packet toPacket()
+    {
+        return new AES128Packet(this);
     }
 }

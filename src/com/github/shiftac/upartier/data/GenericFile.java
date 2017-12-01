@@ -1,13 +1,33 @@
 package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 
 public class GenericFile implements ByteArrayIO
 {
     public BString name = null;
     public byte[] payload = null;
     protected int type = ContentTypes.GENERAL;
+
+    public GenericFile() {}
+
+    public GenericFile(String name)
+        throws IOException
+    {
+        Path path = Paths.get(name);
+        this.payload = Files.readAllBytes(path);
+        this.name = new BString(name);
+    }
+
+    public GenericFile(Packet pak)
+        throws IOException
+    {
+        this.read(pak);
+    }
 
     @Override
     public void write(byte[] buf, int off, int len)

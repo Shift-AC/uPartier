@@ -10,11 +10,15 @@ import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.SynObject;
 
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.data.LoginInf;
 
 public abstract class ServerWorker extends AbstractWorker
 {
     protected AES128Key key = null;
     protected SynObject obj = new SynObject();
+    protected LoginInf current = null;
+    protected WorkerManager manager = null;
+    protected long seq = -1;
 
     @Override
     public void init(Socket s)
@@ -28,6 +32,14 @@ public abstract class ServerWorker extends AbstractWorker
         Util.log.logMessage(String.format(
             "Server Worker initialized for request from %s:%d", 
             s.getInetAddress().toString(), s.getPort()));
+    }
+
+    public void init(Socket s, WorkerManager manager, long seq)
+        throws IOException
+    {
+        init(s);
+        this.manager = manager;
+        this.seq = seq;
     }
 
     @Override
@@ -72,5 +84,22 @@ public abstract class ServerWorker extends AbstractWorker
             return 1;
         }
         return 0;
+    }
+
+    protected void notifyClient() {}
+
+    public void endSession()
+    {
+        synchronized (current)
+        {
+            if (current == null)
+            {
+                return;
+            }
+
+            notifyClient();
+
+            current = null;
+        }
     }
 }
