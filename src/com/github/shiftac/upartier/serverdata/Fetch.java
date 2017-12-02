@@ -1,4 +1,5 @@
 package com.github.shiftac.upartier.serverdata;
+import java.io.IOException;
 import java.sql.*;
 
 
@@ -14,8 +15,9 @@ public class Fetch {
      * Current thread will <b>block</b> inside this call.
      * 
      * @throws SQLException if SQLException occured when accessing database files
+	 * @throws IOException 
      */
-	static public Block[] fetchBlocks() throws SQLException {
+	static public Block[] fetchBlocks() throws SQLException, IOException {
 		Connection conn = null;
 		Statement stmt=null;
 		String sql;
@@ -32,6 +34,8 @@ public class Fetch {
 				 String name=rs.getString("BlockName");
 				 block[i].name=new BString(name);
 				 block[i].postCount=rs.getInt("PostCount");
+				 new getlist();
+				block[i].posts=getlist.getbpostlist(block[i].id);
 				 i++;
 				 }
 			 
@@ -95,8 +99,9 @@ public class Fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchUserException if no such user exists.
+	 * @throws IOException 
      */
-	static public Post[] fetchPostForUser(int userid, int postid, int count) throws SQLException,NoSuchUserException {
+	static public Post[] fetchPostForUser(int userid, int postid, int count) throws SQLException,NoSuchUserException, IOException {
 
 		Connection conn = null;
 		String sql,sql2;
@@ -129,6 +134,11 @@ public class Fetch {
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
 				 post[i].userID=rs.getInt("PostOwnerId");
+				 new getlist();
+				 post[i].messages=getlist.getpmlist(post[i].id);
+				 post[i].postUser=fetchProfile(post[i].userID);
+				 post[i].userCount=rs.getInt("UserCount");
+				 post[i].users=getlist.getpulist(post[i].id);
 				 i++;
 				 }
 			 
@@ -145,8 +155,9 @@ public class Fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
+	 * @throws IOException 
      */
-	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException{
+	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException, IOException{
 		User[] user=new User[20];
 		
 		Connection conn = null;
@@ -181,6 +192,11 @@ public class Fetch {
 	            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
 	            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 	            	 user[i].postCount=rs.getInt("PostCount");
+	            	 new getlist();
+	            	 user[i].myPosts=getlist.getupostlist(user[i].id);
+	            	 user[i].postCount=rs.getInt("PostCount");
+	            	 user[i].profile=new Image(rs.getString("Image"));
+	            	 
 	            	 
 	             }
 	             i++;
