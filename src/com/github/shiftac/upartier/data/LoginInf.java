@@ -59,4 +59,11 @@ public class LoginInf implements ByteArrayIO, PacketGenerator
     {
         return new AES128Packet(this, PacketType.TYPE_LOGIN);
     }
+
+    @Override
+    public String getInf()
+    {
+        return String.format("id=%d, passwd=%s, isNewUser=%b", id, passwd,
+            isNewUser);
+    }
 }

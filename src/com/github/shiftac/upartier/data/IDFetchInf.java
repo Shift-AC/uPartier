@@ -29,6 +29,12 @@ public abstract class IDFetchInf implements ByteArrayIO, PacketGenerator
     public int id;
 
     @Override
+    public String getInf()
+    {
+        return String.format("type=%d, id=%d", type, id);
+    }
+
+    @Override
     public int getLength()
     {
         return SIZE_INT + SIZE_INT;

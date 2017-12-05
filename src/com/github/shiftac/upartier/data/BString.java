@@ -110,6 +110,12 @@ public class BString implements ByteArrayIO
     }
 
     @Override
+    public String getInf()
+    {
+        return content;
+    }
+
+    @Override
     public int getLength()
     {
         synchronized (this)

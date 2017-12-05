@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.data.LoginInf;
+import com.github.shiftac.upartier.data.MessageInf;
 import com.github.shiftac.upartier.data.PacketType;
+import com.github.shiftac.upartier.data.Post;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
@@ -52,6 +55,7 @@ public class Client extends AbstractClient
         }
         int seq = pak.sequence;
         Thread current = Thread.currentThread();
+        Util.log.logVerbose("Waiting ACK for packet #" + seq);
         synchronized (this.bufLock)
         {
             waitBuf[seq] = current;
@@ -73,6 +77,7 @@ public class Client extends AbstractClient
         {
             res = recvBuf[seq];
         }
+        Util.log.logVerbose("Got ACK for packet #" + seq);
         return res;
     }
     
@@ -80,6 +85,9 @@ public class Client extends AbstractClient
     protected void parseOut(Packet pak)
         throws IOException, PacketFormatException
     {
+        Util.log.logMessage(String.format(
+            "Parsing send package #%d with type=%d", pak.sequence, pak.type));
+
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
@@ -91,17 +99,18 @@ public class Client extends AbstractClient
         case PacketType.TYPE_POST_MODIFY:
         case PacketType.TYPE_MESSAGE_FETCH:
             pak.write(os);
+            Util.log.logMessage("Package #" + pak.sequence + " sent.");   
             break;
         default:
             throw new PacketFormatException("Invalid packet type " + pak.type);
         }
-        
     }
 
     @Override
     protected void parseIn(Packet pak)
         throws IOException, PacketFormatException
     {
+        Util.log.logMessage("Parsing incoming package with type=" + pak.type);
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
@@ -111,6 +120,8 @@ public class Client extends AbstractClient
         case PacketType.TYPE_SERVER_ACK:
             int ack = pak.ack;
             Thread waiting;
+            Util.log.logVerbose(String.format("Got ACK for pending packet #%d.", 
+                pak.ack));
             synchronized (this.bufLock)
             {
                 recvBuf[ack] = pak;
@@ -123,34 +134,37 @@ public class Client extends AbstractClient
             }
             break;
         case PacketType.TYPE_MESSAGE_PUSH:
-        case PacketType.TYPE_LOGOUT:
             // someone should provide me a way to notify the app that 
             // theres's an incoming message.
+            // callback function specification:
+            // class ?
+            // /**
+            //  * Parse and try to display an incoming message that someone 
+            //  * issued in a post.
+            //  * 
+            //  * This method should <b>never</b> throw an exception, instead,
+            //  * it should try to distinguish the type of exception happening
+            //  * and generate a report for the user to know about.
+            //  */
+            // static void parseIncomingMsg(MessageInf inf)
+            try
+            {
+                MessageInf inf = new MessageInf(pak);
+                Util.log.logMessage(String.format(
+                    "User #%d issued a message in post #%d with type=%d",
+                    inf.postID, inf.userID, inf.type));
+                Post.parseIncomingMessage(inf);
+            }
+            catch (IOException ioe)
+            {
+                Util.log.logWarning("Server sending unrecognizable message.");
+            }
+            break;
+        case PacketType.TYPE_LOGOUT:
             break;
         default:
             throw new PacketFormatException("Invalid packet type " + pak.type);
         }
-    }
-
-    @Override
-    protected int synchronize()
-    {
-        int syn = super.synchronize();
-        if (syn != 0)
-        {
-            return syn;
-        }
-
-        try
-        {
-            parseOut(new AES128Packet(inf));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return 1;
-        }
-        return 0;
     }
 
     static

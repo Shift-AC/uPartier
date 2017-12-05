@@ -19,6 +19,12 @@ public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
     }
 
     @Override
+    public String getInf()
+    {
+        return String.format("type=%s, len=%d", arr.toString(), arr.length);
+    }
+
+    @Override
     public int getLength()
     {
         int sum = 0;

@@ -52,8 +52,7 @@ public abstract class ServerWorker extends AbstractWorker
             is.read(buf);
             obj.id = obj.getInt(buf, 0);
             obj.mili = obj.getLong(buf, ByteArrayIO.SIZE_INT);
-            Util.log.logVerbose(String.format(
-                "Got userID=%d, timestamp=%d", obj.id, obj.mili), 2);
+            Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             obj.setInt(buf, ByteArrayIO.SIZE_INT + ByteArrayIO.SIZE_LONG,
                 obj.ip);
             Util.log.logVerbose(String.format("Set ip=%d", obj.ip), 2);
@@ -62,9 +61,7 @@ public abstract class ServerWorker extends AbstractWorker
             is.read(buf);
             SynObject tobj = new SynObject();
             tobj.read(buf);
-            Util.log.logVerbose(String.format(
-                "Got userID=%d, timestamp=%d, ip=%d", tobj.id, tobj.mili,
-                tobj.ip), 2);
+            Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             if (obj.id != tobj.id || obj.mili != tobj.mili || 
                 obj.ip != tobj.ip)
             {

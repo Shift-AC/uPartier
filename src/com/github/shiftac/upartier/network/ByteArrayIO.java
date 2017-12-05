@@ -65,6 +65,7 @@ public interface ByteArrayIO
      * previously).
      */
     public int getLength();
+    public String getInf();
     public default byte[] toByteArray()
     {
         byte[] res = new byte[getLength()];

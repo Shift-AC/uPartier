@@ -72,4 +72,10 @@ public class ACKInf implements ByteArrayIO, PacketGenerator
     {
         return new AES128Packet(this, PacketType.TYPE_SERVER_ACK);
     }
+
+    @Override
+    public String getInf()
+    {
+        return String.format("retval=%d", retval);
+    }
 }

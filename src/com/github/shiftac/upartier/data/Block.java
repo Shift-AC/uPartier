@@ -5,6 +5,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.ByteArrayIOList;
@@ -27,7 +28,7 @@ import com.github.shiftac.upartier.network.app.Client;
 public class Block implements ByteArrayIO, PacketGenerator
 {
     public int id = 0;
-    public BString name = null;
+    public BString name = new BString();
     public int postCount = 0;
     public ArrayList<Post> posts = null;
 
@@ -37,6 +38,13 @@ public class Block implements ByteArrayIO, PacketGenerator
         throws IOException
     {
         this.read(pak);
+    }
+
+    @Override
+    public String getInf()
+    {
+        return String.format("id=%d, name=%s, portCount=%d", 
+            id, name.toString(), postCount);
     }
 
     /**
@@ -54,12 +62,18 @@ public class Block implements ByteArrayIO, PacketGenerator
     {
         BlockFetchInf inf = new BlockFetchInf(BlockFetchInf.ALL, 0);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching block: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_BLOCK_FETCH:
         {
             ByteArrayIOList<Block> res = new ByteArrayIOList<Block>(pak);
+            Util.log.logVerbose("Success. result:");
+            for (int i = 0; i < res.arr.length; ++i)
+            {
+                Util.log.logVerbose("  ->" + res.arr[i].getInf());
+            }
             return res.arr;
         }
         case PacketType.TYPE_SERVER_ACK:
@@ -110,6 +124,7 @@ public class Block implements ByteArrayIO, PacketGenerator
         PostFetchInf inf = new PostFetchInf(PostFetchInf.BLOCK, 0, token,
             id, count);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching posts: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
@@ -124,6 +139,11 @@ public class Block implements ByteArrayIO, PacketGenerator
                     posts = new ArrayList<Post>();
                 }
                 posts.addAll(Arrays.asList(res.arr));
+            }
+            Util.log.logVerbose("Success. result:");
+            for (int i = 0; i < res.arr.length; ++i)
+            {
+                Util.log.logVerbose("  ->" + res.arr[i].getInf());
             }
             return;
         }

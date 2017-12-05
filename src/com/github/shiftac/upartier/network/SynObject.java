@@ -15,6 +15,12 @@ public class SynObject implements ByteArrayIO
     }
 
     @Override
+    public String getInf()
+    {
+        return String.format("id=%d, mili=%d, ip=%d", id, mili, ip);
+    }
+
+    @Override
     public void write(byte[] buf, int off, int len)
         throws IOException
     {
