@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.data.ACKInf;
+import com.github.shiftac.upartier.data.Block;
 import com.github.shiftac.upartier.data.LoginInf;
 import com.github.shiftac.upartier.data.MessageInf;
 import com.github.shiftac.upartier.data.PacketType;
@@ -184,6 +186,10 @@ public class Client extends AbstractClient
 
     public static void main(String[] args)
     {
+        User currentuser;
+        TreeMap<Integer, Block> blockCache = new TreeMap<Integer, Block>();
+        TreeMap<Integer, Post> postCache = new TreeMap<Integer, Post>();
+        TreeMap<Integer, User> userCache = new TreeMap<Integer, User>();
         try
         {
             client.start();
@@ -220,6 +226,9 @@ public class Client extends AbstractClient
                     pak = new AES128Packet();
                     pak.setLen(8);
                     pak.type = PacketType.TYPE_LOGOUT;
+                    break;
+                case 'u':
+                    
                     break;
                 default:
                     break;
