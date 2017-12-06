@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.ByteArrayIOList;
@@ -40,10 +42,11 @@ public class User implements ByteArrayIO, PacketGenerator
     public int id = 0;
     public int age = 0;
     public int gender = Gender.unknown;
-    public BString mailAccount = null;
-    public BString nickname = null;
+    public BString mailAccount = new BString();
+    public BString nickname = new BString();
     public Image profile = null;
     public int postCount = 0;
+    public AtomicBoolean myPostsLock = new AtomicBoolean(false);
     public ArrayList<Post> myPosts = null;
 
     public User() {}
@@ -52,6 +55,14 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException
     {
         this.read(pak);
+    }
+
+    @Override
+    public String getInf()
+    {
+        return String.format("id=%d, age=%d, gender=%d, mailAccount=%s, " +
+            "nickname=%s, postCount=%d", id, age, gender, 
+            mailAccount.toString(), nickname.toString(), postCount);
     }
 
     public void setMailAccount(String mail)
@@ -81,12 +92,14 @@ public class User implements ByteArrayIO, PacketGenerator
     {
         Client.client.init(inf);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Attempting to login: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
         {
             User res = new User(pak);
+            Util.log.logVerbose("Success. result: " + res.getInf());
             return res;
         }
         case PacketType.TYPE_SERVER_ACK:
@@ -124,6 +137,8 @@ public class User implements ByteArrayIO, PacketGenerator
     {
         Packet pak = new AES128Packet();
         ((AES128Packet)pak).setLen(8);
+        pak.type = PacketType.TYPE_LOGOUT;
+        Util.log.logVerbose("Attempting to logout.");
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
@@ -133,6 +148,7 @@ public class User implements ByteArrayIO, PacketGenerator
             {
             case ACKInf.RET_SUCC:
                 Client.client.terminate();
+                Util.log.logVerbose("Success.");
                 return;
             case ACKInf.RET_ERRIO:
                 throw new IOException("Server IO exception.");
@@ -163,12 +179,14 @@ public class User implements ByteArrayIO, PacketGenerator
     {
         UserFetchInf inf = new UserFetchInf(UserFetchInf.ID, id);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching user: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_USER_FETCH:
         {
             User res = new User(pak);
+            Util.log.logVerbose("Success. result: " + res.getInf());
             return res;
         }
         case PacketType.TYPE_SERVER_ACK:
@@ -208,6 +226,7 @@ public class User implements ByteArrayIO, PacketGenerator
     {
         Packet pak = this.toPacket();
         pak = Client.client.issueWait(pak);
+        Util.log.logVerbose("Modifying profile: " + this.getInf());
         switch (pak.type)
         {
         case PacketType.TYPE_SERVER_ACK:
@@ -216,6 +235,7 @@ public class User implements ByteArrayIO, PacketGenerator
             switch ((int)res.retval)
             {
             case ACKInf.RET_SUCC:
+                Util.log.logVerbose("Success. Result: " + this.getInf());
                 return;
             case ACKInf.RET_ERRIO:
                 throw new IOException("Server IO exception.");
@@ -248,7 +268,7 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         long token;
-        synchronized (myPosts)
+        synchronized (myPostsLock)
         {
             if (myPosts == null)
             {
@@ -262,19 +282,25 @@ public class User implements ByteArrayIO, PacketGenerator
         PostFetchInf inf = new PostFetchInf(PostFetchInf.USER, this.id, token,
             0, count);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching posts: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_POST_FETCH:
         {
             ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
-            synchronized (myPosts)
+            synchronized (myPostsLock)
             {
                 if (myPosts == null)
                 {
                     myPosts = new ArrayList<Post>();
                 }
                 myPosts.addAll(Arrays.asList(res.arr));
+            }
+            Util.log.logVerbose("Success. result:");
+            for (int i = 0; i < res.arr.length; ++i)
+            {
+                Util.log.logVerbose("  ->" + res.arr[i].getInf());
             }
             return;
         }
@@ -316,13 +342,14 @@ public class User implements ByteArrayIO, PacketGenerator
         post.postUser = this;
         post.userID = this.id;
         Packet pak = post.toPacket();
+        Util.log.logVerbose("Issuing post: " + post.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_POST_MODIFY:
         {
             post.read(pak);
-            synchronized (myPosts)
+            synchronized (myPostsLock)
             {
                 if (myPosts == null)
                 {
@@ -330,6 +357,7 @@ public class User implements ByteArrayIO, PacketGenerator
                 }
                 myPosts.add(0, post);
             }
+            Util.log.logVerbose("Success. result: " + post.getInf());
             return;
         }
         case PacketType.TYPE_SERVER_ACK:
@@ -379,6 +407,7 @@ public class User implements ByteArrayIO, PacketGenerator
         message.userID = this.id;
         Packet pak = message.toPacket();
         pak.type = PacketType.TYPE_MESSAGE_PUSH;
+        Util.log.logVerbose("Sending message: " + message.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
@@ -403,7 +432,7 @@ public class User implements ByteArrayIO, PacketGenerator
                 if (res.retval > 0)
                 {
                     message.time = res.retval;
-                    synchronized (post.messages)
+                    synchronized (post.messagesLock)
                     {
                         if (post.messages == null)
                         {
@@ -412,6 +441,7 @@ public class User implements ByteArrayIO, PacketGenerator
                         // this is ugly and inefficient. fix this later.
                         post.messages.add(0, message);
                     }
+                    Util.log.logVerbose("Success. result: " + message.getInf());
                     return;
                 }
                 else
@@ -443,6 +473,7 @@ public class User implements ByteArrayIO, PacketGenerator
     {
         PostJoinInf inf = new PostJoinInf(post.id, this.id);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Joining post: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
@@ -451,6 +482,9 @@ public class User implements ByteArrayIO, PacketGenerator
             ACKInf res = new ACKInf(pak);
             switch ((int)res.retval)
             {
+            case ACKInf.RET_SUCC:
+                Util.log.logVerbose("Success.");
+                return;
             case ACKInf.RET_ERRIO:
                 throw new IOException("Server IO exception.");
             case ACKInf.RET_ERRPOST:

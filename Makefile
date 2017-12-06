@@ -1,13 +1,12 @@
 # Auto generated file, modify if you want to add functions.
 
-JAVALIBWIN := test:upartier.jar:lib/org.json.jar:/lib/jce.jar:/lib/sunjce_provider.jar
-JAVALIBLINUX := $(subst :,;,$(JAVALIBWIN))
-JAVALIB := $(JAVALIBWIN);$(JAVALIBLINUX)
+CPWIN := upartier.jar:lib/org.json.jar:/lib/jce.jar:/lib/sunjce_provider.jar
+CPLINUX := $(subst :,;,$(CPWIN))
+CP := $(CPWIN);$(CPLINUX)
 
 .PHONY: all
 all: clean init
 	make -C src TARGET=../bin
-	-make -C test
 	make jar
 
 .PHONY: init
@@ -17,9 +16,14 @@ init:
 
 .PHONY: jar
 jar:
-	cp bin/com . -r
+	cp Makefile bin/Makefile
+	make -C bin dojar
+	mv bin/upartier.jar ./upartier.jar
+	rm bin/Makefile
+
+.PHONY: dojar
+dojar:
 	jar cf upartier.jar com/
-	rm com -r
 
 .PHONY: javadoc
 javadoc:
@@ -35,10 +39,13 @@ README: README.md
 	pandoc README.md --latex-engine=xelatex -o README.pdf
 
 runServerDemo:
-	java -cp "$(JAVALIB)" TestServer
+	java -cp "$(CP)" com.github.shiftac.upartier.network.demo.EchoServer
 
 runClientDemo:
-	java -cp "$(JAVALIB)" TestClient
+	java -cp "$(CP)" com.github.shiftac.upartier.network.demo.EchoClient
 
-runServer:
-	java -cp "$(JAVALIB)" com.github.shiftac.upartier.network.server.Server
+runServerTest:
+	java -cp "$(CP)" com.github.shiftac.upartier.network.server.Server
+
+runClientTest:
+	java -cp "$(CP)"  com.github.shiftac.upartier.network.app.Client

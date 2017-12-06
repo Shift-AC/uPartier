@@ -26,6 +26,12 @@ public class PostJoinInf implements ByteArrayIO, PacketGenerator
     }
 
     @Override
+    public String getInf()
+    {
+        return String.format("postID=%d, userID=%d", postID, userID);
+    }
+
+    @Override
     public int getLength()
     {
         return SIZE_INT * 2;

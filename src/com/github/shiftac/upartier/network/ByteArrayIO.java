@@ -65,6 +65,7 @@ public interface ByteArrayIO
      * previously).
      */
     public int getLength();
+    public String getInf();
     public default byte[] toByteArray()
     {
         byte[] res = new byte[getLength()];
@@ -97,7 +98,7 @@ public interface ByteArrayIO
     public default void checkLen(int len, int need)
         throws IOException
     {
-        if (need < len)
+        if (len < need)
         {
             throw new IOException(String.format(
                 "No enough buffer space(%d), expected %d.", len, need));

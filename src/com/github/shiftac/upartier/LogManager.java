@@ -61,6 +61,11 @@ public class LogManager
             log(msg, LOG_VERBOSE);
         }
     }
+    
+    public void logVerbose(String msg)
+    {
+        logVerbose(msg, 1);
+    }
 
     public void logMessage(String msg)
     {
@@ -95,6 +100,8 @@ public class LogManager
             mili = mili % 1000;
             prefix.append(String.format("(%7d.%03d)", sec, mili));
         }
+        prefix.append(' ');
+        prefix.append(Thread.currentThread().toString());
         prefix.append(": ");
         prefix.append(msg);
         return prefix.toString();

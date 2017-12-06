@@ -2,6 +2,7 @@ package com.github.shiftac.upartier.data;
 
 import java.io.IOException;
 
+import com.github.shiftac.upartier.LogManager;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.Packet;
@@ -40,11 +41,71 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
     {
         this.read(pak);
     }
-
+    
     @Override
     public int getLength()
     {
         return SIZE_INT * 3 + content.getLength();
+    }
+
+    @Override
+    public String getInf()
+    {
+        return String.format(
+            "userID=%d, postID=%d, type=%d, time=%d, content.inf=%s",
+            userID, postID, type, time, content.getInf());
+    }
+
+    /**
+     * Construct a text message, the {@code time} field will be set to current
+     * time.
+     */
+    public MessageInf(String content, int userID, int postID)
+    {
+        this.content = new BString(new String(content));
+        this.userID = userID;
+        this.postID = postID;
+        this.type = TYPE_TEXT;
+        this.time = LogManager.calendar.getTimeInMillis();
+    }
+
+    /**
+     * Construct a image message, the {@code time} field will be set to current
+     * time.
+     */
+    public MessageInf(Image content, int userID, int postID)
+    {
+        this.content = content;
+        this.userID = userID;
+        this.postID = postID;
+        this.type = TYPE_TEXT;
+        this.time = LogManager.calendar.getTimeInMillis();
+    }
+
+    /**
+     * Construct a audio message, the {@code time} field will be set to current
+     * time.
+     */
+    public MessageInf(Audio content, int userID, int postID)
+    {
+        this.content = content;
+        this.userID = userID;
+        this.postID = postID;
+        this.type = TYPE_TEXT;
+        this.time = LogManager.calendar.getTimeInMillis();
+    }
+
+    /**
+     * Construct a file message, the {@code time} field will be set to current
+     * time.
+     */
+    public MessageInf(GenericFile content, int userID, int postID)
+    {
+        this.content = content;
+        this.userID = userID;
+        this.postID = postID;
+        this.type = TYPE_TEXT;
+        this.time = LogManager.calendar.getTimeInMillis();
     }
 
     @Override

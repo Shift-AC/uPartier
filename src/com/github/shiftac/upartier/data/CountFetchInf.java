@@ -39,6 +39,13 @@ public abstract class CountFetchInf implements ByteArrayIO, PacketGenerator
     public int user;
 
     @Override
+    public String getInf()
+    {
+        return String.format("type=%d, id=%d, count=%d, token=%d, user=%d", 
+            type, id, count, token, user);
+    }
+
+    @Override
     public int getLength()
     {
         return SIZE_INT * 4 + SIZE_LONG;

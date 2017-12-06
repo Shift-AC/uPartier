@@ -48,8 +48,7 @@ public abstract class AbstractClient extends AbstractWorker
             obj.mili = LogManager.calendar.getTimeInMillis();
             long mili = obj.mili;
             byte[] buf = obj.toByteArray();
-            Util.log.logVerbose(String.format(
-                "Set userID=%d, timestamp=%d", obj.id, obj.mili), 2);
+            Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             String host = Util.getStringConfig("/network/server/Server/host");
             int port = Util.getIntConfig("/network/server/Server/port");
             init(new Socket(host, port));
@@ -57,9 +56,7 @@ public abstract class AbstractClient extends AbstractWorker
             os.flush();
             is.read(buf);
             obj.read(buf);
-            Util.log.logVerbose(String.format(
-                "Got userID=%d, timestamp=%d, ip=%d", obj.id, obj.mili,
-                obj.ip), 2);
+            Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             if (obj.id != obj.id || mili != obj.mili)
             {
                 s.close();

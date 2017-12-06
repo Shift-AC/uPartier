@@ -21,6 +21,12 @@ public class PlainMessage implements ByteArrayIO
     }
 
     @Override
+    public String getInf()
+    {
+        return new String(sbuf);
+    }
+
+    @Override
     public void read(byte[] buf, int off, int len) throws IOException
     {
         sbuf = new byte[buf.length - len];

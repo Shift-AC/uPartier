@@ -1,4 +1,5 @@
 package com.github.shiftac.upartier.serverdata;
+import java.io.IOException;
 import java.sql.*;
 
 
@@ -14,8 +15,9 @@ public class Fetch {
      * Current thread will <b>block</b> inside this call.
      * 
      * @throws SQLException if SQLException occured when accessing database files
+	 * @throws IOException 
      */
-	static public Block[] fetchBlocks() throws SQLException {
+	static public Block[] fetchBlocks() throws SQLException, IOException {
 		Connection conn = null;
 		Statement stmt=null;
 		String sql;
@@ -32,6 +34,8 @@ public class Fetch {
 				 String name=rs.getString("BlockName");
 				 block[i].name=new BString(name);
 				 block[i].postCount=rs.getInt("PostCount");
+				 new getlist();
+				block[i].posts=getlist.getbpostlist(block[i].id);
 				 i++;
 				 }
 			 
@@ -95,8 +99,9 @@ public class Fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchUserException if no such user exists.
+	 * @throws IOException 
      */
-	static public Post[] fetchPostForUser(int userid, int postid, int count) throws SQLException,NoSuchUserException {
+	static public Post[] fetchPostForUser(int userid, int postid, int count) throws SQLException,NoSuchUserException, IOException {
 
 		Connection conn = null;
 		String sql,sql2;
@@ -129,6 +134,11 @@ public class Fetch {
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
 				 post[i].userID=rs.getInt("PostOwnerId");
+				 new getlist();
+				 post[i].messages=getlist.getpmlist(post[i].id);
+				 post[i].postUser=fetchProfile(post[i].userID);
+				 post[i].userCount=rs.getInt("UserCount");
+				 post[i].users=getlist.getpulist(post[i].id);
 				 i++;
 				 }
 			 
@@ -145,8 +155,9 @@ public class Fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
+	 * @throws IOException 
      */
-	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException{
+	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException, IOException{
 		User[] user=new User[20];
 		
 		Connection conn = null;
@@ -181,6 +192,11 @@ public class Fetch {
 	            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
 	            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 	            	 user[i].postCount=rs.getInt("PostCount");
+	            	 new getlist();
+	            	 user[i].myPosts=getlist.getupostlist(user[i].id);
+	            	 user[i].postCount=rs.getInt("PostCount");
+	            	 user[i].profile=new Image(rs.getString("Image"));
+	            	 
 	            	 
 	             }
 	             i++;
@@ -268,17 +284,43 @@ public class Fetch {
 			//post.users
 			//post.messages
 			//post.users
-		    stmt.executeQuery(sql);
+		    stmt.execute(sql);
 		    for( User postuser:post.users)
 		    {
 		    	 sql="insert into upartier.userpost(UserId,PostId) value(?,?)";
-		    	 PreparedStatement stmt1=conn.prepareStatement(sql);
+		    	 stmt=conn.prepareStatement(sql);
 		    	 stmt.setInt(1, postuser.id);
 		    	 stmt.setInt(2, post.id);
 		    	 stmt.execute(sql);
 		    }
+		    sql="insert into upartier.blockpost(BlockId,PostId) value(?,?)";
+		    stmt=conn.prepareStatement(sql);
+		    stmt.setInt(1, post.blockID);
+		    stmt.setInt(2, post.id);
+		    stmt.execute(sql);
+		    sql="select PostCount from upartier.user where UserId=?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, post.userID);
+			ResultSet rs = stmt.executeQuery(sql);
+			int mypostcount =rs.getInt("PostCount");
+			mypostcount=mypostcount+1;
+		    sql="update upartier.user set PostCount=? where UserId=?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, mypostcount);
+			stmt.setInt(2, post.userID);
+			stmt.execute(sql);
+			sql="select PostCount from upartier.block where BlockId=?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, post.blockID);
+			rs = stmt.executeQuery(sql);
+			mypostcount =rs.getInt("PostCount");
+			mypostcount=mypostcount+1;
+		    sql="update upartier.user set PostCount=? where BlockId=?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, mypostcount);
+			stmt.setInt(2, post.blockID);
+			stmt.execute(sql);
 		   
-		    
 			 stmt.close();
 			 conn.close();
 			
@@ -294,9 +336,10 @@ public class Fetch {
 	     * @throws NoSuchPostException if no such post exists.
 	     * @throws PermissionException if current user can't send message on this 
 	     * post.
+		 * @throws IOException 
 	     */
 		static public User[] sendMessage(int userid, int postid, MessageInf message) 
-				throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException{
+				throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException, IOException{
 			 User[] user=new User[30];
 			 int i=0;
 			 Connection conn = null;
@@ -327,7 +370,11 @@ public class Fetch {
 		            	 user[i].id=rs.getInt("UserId");
 		            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
 		            	 user[i].nickname=new BString(rs.getString("UserNickName"));
-		            	 user[i].postCount=rs.getInt("PostCount");					
+		            	 user[i].postCount=rs.getInt("PostCount");			
+		            	 new getlist();
+		            	 user[i].myPosts=getlist.getupostlist(user[i].id);
+		            	 user[i].postCount=rs.getInt("PostCount");
+		            	 user[i].profile=new Image(rs.getString("Image"));
 					}
 		
 						sql="insert into upartier.messageinf(PostId,UserId,Type,Time) values(?,?,?,?)";
@@ -350,8 +397,9 @@ public class Fetch {
 	     * @throws SQLException if SQLException occured when accessing database files.
 	     * @throws NoSuchUserException if no such user exists.
 	     * @throws NoSuchPostException if no such post exists.
+		 * @throws IOException 
 	     */
-		static public void join(int userid,int postid) throws SQLException, NoSuchUserException, NoSuchPostException{
+		static public void join(int userid,int postid) throws SQLException, NoSuchUserException, NoSuchPostException, IOException{
 			 Connection conn = null;
 				String sql;
 				System.out.println("connecting to database....");
@@ -373,6 +421,38 @@ public class Fetch {
 					stmt.setInt(1, mypostcount);
 					stmt.setInt(2, userid);
 					stmt.execute(sql);
+					sql="select UserCount from upartier.post where PostId=?";
+					stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, postid);
+					rs = stmt.executeQuery(sql);
+					int myusercount =rs.getInt("UserCount");
+					myusercount=myusercount+1;
+					sql="update upartier.post set UserCount=? where PostId=?";
+					stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, myusercount);
+					stmt.setInt(2, postid);
+					stmt.execute(sql);
+					/*sql="select * from upartier.post where PostId=?";
+					stmt=conn.prepareStatement(sql);
+					stmt.setInt(1, postid);
+					ResultSet rs2 = stmt.executeQuery(sql);
+					Post post=new Post();
+					 new getlist();
+					while(rs2.next()) {
+						post.blockID=rs2.getInt("BlockId");
+						post.label=new BString (rs2.getString("PostLabel"));
+						post.name=new BString(rs2.getString("PostName"));
+						post.note=new BString(rs2.getString("PostNote"));
+						post.place=new BString(rs2.getString("PostPlace"));
+						post.time=rs2.getLong("Time");
+						post.userCount=rs2.getInt("UserCount");
+						post.userID=rs.getInt("PostOwnerId");
+						post.messages=getlist.getpmlist(post.id);
+						new Fetch();
+						post.postUser=Fetch.fetchProfile(post.userID);
+						post.users=getlist.getpulist(post.id);
+					}*/
+
 		}
 	
 		 /**
@@ -381,8 +461,9 @@ public class Fetch {
 	     * Current thread will <b>block</b> inside this call.
 	     *
 	     * @throws SQLException if SQLException occured when accessing database files.
+		 * @throws IOException 
 	     */
-	   public static User fetchProfile(int id) throws SQLException{
+	   public static User fetchProfile(int id) throws SQLException, IOException{
 	    	User user=new User();
 	    	 Connection conn = null;
 				String sql;
@@ -399,6 +480,10 @@ public class Fetch {
         	 user.mailAccount=new BString(rs.getString("MailAccount"));
         	 user.nickname=new BString(rs.getString("UserNickName"));
         	 user.postCount=rs.getInt("PostCount");
+        	 new getlist();
+        	 user.myPosts=getlist.getupostlist(user.id);
+        	 user.postCount=rs.getInt("PostCount");
+        	 user.profile=new Image(rs.getString("Image"));
 	    	
 		   return user;
 	    }
@@ -409,8 +494,9 @@ public class Fetch {
 	     * Current thread will <b>block</b> inside this call.
 	     *
 	     * @throws SQLException if SQLException occured when accessing database files.
+	 * @throws IOException 
 	     */
-	   public static User fetchIssuerProfile(int id)throws SQLException{
+	   public static User fetchIssuerProfile(int id)throws SQLException, IOException{
 	    	User user = new User();
 	    	Connection conn = null;
 			String sql;
@@ -432,6 +518,10 @@ public class Fetch {
     	 user.mailAccount=new BString(rs.getString("MailAccount"));
     	 user.nickname=new BString(rs.getString("UserNickName"));
     	 user.postCount=rs.getInt("PostCount");    	
+    	 new getlist();
+    	 user.myPosts=getlist.getupostlist(user.id);
+    	 user.postCount=rs.getInt("PostCount");
+    	 user.profile=new Image(rs.getString("Image"));
 	    	return user;
 	    	}
 	   
@@ -449,14 +539,15 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="update upartier.user set Age=? Gender=? PostCount=? MailAccount=? NickName=? where UserId=?";
+				sql="update upartier.user set Age=? Gender=? PostCount=? MailAccount=? NickName=?  Image=? where UserId=?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, u.age);
 				stmt.setInt(2, u.gender);
 				stmt.setInt(3, u.postCount);
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
-				stmt.setInt(6, u.id);
+				stmt.setString(6, u.profile.name.toString());
+				stmt.setInt(7, u.id);
 				stmt.execute(sql);
 	    }
 	}

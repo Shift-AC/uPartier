@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 import com.github.shiftac.upartier.network.ByteArrayIOList;
@@ -35,14 +37,16 @@ public class Post implements ByteArrayIO, PacketGenerator
     public int id = 0;
     public int blockID = 0;
     public int userID = 0;
-    public BString name = null;
+    public BString name = new BString();
     public long time = 0;
-    public BString label = null;
-    public BString place = null;
-    public BString note = null;
+    public BString label = new BString();
+    public BString place = new BString();
+    public BString note = new BString();
     public User postUser = null;
+    public AtomicBoolean messagesLock = new AtomicBoolean(false);
     public ArrayList<MessageInf> messages = null;
     public int userCount = 0;
+    public AtomicBoolean usersLock = new AtomicBoolean(false);
     public ArrayList<User> users = null;
 
     public Post() {}
@@ -51,6 +55,14 @@ public class Post implements ByteArrayIO, PacketGenerator
         throws IOException
     {
         this.read(pak);
+    }
+
+    @Override
+    public String getInf()
+    {
+        return String.format("id=%d, blockID=%d, userID=%d, name=%s, time=%d," +
+        " label=%s, place=%s, note=%s, userCount=%d", id, blockID, userID, 
+        name.toString(), label.toString(), note.toString(), userCount);
     }
 
     @Override
@@ -116,6 +128,7 @@ public class Post implements ByteArrayIO, PacketGenerator
     {
         UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_ISSUE, this.id);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching profile: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
@@ -124,6 +137,7 @@ public class Post implements ByteArrayIO, PacketGenerator
             User res = new User(pak);
             this.postUser = res;
             this.userID = res.id;
+            Util.log.logVerbose("Success. Result: " + res.getInf());
             return;
         }
         case PacketType.TYPE_SERVER_ACK:
@@ -162,19 +176,25 @@ public class Post implements ByteArrayIO, PacketGenerator
     {
         UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_LIST, this.id);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching user list: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
         case PacketType.TYPE_USER_FETCH:
         {
             ByteArrayIOList<User> res = new ByteArrayIOList<User>(pak);
-            synchronized (users)
+            synchronized (usersLock)
             {
                 if (users == null)
                 {
                     users = new ArrayList<User>();
                 }
                 users.addAll(Arrays.asList(res.arr));
+            }
+            Util.log.logVerbose("Success. result:");
+            for (int i = 0; i < res.arr.length; ++i)
+            {
+                Util.log.logVerbose("  ->" + res.arr[i].getInf());
             }
             break;
         }
@@ -217,7 +237,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         PermissionException
     {
         long token;
-        synchronized (messages)
+        synchronized (messagesLock)
         {
             if (messages == null)
             {
@@ -231,6 +251,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         MsgFetchInf inf = new MsgFetchInf(MsgFetchInf.POST, user.id, token,
             this.id, count);
         Packet pak = inf.toPacket();
+        Util.log.logVerbose("Fetching messages: " + inf.getInf());
         pak = Client.client.issueWait(pak);
         switch (pak.type)
         {
@@ -238,13 +259,18 @@ public class Post implements ByteArrayIO, PacketGenerator
         {
             ByteArrayIOList<MessageInf> res = 
                 new ByteArrayIOList<MessageInf>(pak);
-            synchronized (messages)
+            synchronized (messagesLock)
             {
                 if (messages == null)
                 {
                     messages = new ArrayList<MessageInf>();
                 }
                 messages.addAll(Arrays.asList(res.arr));
+            }
+            Util.log.logVerbose("Success. result:");
+            for (int i = 0; i < res.arr.length; ++i)
+            {
+                Util.log.logVerbose("  ->" + res.arr[i].getInf());
             }
             return;
         }
@@ -271,5 +297,10 @@ public class Post implements ByteArrayIO, PacketGenerator
             throw new IOException("Server returning unknown packet("
                 + pak.type + ")!");
         }
+    }
+
+    public static void parseIncomingMessage(MessageInf inf)
+    {
+        
     }
 }

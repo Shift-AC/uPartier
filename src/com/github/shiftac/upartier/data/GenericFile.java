@@ -9,7 +9,7 @@ import com.github.shiftac.upartier.network.Packet;
 
 public class GenericFile implements ByteArrayIO
 {
-    public BString name = null;
+    public BString name = new BString();
     public byte[] payload = null;
     protected int type = ContentTypes.GENERAL;
 
@@ -27,6 +27,13 @@ public class GenericFile implements ByteArrayIO
         throws IOException
     {
         this.read(pak);
+    }
+
+    @Override
+    public String getInf()
+    {
+        return String.format("type=%d, name=%s, len=%d", 
+            type, name.toString(), payload.length);
     }
 
     @Override

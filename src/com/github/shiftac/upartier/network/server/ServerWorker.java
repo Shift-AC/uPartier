@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import com.github.shiftac.upartier.network.AbstractWorker;
 import com.github.shiftac.upartier.network.ByteArrayIO;
+import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.AES128Key;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.SynObject;
@@ -14,9 +15,10 @@ import com.github.shiftac.upartier.data.LoginInf;
 
 public abstract class ServerWorker extends AbstractWorker
 {
+    protected static final LoginInf dumbLoginInf = new LoginInf(0, "", false);
     protected AES128Key key = null;
     protected SynObject obj = new SynObject();
-    protected LoginInf current = null;
+    protected LoginInf current = dumbLoginInf;
     protected WorkerManager manager = null;
     protected long seq = -1;
 
@@ -52,8 +54,7 @@ public abstract class ServerWorker extends AbstractWorker
             is.read(buf);
             obj.id = obj.getInt(buf, 0);
             obj.mili = obj.getLong(buf, ByteArrayIO.SIZE_INT);
-            Util.log.logVerbose(String.format(
-                "Got userID=%d, timestamp=%d", obj.id, obj.mili), 2);
+            Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             obj.setInt(buf, ByteArrayIO.SIZE_INT + ByteArrayIO.SIZE_LONG,
                 obj.ip);
             Util.log.logVerbose(String.format("Set ip=%d", obj.ip), 2);
@@ -62,9 +63,7 @@ public abstract class ServerWorker extends AbstractWorker
             is.read(buf);
             SynObject tobj = new SynObject();
             tobj.read(buf);
-            Util.log.logVerbose(String.format(
-                "Got userID=%d, timestamp=%d, ip=%d", tobj.id, tobj.mili,
-                tobj.ip), 2);
+            Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             if (obj.id != tobj.id || obj.mili != tobj.mili || 
                 obj.ip != tobj.ip)
             {
@@ -88,18 +87,32 @@ public abstract class ServerWorker extends AbstractWorker
 
     protected void notifyClient() {}
 
+    public boolean loginState()
+    {
+        synchronized (current)
+        {
+            return current != dumbLoginInf;
+        } 
+    }
+
     public void endSession()
     {
         synchronized (current)
         {
-            if (current == null)
+            if (current == dumbLoginInf)
             {
                 return;
             }
 
             notifyClient();
 
-            current = null;
+            current = dumbLoginInf;
         }
+    }
+
+    public void issueAck(Packet pak, byte ack)
+    {
+        pak.ack = ack;
+        issue(pak);
     }
 }

@@ -1,6 +1,6 @@
 package com.github.shiftac.upartier;
 
-import java.io.FileInputStream;
+//import java.io.FileInputStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,24 +10,57 @@ import org.json.JSONTokener;
 
 public class Util
 {
+    public static final long version = 0x0000000000000001;
+
+    private static String configString = 
+        "{\n" +
+        "    \"network\":\n" +
+        "    {\n" +
+        "        \"server\":\n" +
+        "        {\n" +
+        "            \"Server\":\n" +
+        "            {\n" +
+        "                \"host\": \"162.105.175.115\",\n" +
+        "                \"port\": 2333,\n" +
+        "                \"maxWorker\": 32\n" +
+        "            },\n" +
+        "            \"WorkerManager\":\n" +
+        "            {\n" +
+        "                \"probeGapInms\": 100\n" +
+        "            }\n" +
+        "        },\n" +
+        "        \"demo\":\n" +
+        "        {\n" +
+        "            \"EchoServer\":\n" +
+        "            {\n" +
+        "                \"maxWorker\": 32\n" +
+        "            }\n" +
+        "        },\n" +
+        "        \"Packet\":\n" +
+        "        {\n" +
+        "            \"attemptPerKB\": 1,\n" +
+        "            \"baseAttempt\": 10,\n" +
+        "            \"sleepInms\": 100\n" +
+        "        }\n" +
+        "    }\n" +
+        "}";
+    private static JSONObject config;
+    public static LogManager log = new LogManager(System.err, 10, true);
+
     static
     {
         try
         {
-            config = new JSONObject(new JSONTokener(new FileInputStream(
-                "config/config.json")));
+            //config = new JSONObject(new JSONTokener(new FileInputStream(
+            //    "config/config.json")));
+            config = new JSONObject(new JSONTokener(configString));
         }
         catch (Exception e)
         {
             errorExit("Can't initialize config manager.", e);
         }
     }
-
-    public static final long version = 0x0000000000000001;
-
-    private static JSONObject config;
-    public static LogManager log = new LogManager(System.err, 10, true);
-
+    
     private static Object getConfig(String name)
         throws JSONPointerException
     {

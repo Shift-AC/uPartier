@@ -1,11 +1,20 @@
 package com.github.shiftac.upartier.network.app;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.data.ACKInf;
+import com.github.shiftac.upartier.data.Block;
 import com.github.shiftac.upartier.data.LoginInf;
+import com.github.shiftac.upartier.data.MessageInf;
 import com.github.shiftac.upartier.data.PacketType;
+import com.github.shiftac.upartier.data.Post;
+import com.github.shiftac.upartier.data.User;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
@@ -52,6 +61,7 @@ public class Client extends AbstractClient
         }
         int seq = pak.sequence;
         Thread current = Thread.currentThread();
+        Util.log.logVerbose("Waiting ACK for packet #" + seq);
         synchronized (this.bufLock)
         {
             waitBuf[seq] = current;
@@ -73,6 +83,7 @@ public class Client extends AbstractClient
         {
             res = recvBuf[seq];
         }
+        Util.log.logVerbose("Got ACK for packet #" + seq);
         return res;
     }
     
@@ -80,6 +91,9 @@ public class Client extends AbstractClient
     protected void parseOut(Packet pak)
         throws IOException, PacketFormatException
     {
+        Util.log.logMessage(String.format(
+            "Parsing send package #%d with type=%d", pak.sequence, pak.type));
+
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
@@ -91,17 +105,18 @@ public class Client extends AbstractClient
         case PacketType.TYPE_POST_MODIFY:
         case PacketType.TYPE_MESSAGE_FETCH:
             pak.write(os);
+            Util.log.logMessage("Package #" + pak.sequence + " sent.");   
             break;
         default:
             throw new PacketFormatException("Invalid packet type " + pak.type);
         }
-        
     }
 
     @Override
     protected void parseIn(Packet pak)
         throws IOException, PacketFormatException
     {
+        Util.log.logMessage("Parsing incoming package with type=" + pak.type);
         switch (pak.type)
         {
         case PacketType.TYPE_LOGIN:
@@ -111,6 +126,8 @@ public class Client extends AbstractClient
         case PacketType.TYPE_SERVER_ACK:
             int ack = pak.ack;
             Thread waiting;
+            Util.log.logVerbose(String.format("Got ACK for pending packet #%d.",
+                pak.ack));
             synchronized (this.bufLock)
             {
                 recvBuf[ack] = pak;
@@ -123,38 +140,120 @@ public class Client extends AbstractClient
             }
             break;
         case PacketType.TYPE_MESSAGE_PUSH:
-        case PacketType.TYPE_LOGOUT:
             // someone should provide me a way to notify the app that 
             // theres's an incoming message.
+            // callback function specification:
+            // class ?
+            // /**
+            //  * Parse and try to display an incoming message that someone 
+            //  * issued in a post.
+            //  * 
+            //  * This method should <b>never</b> throw an exception, instead,
+            //  * it should try to distinguish the type of exception happening
+            //  * and generate a report for the user to know about.
+            //  */
+            // static void parseIncomingMsg(MessageInf inf)
+            try
+            {
+                MessageInf inf = new MessageInf(pak);
+                Util.log.logMessage(String.format(
+                    "User #%d issued a message in post #%d with type=%d",
+                    inf.postID, inf.userID, inf.type));
+                Post.parseIncomingMessage(inf);
+            }
+            catch (IOException ioe)
+            {
+                Util.log.logWarning("Server sending unrecognizable message.");
+            }
+            break;
+        case PacketType.TYPE_LOGOUT:
             break;
         default:
             throw new PacketFormatException("Invalid packet type " + pak.type);
         }
     }
 
-    @Override
-    protected int synchronize()
+    static
     {
-        int syn = super.synchronize();
-        if (syn != 0)
-        {
-            return syn;
-        }
+        client = new Client();
+    }
 
+    private static final String usage = 
+        "General: [operator] [parameters...]\n" +
+        "  h: show this message\n" +
+        "  l [userID] [passwd]: login\n" +
+        "  o: logout\n";
+
+    public static void main(String[] args)
+    {
+        User currentuser;
+        TreeMap<Integer, Block> blockCache = new TreeMap<Integer, Block>();
+        TreeMap<Integer, Post> postCache = new TreeMap<Integer, Post>();
+        TreeMap<Integer, User> userCache = new TreeMap<Integer, User>();
         try
         {
-            parseOut(new AES128Packet(inf));
+            client.start();
+            while (true)
+            {
+                BufferedReader is = new BufferedReader(
+                    new InputStreamReader(System.in));
+                String line = is.readLine();
+                if (!client.isAlive())
+                {
+                    throw new Exception(
+                        "Client closed unexpectedly!");
+                }
+                if (line == null || line.length() == 0)
+                {
+                    continue;
+                }
+
+                Packet pak = null;
+                char operator = line.charAt(0);
+
+                switch (operator)
+                {
+                case 'l':
+                    String[] largs = line.substring(2).split(" ");
+                    LoginInf inf = new LoginInf(Integer.parseInt(largs[0]),
+                        largs[1], false);
+                    pak = inf.toPacket();
+                    break;
+                case 'h':
+                    System.out.println(usage);
+                    break;
+                case 'o':
+                    pak = new AES128Packet();
+                    pak.setLen(8);
+                    pak.type = PacketType.TYPE_LOGOUT;
+                    break;
+                case 'u':
+                    
+                    break;
+                default:
+                    break;
+                }
+
+                if (pak != null)
+                {
+                    pak = client.issueWait(pak);
+                    switch (pak.type)
+                    {
+                    case PacketType.TYPE_LOGIN:
+                        User inf = new User(pak);
+                        System.out.println(
+                            "Login succeed, inf " + inf.getInf());
+                        break;
+                    case PacketType.TYPE_SERVER_ACK:
+                        ACKInf ack = new ACKInf(pak);
+                        System.out.println("Server ack, inf " + ack.getInf());
+                    }
+                }
+            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            return 1;
         }
-        return 0;
-    }
-
-    static
-    {
-        client = new Client();
     }
 }

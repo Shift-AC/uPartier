@@ -31,7 +31,7 @@ public class MsgFetchInf extends CountFetchInf
         this.token = token;
         this.count = count;
         this.id = id;
-}
+    }
 
     @Override 
     public int getOperationType()
