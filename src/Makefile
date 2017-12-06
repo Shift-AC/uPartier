@@ -17,7 +17,7 @@ com.github.shiftac.upartier.serverdata;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 LIB := ../lib
-JAVALIBLINUX := $(LIB)/org.json.jar:#$(LIB)/jce.jar:$(LIB)/sunjce_provider.jar:
+JAVALIBLINUX := $(LIB)/org.json.jar:$(LIB)/junit-4.12.jar:$(LIB)/hamcrest-core-1.3.jar:$(LIB)/mysql-connector-java-5.1.44-bin.jar:
 JAVALIBWIN := $(subst :,;,$(JAVALIBLINUX))
 JAVALIB := $(JAVALIBWIN):$(JAVALIBLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
@@ -34,5 +34,5 @@ javadoc:
 
 .PHONY: clean
 clean:
-	-rm *.class *~
+	-rm *.class *~ *.jar
 	

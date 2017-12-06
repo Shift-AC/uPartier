@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
@@ -42,8 +43,10 @@ public class Post implements ByteArrayIO, PacketGenerator
     public BString place = new BString();
     public BString note = new BString();
     public User postUser = null;
+    public AtomicBoolean messagesLock = new AtomicBoolean(false);
     public ArrayList<MessageInf> messages = null;
     public int userCount = 0;
+    public AtomicBoolean usersLock = new AtomicBoolean(false);
     public ArrayList<User> users = null;
 
     public Post() {}
@@ -180,7 +183,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         case PacketType.TYPE_USER_FETCH:
         {
             ByteArrayIOList<User> res = new ByteArrayIOList<User>(pak);
-            synchronized (users)
+            synchronized (usersLock)
             {
                 if (users == null)
                 {
@@ -234,7 +237,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         PermissionException
     {
         long token;
-        synchronized (messages)
+        synchronized (messagesLock)
         {
             if (messages == null)
             {
@@ -256,7 +259,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         {
             ByteArrayIOList<MessageInf> res = 
                 new ByteArrayIOList<MessageInf>(pak);
-            synchronized (messages)
+            synchronized (messagesLock)
             {
                 if (messages == null)
                 {

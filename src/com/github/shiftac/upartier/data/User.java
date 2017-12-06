@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
@@ -45,6 +46,7 @@ public class User implements ByteArrayIO, PacketGenerator
     public BString nickname = new BString();
     public Image profile = null;
     public int postCount = 0;
+    public AtomicBoolean myPostsLock = new AtomicBoolean(false);
     public ArrayList<Post> myPosts = null;
 
     public User() {}
@@ -135,6 +137,7 @@ public class User implements ByteArrayIO, PacketGenerator
     {
         Packet pak = new AES128Packet();
         ((AES128Packet)pak).setLen(8);
+        pak.type = PacketType.TYPE_LOGOUT;
         Util.log.logVerbose("Attempting to logout.");
         pak = Client.client.issueWait(pak);
         switch (pak.type)
@@ -265,7 +268,7 @@ public class User implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchUserException
     {
         long token;
-        synchronized (myPosts)
+        synchronized (myPostsLock)
         {
             if (myPosts == null)
             {
@@ -286,7 +289,7 @@ public class User implements ByteArrayIO, PacketGenerator
         case PacketType.TYPE_POST_FETCH:
         {
             ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
-            synchronized (myPosts)
+            synchronized (myPostsLock)
             {
                 if (myPosts == null)
                 {
@@ -346,7 +349,7 @@ public class User implements ByteArrayIO, PacketGenerator
         case PacketType.TYPE_POST_MODIFY:
         {
             post.read(pak);
-            synchronized (myPosts)
+            synchronized (myPostsLock)
             {
                 if (myPosts == null)
                 {
@@ -429,7 +432,7 @@ public class User implements ByteArrayIO, PacketGenerator
                 if (res.retval > 0)
                 {
                     message.time = res.retval;
-                    synchronized (post.messages)
+                    synchronized (post.messagesLock)
                     {
                         if (post.messages == null)
                         {

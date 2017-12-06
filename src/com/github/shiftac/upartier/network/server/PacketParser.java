@@ -23,24 +23,22 @@ public interface PacketParser
         }
         if (!generateObject(worker, pak, obj))
         {
-            Util.log.logWarning("Can't generate " + obj.getClass().getName() + ".");
+            Util.log.logWarning("Can't generate " + 
+                obj.getClass().getName() + ".");
             return;
         }
-        parseObject(worker, obj);
+        parseObject(worker, obj, pak.sequence);
     }
 
     // checkstate->generate object->parse object
     public default boolean checkState(ServerWorker worker, Packet pak, 
         boolean login)
     {
-        boolean cur = false;
-        synchronized (worker.current)
+        boolean cur = worker.loginState();
+        if (cur != login)
         {
-            cur = worker.current == null;
-        }
-        if (cur == login)
-        {
-            worker.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            worker.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), 
+                pak.sequence);
             return false;
         }
         return true;
@@ -56,10 +54,12 @@ public interface PacketParser
         }
         catch (IOException e)
         {
-            worker.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            e.printStackTrace();
+            worker.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), 
+                pak.sequence);
             return false;
         }
     }
 
-    public void parseObject(ServerWorker worker, ByteArrayIO obj);
+    public void parseObject(ServerWorker worker, ByteArrayIO obj, byte seq);
 }

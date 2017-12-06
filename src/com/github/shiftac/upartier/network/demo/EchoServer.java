@@ -25,4 +25,18 @@ public final class EchoServer extends AbstractServer
         }
         catch (Exception e) {}
     }
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            AbstractServer s = new EchoServer();
+            s.start();
+            s.join();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace(Util.log.dest);
+        }
+    }
 }

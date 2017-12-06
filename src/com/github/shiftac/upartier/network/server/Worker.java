@@ -17,7 +17,7 @@ import com.github.shiftac.upartier.serverdata.Log;
 
 public class Worker extends ServerWorker
 {
-    static public final PacketParser loginHandler = (wk, obj) ->
+    static public final PacketParser loginHandler = (wk, obj, seq) ->
     {
         LoginInf inf = (LoginInf)obj;
         Packet res = null;
@@ -56,7 +56,7 @@ public class Worker extends ServerWorker
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
         }
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
     static public final PacketParser logoutHandler = new PacketParser()
@@ -67,25 +67,25 @@ public class Worker extends ServerWorker
             return true;
         }
 
-        public void parseObject(ServerWorker wk, ByteArrayIO obj)
+        public void parseObject(ServerWorker wk, ByteArrayIO obj, byte seq)
         {
             try
             {
                 synchronized (wk.current)
                 {
                     Log.logout(wk.current.id);
-                    wk.current = null;
+                    wk.current = dumbLoginInf;
                     wk.manager.removeIDPos(wk.current.id);
                 }
             }
             catch (SQLException e)
             {
-                wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+                wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             }
         }
     };
 
-    static public final PacketParser userFetchHandler = (wk, obj) ->
+    static public final PacketParser userFetchHandler = (wk, obj, seq) ->
     {
         UserFetchInf inf = (UserFetchInf)obj;
         Packet res = null;
@@ -135,10 +135,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser postFetchHandler = (wk, obj) ->
+    static public final PacketParser postFetchHandler = (wk, obj, seq) ->
     {
         PostFetchInf inf = (PostFetchInf)obj;
         Packet res = null;
@@ -152,7 +152,7 @@ public class Worker extends ServerWorker
         }
         if (cur)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -204,10 +204,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser blockFetchHandler = (wk, obj) ->
+    static public final PacketParser blockFetchHandler = (wk, obj, seq) ->
     {
         BlockFetchInf inf = (BlockFetchInf)obj;
         Packet res = null;
@@ -245,10 +245,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser msgFetchHandler = (wk, obj) ->
+    static public final PacketParser msgFetchHandler = (wk, obj, seq) ->
     {
         MsgFetchInf inf = (MsgFetchInf)obj;
         Packet res = null;
@@ -262,7 +262,7 @@ public class Worker extends ServerWorker
         }
         if (cur)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -302,10 +302,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser userModifyHandler = (wk, obj) ->
+    static public final PacketParser userModifyHandler = (wk, obj, seq) ->
     {
         User user = (User)obj;
         Packet res = null;
@@ -319,7 +319,7 @@ public class Worker extends ServerWorker
         }
         if (cur)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -338,10 +338,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser postModifyHandler = (wk, obj) ->
+    static public final PacketParser postModifyHandler = (wk, obj, seq) ->
     {
         Post post = (Post)obj;
         Packet res = null;
@@ -355,7 +355,7 @@ public class Worker extends ServerWorker
         }
         if (cur)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -385,10 +385,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser msgPushHandler = (wk, obj) ->
+    static public final PacketParser msgPushHandler = (wk, obj, seq) ->
     {
         MessageInf inf = (MessageInf)obj;
         Packet res = null;
@@ -402,7 +402,7 @@ public class Worker extends ServerWorker
         }
         if (cur)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -453,10 +453,10 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
-    static public final PacketParser postJoinHandler = (wk, obj) ->
+    static public final PacketParser postJoinHandler = (wk, obj, seq) ->
     {
         PostJoinInf inf = (PostJoinInf)obj;
         Packet res = null;
@@ -470,7 +470,7 @@ public class Worker extends ServerWorker
         }
         if (cur)
         {
-            wk.issue(new ACKInf(ACKInf.RET_ERRIO).toPacket());
+            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -507,7 +507,7 @@ public class Worker extends ServerWorker
             res = ack.toPacket();
         }
 
-        wk.issue(res);
+        wk.issueAck(res, seq);
     };
 
     @Override

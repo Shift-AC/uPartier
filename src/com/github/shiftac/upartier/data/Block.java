@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.AES128Packet;
@@ -30,6 +31,7 @@ public class Block implements ByteArrayIO, PacketGenerator
     public int id = 0;
     public BString name = new BString();
     public int postCount = 0;
+    public AtomicBoolean postsLock = new AtomicBoolean(false);
     public ArrayList<Post> posts = null;
 
     public Block() {}
@@ -110,7 +112,7 @@ public class Block implements ByteArrayIO, PacketGenerator
         throws IOException, SocketTimeoutException, NoSuchBlockException
     {
         long token;
-        synchronized (posts)
+        synchronized (postsLock)
         {
             if (posts == null)
             {
@@ -132,7 +134,7 @@ public class Block implements ByteArrayIO, PacketGenerator
         {
             ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
             res.read(pak);
-            synchronized (posts)
+            synchronized (postsLock)
             {
                 if (posts == null)
                 {

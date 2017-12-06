@@ -1,6 +1,9 @@
 package com.github.shiftac.upartier.network.demo;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 import com.github.shiftac.upartier.network.PlainMessage;
@@ -46,6 +49,39 @@ public final class EchoClient extends AbstractClient
         default:
             Util.log.logWarning(
                 "Unrecognized package. Inf:" + pak.getInf());
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            AbstractClient client = new EchoClient(10);
+            client.start();
+            while (true)
+            {
+                BufferedReader is = new BufferedReader(
+                    new InputStreamReader(System.in));
+                String line = is.readLine();
+                AES128Packet pak;
+                if (line.charAt(0) == ' ')
+                {
+                    pak = new AES128Packet(new PlainMessage(line.substring(1)));
+                    pak.type = PacketType.DATA_MESSAGE_PLAIN | 
+                        PacketType.TYPE_TRIGGER;
+                }
+                else
+                {
+                    pak = new AES128Packet(new PlainMessage(line));
+                    pak.type = PacketType.DATA_MESSAGE_PLAIN | 
+                        PacketType.TYPE_PUSH;
+                }
+                client.issue(pak);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace(Util.log.dest);
         }
     }
 }

@@ -1,14 +1,18 @@
 package com.github.shiftac.upartier.network.app;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
+import com.github.shiftac.upartier.data.ACKInf;
 import com.github.shiftac.upartier.data.LoginInf;
 import com.github.shiftac.upartier.data.MessageInf;
 import com.github.shiftac.upartier.data.PacketType;
 import com.github.shiftac.upartier.data.Post;
+import com.github.shiftac.upartier.data.User;
 import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
@@ -120,7 +124,7 @@ public class Client extends AbstractClient
         case PacketType.TYPE_SERVER_ACK:
             int ack = pak.ack;
             Thread waiting;
-            Util.log.logVerbose(String.format("Got ACK for pending packet #%d.", 
+            Util.log.logVerbose(String.format("Got ACK for pending packet #%d.",
                 pak.ack));
             synchronized (this.bufLock)
             {
@@ -170,5 +174,77 @@ public class Client extends AbstractClient
     static
     {
         client = new Client();
+    }
+
+    private static final String usage = 
+        "General: [operator] [parameters...]\n" +
+        "  h: show this message\n" +
+        "  l [userID] [passwd]: login\n" +
+        "  o: logout\n";
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            client.start();
+            while (true)
+            {
+                BufferedReader is = new BufferedReader(
+                    new InputStreamReader(System.in));
+                String line = is.readLine();
+                if (!client.isAlive())
+                {
+                    throw new Exception(
+                        "Client closed unexpectedly!");
+                }
+                if (line == null || line.length() == 0)
+                {
+                    continue;
+                }
+
+                Packet pak = null;
+                char operator = line.charAt(0);
+
+                switch (operator)
+                {
+                case 'l':
+                    String[] largs = line.substring(2).split(" ");
+                    LoginInf inf = new LoginInf(Integer.parseInt(largs[0]),
+                        largs[1], false);
+                    pak = inf.toPacket();
+                    break;
+                case 'h':
+                    System.out.println(usage);
+                    break;
+                case 'o':
+                    pak = new AES128Packet();
+                    pak.setLen(8);
+                    pak.type = PacketType.TYPE_LOGOUT;
+                    break;
+                default:
+                    break;
+                }
+
+                if (pak != null)
+                {
+                    pak = client.issueWait(pak);
+                    switch (pak.type)
+                    {
+                    case PacketType.TYPE_LOGIN:
+                        User inf = new User(pak);
+                        System.out.println(
+                            "Login succeed, inf " + inf.getInf());
+                        break;
+                    case PacketType.TYPE_SERVER_ACK:
+                        ACKInf ack = new ACKInf(pak);
+                        System.out.println("Server ack, inf " + ack.getInf());
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
