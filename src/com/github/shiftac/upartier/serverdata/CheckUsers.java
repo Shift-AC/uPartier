@@ -4,7 +4,7 @@ import  com.github.shiftac.upartier.data.LoginInf;
 import  com.github.shiftac.upartier.data.NoSuchUserException;
 
 public class CheckUsers {
-	static final String url ="jdbc:mysql://162.105.175.115:8040/group4?useSSL=false"; 
+	static final String url ="jdbc:mysql://162.105.175.115:3306/group4?useSSL=false"; 
 	static final String USER ="group4";
 	static final String PASS="group4";
 	
