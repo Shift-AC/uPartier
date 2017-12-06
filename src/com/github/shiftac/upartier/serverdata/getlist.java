@@ -5,7 +5,7 @@ import java.util.*;
 import com.github.shiftac.upartier.data.*;
 
 public class getlist {
-	static final String url ="jdbc:mysql://162.105.175.115:3306/group4?useSSL=false"; 
+	static final String url ="jdbc:mysql://localhost:3306/group4?useSSL=false"; 
 	static final String USER ="group4";
 	static final String PASS="group4";
 
