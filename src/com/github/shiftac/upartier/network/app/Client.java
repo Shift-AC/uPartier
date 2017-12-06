@@ -42,7 +42,6 @@ public class Client extends AbstractClient
         {
             this.inf = inf;
         }
-        restart();
     }
 
     /**
@@ -217,7 +216,9 @@ public class Client extends AbstractClient
                     String[] largs = line.substring(2).split(" ");
                     LoginInf inf = new LoginInf(Integer.parseInt(largs[0]),
                         largs[1], false);
-                    pak = inf.toPacket();
+                    User user = User.login(inf);
+                    System.out.println(
+                        "Login succeed, inf " + user.getInf());
                     break;
                 case 'h':
                     System.out.println(usage);

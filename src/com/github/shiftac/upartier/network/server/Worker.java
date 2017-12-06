@@ -40,18 +40,21 @@ public class Worker extends ServerWorker
         }
         catch (IOException ioe)
         {
+            ioe.printStackTrace();
             Util.log.logVerbose("IOException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchUserException nsue)
         {
+            nsue.printStackTrace();
             Util.log.logVerbose("NoSuchUserException, return ERRUSER");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
@@ -118,18 +121,21 @@ public class Worker extends ServerWorker
         }
         catch (IOException ioe)
         {
+            ioe.printStackTrace();
             Util.log.logVerbose("IOException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchPostException nspe)
         {
+            nspe.printStackTrace();
             Util.log.logVerbose("NoSuchPostException, return ERRPOST");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
@@ -181,24 +187,28 @@ public class Worker extends ServerWorker
         }
         catch (IOException ioe)
         {
+            ioe.printStackTrace();
             Util.log.logVerbose("IOException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchBlockException nsbe)
         {
+            nsbe.printStackTrace();
             Util.log.logVerbose("NoSuchBlockException, return ERRBLOCK");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRBLOCK);
             res = ack.toPacket();
         }
         catch (NoSuchUserException nsue)
         {
+            nsue.printStackTrace();
             Util.log.logVerbose("NoSuchUserException, return ERRUSER");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
@@ -234,12 +244,14 @@ public class Worker extends ServerWorker
         }
         catch (IOException ioe)
         {
+            ioe.printStackTrace();
             Util.log.logVerbose("IOException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
@@ -285,18 +297,21 @@ public class Worker extends ServerWorker
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchPostException nspe)
         {
+            nspe.printStackTrace();
             Util.log.logVerbose("NoSuchPostException, return ERRPOST");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
         }
         catch (PermissionException pe)
         {
+            pe.printStackTrace();
             Util.log.logVerbose("PermissionException, return ERRPERMISSION");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
             res = ack.toPacket();
@@ -333,6 +348,7 @@ public class Worker extends ServerWorker
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
@@ -368,18 +384,21 @@ public class Worker extends ServerWorker
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchUserException nsue)
         {
+            nsue.printStackTrace();
             Util.log.logVerbose("NoSuchUserException, return ERRUSER");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
         }
         catch (NoSuchBlockException nsbe)
         {
+            nsbe.printStackTrace();
             Util.log.logVerbose("NoSuchBlockException, return ERRBLOCK");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRBLOCK);
             res = ack.toPacket();
@@ -424,30 +443,35 @@ public class Worker extends ServerWorker
         }
         catch (IOException ioe)
         {
+            ioe.printStackTrace();
             Util.log.logVerbose("IOException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchPostException nspe)
         {
+            nspe.printStackTrace();
             Util.log.logVerbose("NoSuchPostException, return ERRPOST");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
         }
         catch (NoSuchUserException nsue)
         {
+            nsue.printStackTrace();
             Util.log.logVerbose("NoSuchUserException, return ERRUSER");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
         }
         catch (PermissionException pe)
         {
+            pe.printStackTrace();
             Util.log.logVerbose("PermissionException, return ERRPERMISSION");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPERMISSION);
             res = ack.toPacket();
@@ -484,24 +508,28 @@ public class Worker extends ServerWorker
         }
         catch (IOException ioe)
         {
+            ioe.printStackTrace();
             Util.log.logVerbose("IOException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (SQLException sqle)
         {
+            sqle.printStackTrace();
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
         }
         catch (NoSuchUserException nsue)
         {
+            nsue.printStackTrace();
             Util.log.logVerbose("NoSuchUserException, return ERRUSER");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRUSER);
             res = ack.toPacket();
         }
         catch (NoSuchPostException nspe)
         {
+            nspe.printStackTrace();
             Util.log.logVerbose("NoSuchPostException, return ERRPOST");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
