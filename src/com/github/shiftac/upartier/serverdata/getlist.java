@@ -5,9 +5,9 @@ import java.util.*;
 import com.github.shiftac.upartier.data.*;
 
 public class getlist {
-	static final String url ="jdbc:mysql://127.0.0.1:3306/upartier?useSSL=false"; 
-	static final String USER ="root";
-	static final String PASS="tyy971012";
+	static final String url ="jdbc:mysql://162.105.175.115:3306/group4?useSSL=false"; 
+	static final String USER ="group4";
+	static final String PASS="group4";
 
 	public static ArrayList<MessageInf> getpmlist(int postid) throws SQLException{
 		Connection conn = null;
@@ -15,7 +15,7 @@ public class getlist {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select * from upartier.messageinf where PostId=?";
+			sql="select * from messageinf where PostId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, postid);
 			ResultSet rs = stmt.executeQuery(sql);	
@@ -39,12 +39,12 @@ public class getlist {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select UserId from upartier.userpost where PostId=?";
+			sql="select UserId from userpost where PostId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, postid);
 			ResultSet rs = stmt.executeQuery(sql);	
 			while(rs.next()) {
-				sql="select * from upartier.user where UserId=?";
+				sql="select * from user where UserId=?";
 				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, rs.getInt("UserId"));
 				ResultSet rs2=stmt.executeQuery(sql);
@@ -70,7 +70,7 @@ public class getlist {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select PostId from upartier.userpost where BlockId=?";
+			sql="select PostId from userpost where BlockId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, blockid);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -78,7 +78,7 @@ public class getlist {
 			while(rs.next()) {
 				Post post=new Post();
 				post.id=rs.getInt("PostId");
-				sql="select * from upartier.post where PostId=?";
+				sql="select * from post where PostId=?";
 				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, post.id);
 				ResultSet rs2 = stmt.executeQuery(sql);
@@ -110,7 +110,7 @@ public class getlist {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select PostId from upartier.userpost where UserId=?";
+			sql="select PostId from userpost where UserId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -118,7 +118,7 @@ public class getlist {
 			while(rs.next()) {
 				Post post=new Post();
 				post.id=rs.getInt("PostId");
-				sql="select * from upartier.post where PostId=?";
+				sql="select * from post where PostId=?";
 				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, post.id);
 				ResultSet rs2 = stmt.executeQuery(sql);

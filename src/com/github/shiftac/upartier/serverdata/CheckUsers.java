@@ -4,9 +4,9 @@ import  com.github.shiftac.upartier.data.LoginInf;
 import  com.github.shiftac.upartier.data.NoSuchUserException;
 
 public class CheckUsers {
-	static final String url ="jdbc:mysql://127.0.0.1:3306/upartier?useSSL=false"; 
-	static final String USER ="root";
-	static final String PASS="tyy971012";
+	static final String url ="jdbc:mysql://162.105.175.115:3306/group4?useSSL=false"; 
+	static final String USER ="group4";
+	static final String PASS="group4";
 	
 	static public void checkusers(LoginInf inf) throws NoSuchUserException,SQLException {
 		Connection conn = null;
@@ -16,7 +16,7 @@ public class CheckUsers {
 			
 			
 			System.out.println("Creating statement....");
-			sql="SELECT UserId,UserPassword FROM upartier.user where id=?";
+			sql="SELECT UserId,UserPassword FROM user where id=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, inf.id);
 			ResultSet rs = stmt.executeQuery(sql);
