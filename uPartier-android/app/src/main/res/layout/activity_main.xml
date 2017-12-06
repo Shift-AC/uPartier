@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="shiftac.github.com.upartier.MainActivity">
+
+    <ImageView
+        android:id="@+id/imgWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="83dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="61dp"
+        android:layout_marginTop="30dp"
+        android:contentDescription="welcome"
+        android:src="@drawable/welcome"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/btnMainLogIn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnMainLogIn"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="280dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="20dp"
+        android:onClick="mainLogIn"
+        android:text="登录"
+        android:textColor="@color/background"
+        android:background="@drawable/button_shape"
+        app:layout_constraintBottom_toTopOf="@+id/btnMainRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgWelcome" />
+
+    <Button
+        android:id="@+id/btnMainRegister"
+        android:layout_width="280dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="22dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginStart="72dp"
+        android:onClick="mainRegister"
+        android:text="注册"
+        android:textColor="@color/background"
+        android:background="@drawable/button_shape"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnMainLogIn"
+        app:layout_constraintStart_toStartOf="@+id/btnMainLogIn"
+        app:layout_constraintTop_toBottomOf="@+id/btnMainLogIn" />
+
+</android.support.constraint.ConstraintLayout>
