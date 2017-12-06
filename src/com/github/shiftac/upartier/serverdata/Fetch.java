@@ -5,9 +5,9 @@ import java.sql.*;
 
 import  com.github.shiftac.upartier.data.*;
 public class Fetch {
-	static final String url ="jdbc:mysql://127.0.0.1:3306/upartier?useSSL=false"; 
-	static final String USER ="root";
-	static final String PASS="tyy971012";
+	static final String url ="jdbc:mysql://162.105.175.115:8040/group4?useSSL=false"; 
+	static final String USER ="group4";
+	static final String PASS="group4";
 	/**
      * Try to fetch all existing post blocks, the {@code Block} objects returned 
      * in this call will in <i>prefetched</i> state.
@@ -24,7 +24,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select top 3 * from upartier.block order By BlockId desc";
+			sql="select top 3 * from block order By BlockId desc";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			Block[] block=new Block[3];
@@ -62,7 +62,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select * from upartier.post where BlockId = ? and PostId <? order by PostId desc limit ? ";
+			sql="select * from post where BlockId = ? and PostId <? order by PostId desc limit ? ";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, blockid);
 			stmt.setInt(2, postid);
@@ -108,7 +108,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql2="select UserId from upartier.user where UserId=?";
+			sql2="select UserId from user where UserId=?";
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, userid);
 			ResultSet rs2 = stmt2.executeQuery(sql2);
@@ -117,7 +117,7 @@ public class Fetch {
 			  throw e;
 			}
 			
-			sql="select * from upartier.post where PostId=(select PostId from upartier.userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			sql="select * from post where PostId=(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
@@ -165,7 +165,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql2="select UserId from upartier.userpost where PostId=?";
+			sql2="select UserId from userpost where PostId=?";
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, id);
 			ResultSet rs2 = stmt2.executeQuery(sql2);
@@ -181,7 +181,7 @@ public class Fetch {
 	        while(rs2.next()) 
 	        {   
 	        	useri=rs2.getInt("UserId");
-	            sql="select * from upartier.user where UserId=?";
+	            sql="select * from user where UserId=?";
 				 PreparedStatement stmt=conn.prepareStatement(sql);
 	             stmt.setInt(1, useri);
 	             ResultSet rs=stmt.executeQuery(sql);
@@ -229,7 +229,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="select * from upartier.messageinf where PostId = ? and Time <? order by Time desc limit ? ";
+				sql="select * from messageinf where PostId = ? and Time <? order by Time desc limit ? ";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, id);
 				stmt.setLong(2, time);
@@ -270,7 +270,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);
 			System.out.println("Creating statement....");
-			sql="insert into upartier.post(PostId,BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?,?) ";
+			sql="insert into post(PostId,BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?,?) ";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, post.id);
 			stmt.setInt(2, post.blockID);
@@ -287,35 +287,35 @@ public class Fetch {
 		    stmt.execute(sql);
 		    for( User postuser:post.users)
 		    {
-		    	 sql="insert into upartier.userpost(UserId,PostId) value(?,?)";
+		    	 sql="insert into userpost(UserId,PostId) value(?,?)";
 		    	 stmt=conn.prepareStatement(sql);
 		    	 stmt.setInt(1, postuser.id);
 		    	 stmt.setInt(2, post.id);
 		    	 stmt.execute(sql);
 		    }
-		    sql="insert into upartier.blockpost(BlockId,PostId) value(?,?)";
+		    sql="insert into blockpost(BlockId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.blockID);
 		    stmt.setInt(2, post.id);
 		    stmt.execute(sql);
-		    sql="select PostCount from upartier.user where UserId=?";
+		    sql="select PostCount from user where UserId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.userID);
 			ResultSet rs = stmt.executeQuery(sql);
 			int mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
-		    sql="update upartier.user set PostCount=? where UserId=?";
+		    sql="update user set PostCount=? where UserId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.userID);
 			stmt.execute(sql);
-			sql="select PostCount from upartier.block where BlockId=?";
+			sql="select PostCount from block where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.blockID);
 			rs = stmt.executeQuery(sql);
 			mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
-		    sql="update upartier.user set PostCount=? where BlockId=?";
+		    sql="update user set PostCount=? where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.blockID);
@@ -347,17 +347,17 @@ public class Fetch {
 				System.out.println("connecting to database....");
 					conn = DriverManager.getConnection(url,USER,PASS);	
 					System.out.println("Creating statement....");
-					sql="select * from upartier.user where UserId = ?  ";
+					sql="select * from user where UserId = ?  ";
 					PreparedStatement stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					ResultSet rs = stmt.executeQuery(sql);
 					if(rs==null) {throw new NoSuchUserException(); }
-					sql="select * from upartier.post where PostId = ? ";
+					sql="select * from post where PostId = ? ";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
 					rs=stmt.executeQuery(sql);
 					if(rs==null) {throw new NoSuchPostException(); }
-					sql="select * from upartier.userpost where UserId = ? and PostId = ?   ";
+					sql="select * from userpost where UserId = ? and PostId = ?   ";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
@@ -377,7 +377,7 @@ public class Fetch {
 		            	 user[i].profile=new Image(rs.getString("Image"));
 					}
 		
-						sql="insert into upartier.messageinf(PostId,UserId,Type,Time) values(?,?,?,?)";
+						sql="insert into messageinf(PostId,UserId,Type,Time) values(?,?,?,?)";
 						stmt = conn.prepareStatement(sql);
 						stmt.setInt(1, message.postID);
 						stmt.setInt(2, message.userID);
@@ -405,29 +405,29 @@ public class Fetch {
 				System.out.println("connecting to database....");
 					conn = DriverManager.getConnection(url,USER,PASS);	
 					System.out.println("Creating statement....");
-					sql="insert into upartier.userpost(UserId,PostId) values(?,?)";
+					sql="insert into userpost(UserId,PostId) values(?,?)";
 					PreparedStatement stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
 					stmt.execute(sql);
-					sql="select PostCount from upartier.user where UserId=?";
+					sql="select PostCount from user where UserId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					ResultSet rs = stmt.executeQuery(sql);
 					int mypostcount =rs.getInt("PostCount");
 					mypostcount=mypostcount+1;
-					sql="update upartier.user set PostCount=? where UserId=?";
+					sql="update user set PostCount=? where UserId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, mypostcount);
 					stmt.setInt(2, userid);
 					stmt.execute(sql);
-					sql="select UserCount from upartier.post where PostId=?";
+					sql="select UserCount from post where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
 					rs = stmt.executeQuery(sql);
 					int myusercount =rs.getInt("UserCount");
 					myusercount=myusercount+1;
-					sql="update upartier.post set UserCount=? where PostId=?";
+					sql="update post set UserCount=? where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, myusercount);
 					stmt.setInt(2, postid);
@@ -470,7 +470,7 @@ public class Fetch {
 				System.out.println("connecting to database....");
 					conn = DriverManager.getConnection(url,USER,PASS);	
 					System.out.println("Creating statement....");
-	    	 sql="select * from upartier.user where UserId=?";
+	    	 sql="select * from user where UserId=?";
 			 PreparedStatement stmt=conn.prepareStatement(sql);
              stmt.setInt(1, id);
              ResultSet rs = stmt.executeQuery(sql);
@@ -503,12 +503,12 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-    	 sql="select PostOwnerId from upartier.post where PostId=?";
+    	 sql="select PostOwnerId from post where PostId=?";
 		 PreparedStatement stmt=conn.prepareStatement(sql);
          stmt.setInt(1, id);
          ResultSet rs = stmt.executeQuery(sql);
          int ownerid=rs.getInt("PostOwnerId");
-         sql="select * from upartier.user where UserId=?";
+         sql="select * from user where UserId=?";
 		 stmt=conn.prepareStatement(sql);
          stmt.setInt(1, ownerid);
          rs = stmt.executeQuery(sql);
@@ -539,7 +539,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="update upartier.user set Age=? Gender=? PostCount=? MailAccount=? NickName=?  Image=? where UserId=?";
+				sql="update user set Age=? Gender=? PostCount=? MailAccount=? NickName=?  Image=? where UserId=?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, u.age);
 				stmt.setInt(2, u.gender);
