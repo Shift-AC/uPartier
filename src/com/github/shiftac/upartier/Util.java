@@ -21,7 +21,7 @@ public class Util
         "            \"Server\":\n" +
         "            {\n" +
         "                \"host\": \"162.105.175.115\",\n" +
-        "                \"port\": 8004,\n" +
+        "                \"port\": 2333,\n" +
         "                \"maxWorker\": 32\n" +
         "            },\n" +
         "            \"WorkerManager\":\n" +
