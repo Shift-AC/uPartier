@@ -16,8 +16,9 @@ public class Fetch {
      * 
      * @throws SQLException if SQLException occured when accessing database files
 	 * @throws IOException 
+	 * @throws NoSuchUserException 
      */
-	static public Block[] fetchBlocks() throws SQLException, IOException {
+	static public Block[] fetchBlocks() throws SQLException, IOException, NoSuchUserException {
 		Connection conn = null;
 		Statement stmt=null;
 		String sql;
