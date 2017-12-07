@@ -409,29 +409,29 @@ public class Fetch {
 					PreparedStatement stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
-					stmt.execute(sql);
+					stmt.execute();
 					sql="select PostCount from user where UserId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
-					ResultSet rs = stmt.executeQuery(sql);
+					ResultSet rs = stmt.executeQuery();
 					int mypostcount =rs.getInt("PostCount");
 					mypostcount=mypostcount+1;
 					sql="update user set PostCount=? where UserId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, mypostcount);
 					stmt.setInt(2, userid);
-					stmt.execute(sql);
+					stmt.execute();
 					sql="select UserCount from post where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
-					rs = stmt.executeQuery(sql);
+					rs = stmt.executeQuery();
 					int myusercount =rs.getInt("UserCount");
 					myusercount=myusercount+1;
 					sql="update post set UserCount=? where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, myusercount);
 					stmt.setInt(2, postid);
-					stmt.execute(sql);
+					stmt.execute();
 					/*sql="select * from upartier.post where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
@@ -473,7 +473,7 @@ public class Fetch {
 	    	 sql="select * from user where UserId=?";
 			 PreparedStatement stmt=conn.prepareStatement(sql);
              stmt.setInt(1, id);
-             ResultSet rs = stmt.executeQuery(sql);
+             ResultSet rs = stmt.executeQuery();
              user.age=rs.getInt("Age");
         	 user.gender=rs.getInt("Gender");
         	 user.id=rs.getInt("UserId");
@@ -506,12 +506,12 @@ public class Fetch {
     	 sql="select PostOwnerId from post where PostId=?";
 		 PreparedStatement stmt=conn.prepareStatement(sql);
          stmt.setInt(1, id);
-         ResultSet rs = stmt.executeQuery(sql);
+         ResultSet rs = stmt.executeQuery();
          int ownerid=rs.getInt("PostOwnerId");
          sql="select * from user where UserId=?";
 		 stmt=conn.prepareStatement(sql);
          stmt.setInt(1, ownerid);
-         rs = stmt.executeQuery(sql);
+         rs = stmt.executeQuery();
          user.age=rs.getInt("Age");
     	 user.gender=rs.getInt("Gender");
     	 user.id=rs.getInt("UserId");
@@ -548,7 +548,7 @@ public class Fetch {
 				stmt.setString(5,u.nickname.toString());
 				stmt.setString(6, u.profile.name.toString());
 				stmt.setInt(7, u.id);
-				stmt.execute(sql);
+				stmt.execute();
 	    }
 	}
 
