@@ -57,7 +57,7 @@ public abstract class ServerWorker extends AbstractWorker
             Util.log.logVerbose("Got SynObject " + obj.getInf(), 2);
             obj.setInt(buf, ByteArrayIO.SIZE_INT + ByteArrayIO.SIZE_LONG,
                 obj.ip);
-            Util.log.logVerbose(String.format("Set ip=%d", obj.ip), 2);
+            Util.log.logVerbose(String.format("Set ip=%8x", obj.ip), 2);
             os.write(buf);
             os.flush();
             is.read(buf);

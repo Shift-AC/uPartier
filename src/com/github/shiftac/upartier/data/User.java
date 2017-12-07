@@ -44,7 +44,7 @@ public class User implements ByteArrayIO, PacketGenerator
     public int gender = Gender.unknown;
     public BString mailAccount = new BString();
     public BString nickname = new BString();
-    public Image profile = null;
+    public Image profile = new Image();
     public int postCount = 0;
     public AtomicBoolean myPostsLock = new AtomicBoolean(false);
     public ArrayList<Post> myPosts = null;
