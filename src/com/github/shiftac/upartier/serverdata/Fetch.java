@@ -480,7 +480,9 @@ public class Fetch {
              if(rs==null) {
             	 throw new NoSuchUserException();
              }
-             else {
+             else 
+             {
+            	 while(rs.next()) {
              user.age=rs.getInt("Age");
         	 user.gender=rs.getInt("Gender");
         	 user.id=rs.getInt("UserId");
@@ -491,6 +493,8 @@ public class Fetch {
         	 user.myPosts=getlist.getupostlist(user.id);
         	 user.postCount=rs.getInt("PostCount");
         	 user.profile=new Image(rs.getString("Image"));
+        	 }
+            	 
 	    	 return user;
 	    	}
              
