@@ -67,7 +67,7 @@ public class Fetch {
 			stmt.setInt(1, blockid);
 			stmt.setInt(2, postid);
 			stmt.setInt(3, count);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			Post[] post=new Post[count];
 			int i=0;
 			if(rs==null) {
@@ -111,7 +111,7 @@ public class Fetch {
 			sql2="select UserId from user where UserId=?";
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, userid);
-			ResultSet rs2 = stmt2.executeQuery(sql2);
+			ResultSet rs2 = stmt2.executeQuery();
 			if(rs2==null) 
 			{NoSuchUserException e= new NoSuchUserException();
 			  throw e;
@@ -122,7 +122,7 @@ public class Fetch {
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
 			stmt.setInt(3, count);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			Post[] post=new Post[count];
 			int i=0;
 			 while(rs.next()) {
@@ -168,7 +168,7 @@ public class Fetch {
 			sql2="select UserId from userpost where PostId=?";
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, id);
-			ResultSet rs2 = stmt2.executeQuery(sql2);
+			ResultSet rs2 = stmt2.executeQuery();
 			if(rs2==null) 
 			{NoSuchPostException e= new NoSuchPostException();
 			  throw e;
@@ -184,7 +184,7 @@ public class Fetch {
 	            sql="select * from user where UserId=?";
 				 PreparedStatement stmt=conn.prepareStatement(sql);
 	             stmt.setInt(1, useri);
-	             ResultSet rs=stmt.executeQuery(sql);
+	             ResultSet rs=stmt.executeQuery();
 	             while(rs.next()) {
 	            	 user[i].age=rs.getInt("Age");
 	            	 user[i].gender=rs.getInt("Gender");
@@ -234,7 +234,7 @@ public class Fetch {
 				stmt.setInt(1, id);
 				stmt.setLong(2, time);
 				stmt.setInt(3, count);
-				ResultSet rs = stmt.executeQuery(sql);
+				ResultSet rs = stmt.executeQuery();
 				if(rs==null) {throw new NoSuchPostException(); }
 				else{
 					int i=0;
@@ -284,42 +284,42 @@ public class Fetch {
 			//post.users
 			//post.messages
 			//post.users
-		    stmt.execute(sql);
+		    stmt.execute();
 		    for( User postuser:post.users)
 		    {
 		    	 sql="insert into userpost(UserId,PostId) value(?,?)";
 		    	 stmt=conn.prepareStatement(sql);
 		    	 stmt.setInt(1, postuser.id);
 		    	 stmt.setInt(2, post.id);
-		    	 stmt.execute(sql);
+		    	 stmt.execute();
 		    }
 		    sql="insert into blockpost(BlockId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.blockID);
 		    stmt.setInt(2, post.id);
-		    stmt.execute(sql);
+		    stmt.execute();
 		    sql="select PostCount from user where UserId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.userID);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			int mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
 		    sql="update user set PostCount=? where UserId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.userID);
-			stmt.execute(sql);
+			stmt.execute();
 			sql="select PostCount from block where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.blockID);
-			rs = stmt.executeQuery(sql);
+			rs = stmt.executeQuery();
 			mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
 		    sql="update user set PostCount=? where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.blockID);
-			stmt.execute(sql);
+			stmt.execute();
 		   
 			 stmt.close();
 			 conn.close();
@@ -350,18 +350,18 @@ public class Fetch {
 					sql="select * from user where UserId = ?  ";
 					PreparedStatement stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
-					ResultSet rs = stmt.executeQuery(sql);
+					ResultSet rs = stmt.executeQuery();
 					if(rs==null) {throw new NoSuchUserException(); }
 					sql="select * from post where PostId = ? ";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
-					rs=stmt.executeQuery(sql);
+					rs=stmt.executeQuery();
 					if(rs==null) {throw new NoSuchPostException(); }
 					sql="select * from userpost where UserId = ? and PostId = ?   ";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
-				    rs = stmt.executeQuery(sql);
+				    rs = stmt.executeQuery();
 					if(rs==null) {throw new PermissionException(); }
 					else { 
 						while(rs.next()) {
@@ -383,7 +383,7 @@ public class Fetch {
 						stmt.setInt(2, message.userID);
 						stmt.setByte(3, message.type);
 						stmt.setLong(4, message.time);
-						stmt.execute(sql);
+						stmt.execute();
 					    }
 			 return user;
 		}

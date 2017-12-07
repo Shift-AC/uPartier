@@ -18,7 +18,7 @@ public class getlist {
 			sql="select * from messageinf where PostId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, postid);
-			ResultSet rs = stmt.executeQuery(sql);	
+			ResultSet rs = stmt.executeQuery();	
 			ArrayList<MessageInf> pmlist =new ArrayList<MessageInf>();
 			while(rs.next()) {
 				MessageInf minf=new MessageInf();
@@ -42,12 +42,12 @@ public class getlist {
 			sql="select UserId from userpost where PostId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, postid);
-			ResultSet rs = stmt.executeQuery(sql);	
+			ResultSet rs = stmt.executeQuery();	
 			while(rs.next()) {
 				sql="select * from user where UserId=?";
 				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, rs.getInt("UserId"));
-				ResultSet rs2=stmt.executeQuery(sql);
+				ResultSet rs2=stmt.executeQuery();
 				while(rs2.next()) {
 					User user=new User();
 					user.age=rs2.getInt("Age");
@@ -73,7 +73,7 @@ public class getlist {
 			sql="select PostId from userpost where BlockId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, blockid);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			ArrayList<Post> postlist =new ArrayList<Post>();
 			while(rs.next()) {
 				Post post=new Post();
@@ -81,7 +81,7 @@ public class getlist {
 				sql="select * from post where PostId=?";
 				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, post.id);
-				ResultSet rs2 = stmt.executeQuery(sql);
+				ResultSet rs2 = stmt.executeQuery();
 				while(rs2.next()) {
 					post.blockID=rs2.getInt("BlockId");
 					post.label=new BString (rs2.getString("PostLabel"));
@@ -113,7 +113,7 @@ public class getlist {
 			sql="select PostId from userpost where UserId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			ArrayList<Post> postlist =new ArrayList<Post>();
 			while(rs.next()) {
 				Post post=new Post();
@@ -121,7 +121,7 @@ public class getlist {
 				sql="select * from post where PostId=?";
 				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, post.id);
-				ResultSet rs2 = stmt.executeQuery(sql);
+				ResultSet rs2 = stmt.executeQuery();
 				while(rs2.next()) {
 					post.blockID=rs2.getInt("BlockId");
 					post.label=new BString (rs2.getString("PostLabel"));

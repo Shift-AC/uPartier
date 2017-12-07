@@ -23,7 +23,7 @@ public class Update {
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, state);
 			stmt.setInt(2, id);
-		    stmt.execute(sql);
+		    stmt.execute();
 			 
 			 stmt.close();
 			 conn.close();
