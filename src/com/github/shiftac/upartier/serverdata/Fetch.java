@@ -462,8 +462,9 @@ public class Fetch {
 	     *
 	     * @throws SQLException if SQLException occured when accessing database files.
 		 * @throws IOException 
+		 * @throws NoSuchUserException if there is no such userid
 	     */
-	   public static User fetchProfile(int id) throws SQLException, IOException{
+	   public static User fetchProfile(int id) throws SQLException, IOException, NoSuchUserException{
 	    	User user=new User();
 	    	 Connection conn = null;
 				String sql;
@@ -474,6 +475,10 @@ public class Fetch {
 			 PreparedStatement stmt=conn.prepareStatement(sql);
              stmt.setInt(1, id);
              ResultSet rs = stmt.executeQuery();
+             if(rs==null) {
+            	 throw new NoSuchUserException();
+             }
+             else {
              user.age=rs.getInt("Age");
         	 user.gender=rs.getInt("Gender");
         	 user.id=rs.getInt("UserId");
@@ -484,8 +489,9 @@ public class Fetch {
         	 user.myPosts=getlist.getupostlist(user.id);
         	 user.postCount=rs.getInt("PostCount");
         	 user.profile=new Image(rs.getString("Image"));
-	    	
-		   return user;
+	    	 return user;
+	    	}
+             
 	    }
 		
 	   /**
@@ -495,8 +501,9 @@ public class Fetch {
 	     *
 	     * @throws SQLException if SQLException occured when accessing database files.
 	 * @throws IOException 
+	 * @throws NoSuchPostException if there is no such postid
 	     */
-	   public static User fetchIssuerProfile(int id)throws SQLException, IOException{
+	   public static User fetchIssuerProfile(int id)throws SQLException, IOException, NoSuchPostException{
 	    	User user = new User();
 	    	Connection conn = null;
 			String sql;
@@ -507,6 +514,11 @@ public class Fetch {
 		 PreparedStatement stmt=conn.prepareStatement(sql);
          stmt.setInt(1, id);
          ResultSet rs = stmt.executeQuery();
+         if(rs==null)
+         {
+        	 throw new NoSuchPostException();
+         }
+         else {
          int ownerid=rs.getInt("PostOwnerId");
          sql="select * from user where UserId=?";
 		 stmt=conn.prepareStatement(sql);
@@ -523,6 +535,7 @@ public class Fetch {
     	 user.postCount=rs.getInt("PostCount");
     	 user.profile=new Image(rs.getString("Image"));
 	    	return user;
+	    	  }
 	    	}
 	   
 	   
