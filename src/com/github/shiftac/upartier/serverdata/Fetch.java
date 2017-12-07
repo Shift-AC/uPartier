@@ -156,8 +156,9 @@ public class Fetch {
      * @throws SQLException if SQLException occured when accessing database files.
      * @throws NoSuchPostException if no such post exists.
 	 * @throws IOException 
+	 * @throws NoSuchUserException 
      */
-	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException, IOException{
+	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException, IOException, NoSuchUserException{
 		User[] user=new User[20];
 		
 		Connection conn = null;
@@ -502,8 +503,9 @@ public class Fetch {
 	     * @throws SQLException if SQLException occured when accessing database files.
 	 * @throws IOException 
 	 * @throws NoSuchPostException if there is no such postid
+	 * @throws NoSuchUserException 
 	     */
-	   public static User fetchIssuerProfile(int id)throws SQLException, IOException, NoSuchPostException{
+	   public static User fetchIssuerProfile(int id)throws SQLException, IOException, NoSuchPostException, NoSuchUserException{
 	    	User user = new User();
 	    	Connection conn = null;
 			String sql;
