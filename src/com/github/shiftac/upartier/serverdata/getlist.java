@@ -64,7 +64,7 @@ public class getlist {
 		return pulist;
 	}
 	
-	public static ArrayList<Post> getbpostlist(int blockid) throws SQLException, IOException{
+	public static ArrayList<Post> getbpostlist(int blockid) throws SQLException, IOException, NoSuchUserException{
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");
@@ -104,7 +104,7 @@ public class getlist {
 		
 	}
 	
-	public static ArrayList<Post> getupostlist(int userid) throws SQLException, IOException{
+	public static ArrayList<Post> getupostlist(int userid) throws SQLException, IOException, NoSuchUserException{
 		Connection conn = null;
 		String sql;
 		System.out.println("connecting to database....");
