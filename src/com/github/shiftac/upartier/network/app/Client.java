@@ -42,6 +42,7 @@ public class Client extends AbstractClient
         {
             this.inf = inf;
         }
+        restart();
     }
 
     /**
@@ -191,17 +192,12 @@ public class Client extends AbstractClient
         TreeMap<Integer, User> userCache = new TreeMap<Integer, User>();
         try
         {
-            client.start();
+            System.out.println("Waiting for input...");
             while (true)
             {
                 BufferedReader is = new BufferedReader(
                     new InputStreamReader(System.in));
                 String line = is.readLine();
-                if (!client.isAlive())
-                {
-                    throw new Exception(
-                        "Client closed unexpectedly!");
-                }
                 if (line == null || line.length() == 0)
                 {
                     continue;
