@@ -32,7 +32,7 @@ public class getlist {
 	}
 	
 	
-	public static ArrayList<User> getpulist(int postid) throws SQLException, IOException{
+	public static ArrayList<User> getpulist(int postid) throws SQLException, IOException, NoSuchUserException{
 		Connection conn = null;
 		String sql;
 		ArrayList<User> pulist=new ArrayList<User>();
