@@ -139,7 +139,10 @@ public class Worker extends ServerWorker
             Util.log.logVerbose("NoSuchPostException, return ERRPOST");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRPOST);
             res = ack.toPacket();
-        }
+        } catch (NoSuchUserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         wk.issueAck(res, seq);
     };
