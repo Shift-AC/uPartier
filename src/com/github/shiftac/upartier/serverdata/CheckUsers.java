@@ -16,7 +16,7 @@ public class CheckUsers {
 			
 			
 			System.out.println("Creating statement....");
-			sql="SELECT UserId,UserPassword FROM user where id=?";
+			sql="SELECT UserId,UserPassword FROM user where UserId=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, inf.id);
 			ResultSet rs = stmt.executeQuery();
