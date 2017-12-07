@@ -22,7 +22,7 @@ public class InsertUsers {
 		stmt.setInt(1, inf.id);
 		String passwd=inf.passwd.toString();
 		stmt.setString(2,passwd);
-	    stmt.execute(sql);
+	    stmt.execute();
 		 
 		 stmt.close();
 		 conn.close();

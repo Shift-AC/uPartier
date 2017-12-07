@@ -19,7 +19,7 @@ public class CheckUsers {
 			sql="SELECT UserId,UserPassword FROM user where id=?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, inf.id);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if(rs==null) {
 				NoSuchUserException e=new NoSuchUserException();
 				throw e;
