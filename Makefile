@@ -1,6 +1,6 @@
 # Auto generated file, modify if you want to add functions.
 
-CPWIN := upartier.jar:lib/org.json.jar:/lib/jce.jar:/lib/sunjce_provider.jar
+CPWIN := upartier.jar:lib/org.json.jar:/lib/jce.jar:/lib/sunjce_provider.jar:mysql-connector-java-5.1.44-bin.jar:hamcrest-core-1.3.jar:junit-4.12.jar:
 CPLINUX := $(subst :,;,$(CPWIN))
 CP := $(CPWIN);$(CPLINUX)
 
