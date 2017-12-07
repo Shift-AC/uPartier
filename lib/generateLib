@@ -1,0 +1,6 @@
+#!/bin/bash
+
+files=`ls $1 | grep jar`
+files=`echo ${files}`
+lib=$1/${files// /:$1/}:
+echo $lib

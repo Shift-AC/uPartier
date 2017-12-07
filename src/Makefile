@@ -17,20 +17,20 @@ com.github.shiftac.upartier.serverdata;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 LIB := ../lib
-JAVALIBLINUX := $(LIB)/org.json.jar:$(LIB)/junit-4.12.jar:$(LIB)/hamcrest-core-1.3.jar:$(LIB)/mysql-connector-java-5.1.44-bin.jar:
-JAVALIBWIN := $(subst :,;,$(JAVALIBLINUX))
-JAVALIB := $(JAVALIBWIN):$(JAVALIBLINUX)
+CPLINUX := $(shell $(LIB)/generateLib $(LIB))
+CPWIN := $(subst :,;,$(CPLINUX))
+CP := $(CPWIN):$(CPLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
 JAVADOCFLAGS := -locale en_US -private 
 #MANIFEST := "Class-Path: lib/org.json.jar lib/jce.jar lib/sunjce_provider.jar"
 
 .PHONY: all
 all:
-	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)"
+	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(CP)"
 
 .PHONY: javadoc
 javadoc:
-	$(JAVADOC) $(JAVADOCFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(JAVALIB)"
+	$(JAVADOC) $(JAVADOCFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(CP)"
 
 .PHONY: clean
 clean:

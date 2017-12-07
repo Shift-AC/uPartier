@@ -1,8 +1,9 @@
 # Auto generated file, modify if you want to add functions.
 
-CPWIN := upartier.jar:lib/org.json.jar:/lib/jce.jar:/lib/sunjce_provider.jar:mysql-connector-java-5.1.44-bin.jar:hamcrest-core-1.3.jar:junit-4.12.jar:
-CPLINUX := $(subst :,;,$(CPWIN))
-CP := $(CPWIN);$(CPLINUX)
+LIB := lib
+CPLINUX := upartier.jar:$(shell $(LIB)/generateLib $(LIB))
+CPWIN := $(subst :,;,$(CPLINUX))
+CP := $(CPWIN):$(CPLINUX)
 
 .PHONY: all
 all: clean init
@@ -38,14 +39,14 @@ clean:
 README: README.md
 	pandoc README.md --latex-engine=xelatex -o README.pdf
 
-runServerDemo:
+runServerDemo: all
 	java -cp "$(CP)" com.github.shiftac.upartier.network.demo.EchoServer
 
-runClientDemo:
+runClientDemo: all
 	java -cp "$(CP)" com.github.shiftac.upartier.network.demo.EchoClient
 
-runServerTest:
+runServerTest: all
 	java -cp "$(CP)" com.github.shiftac.upartier.network.server.Server
 
-runClientTest:
+runClientTest: all
 	java -cp "$(CP)"  com.github.shiftac.upartier.network.app.Client
