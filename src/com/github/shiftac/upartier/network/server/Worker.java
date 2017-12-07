@@ -258,7 +258,10 @@ public class Worker extends ServerWorker
             Util.log.logVerbose("SQLException, return ERRIO");
             ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
             res = ack.toPacket();
-        }
+        } catch (NoSuchUserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         wk.issueAck(res, seq);
     };
