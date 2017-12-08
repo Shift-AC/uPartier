@@ -1,14 +1,17 @@
 package com.github.shiftac.upartier.network.app;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.data.ACKInf;
+import com.github.shiftac.upartier.data.BString;
 import com.github.shiftac.upartier.data.Block;
 import com.github.shiftac.upartier.data.LoginInf;
 import com.github.shiftac.upartier.data.MessageInf;
@@ -42,6 +45,7 @@ public class Client extends AbstractClient
         {
             this.inf = inf;
         }
+        restart();
     }
 
     /**
@@ -179,82 +183,238 @@ public class Client extends AbstractClient
 
     private static final String usage = 
         "General: [operator] [parameters...]\n" +
+        "  b: fetch blocks\n" +
+        "  f [postID]: fetch user list for post with id=postID\n" +
+        "  g [postID] [count]: get [count] messages for post with id=postID\n" +
         "  h: show this message\n" +
+        "  i [postName]: issue a post\n" +
+        "  j [postID]: join post with id=postID\n" +
         "  l [userID] [passwd]: login\n" +
-        "  o: logout\n";
+        "  m [count]: fetch [count] posts issued by me\n" +
+        "  o: logout\n" +
+        "  p [blockID] [count]: get count posts for block with id=blockID\n" +
+        "  r [nickname]: modify my nickname\n" +
+        "  s [postID] [content]: send a message in post with id=postID\n" +
+        "  u [userID]: fetch user with id=userID\n";
 
     public static void main(String[] args)
     {
-        User currentuser;
+        User currentuser = null;
         TreeMap<Integer, Block> blockCache = new TreeMap<Integer, Block>();
         TreeMap<Integer, Post> postCache = new TreeMap<Integer, Post>();
         TreeMap<Integer, User> userCache = new TreeMap<Integer, User>();
-        try
+
+        Util.log.logMessage("Terminal client initialized.");
+        while (true)
         {
-            client.start();
-            while (true)
+            try
             {
+                if (currentuser != null && !client.isAlive())
+                {
+                    System.out.println("Client closed unexpectedly!");
+                    break;
+                }
                 BufferedReader is = new BufferedReader(
                     new InputStreamReader(System.in));
                 String line = is.readLine();
-                if (!client.isAlive())
-                {
-                    throw new Exception(
-                        "Client closed unexpectedly!");
-                }
                 if (line == null || line.length() == 0)
                 {
                     continue;
                 }
 
-                Packet pak = null;
                 char operator = line.charAt(0);
 
                 switch (operator)
                 {
-                case 'l':
-                    String[] largs = line.substring(2).split(" ");
-                    LoginInf inf = new LoginInf(Integer.parseInt(largs[0]),
-                        largs[1], false);
-                    User user = User.login(inf);
-                    System.out.println(
-                        "Login succeed, inf " + user.getInf());
+                case 'b':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    Block[] arr = Block.fetchBlocks();
+                    for (int i = 0; i < arr.length; ++i)
+                    {
+                        blockCache.put(arr[i].id, arr[i]);
+                    }
                     break;
+                }
+                case 'f':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    int num = Integer.parseInt(line.substring(2));
+                    Post post = postCache.get(num);
+                    if (post == null)
+                    {
+                        System.out.println("Fetch this post first.");
+                        break;
+                    }
+                    post.fetchUserList();
+                    break;
+                }
+                case 'g':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    String[] largs = line.substring(2).split(" ");
+                    int num = Integer.parseInt(largs[0]);
+                    Post post = postCache.get(num);
+                    if (post == null)
+                    {
+                        System.out.println("Fetch this post first.");
+                        break;
+                    }
+                    post.fetchMessage(currentuser, Integer.parseInt(largs[1]));
+
+                    break;
+                }
                 case 'h':
                     System.out.println(usage);
                     break;
+                case 'i':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    Post post = new Post();
+                    post.name.setContent(line.substring(2));
+                    currentuser.issue(post);
+                    postCache.put(post.id, post);
+                    break;
+                }
+                case 'j':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    int num = Integer.parseInt(line.substring(2));
+                    Post post = postCache.get(num);
+                    if (post == null)
+                    {
+                        System.out.println("Fetch this post first.");
+                        break;
+                    }
+                    currentuser.join(post);
+                    break;
+                }
+                case 'l':
+                {
+                    String[] largs = line.substring(2).split(" ");
+                    LoginInf inf = new LoginInf(Integer.parseInt(largs[0]),
+                        largs[1], false);
+                    currentuser = User.login(inf);
+                    break;
+                }
+                case 'm':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    int base = currentuser.myPosts.size();
+                    int num = Integer.parseInt(line.substring(2));
+                    currentuser.fetchMyPosts(num);
+                    for (int i = 0; i < num; ++i)
+                    {
+                        Post post = currentuser.myPosts.get(base + i);
+                        postCache.put(post.id, post);
+                    }
+                    break;
+                }
                 case 'o':
-                    pak = new AES128Packet();
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    Packet pak = new AES128Packet();
                     pak.setLen(8);
                     pak.type = PacketType.TYPE_LOGOUT;
-                    break;
-                case 'u':
-                    
-                    break;
-                default:
+                    currentuser = null;
                     break;
                 }
-
-                if (pak != null)
+                case 'p':
                 {
-                    pak = client.issueWait(pak);
-                    switch (pak.type)
+                    if (currentuser == null)
                     {
-                    case PacketType.TYPE_LOGIN:
-                        User inf = new User(pak);
-                        System.out.println(
-                            "Login succeed, inf " + inf.getInf());
+                        System.out.println("Login needed for this operation.");
                         break;
-                    case PacketType.TYPE_SERVER_ACK:
-                        ACKInf ack = new ACKInf(pak);
-                        System.out.println("Server ack, inf " + ack.getInf());
                     }
+                    String[] largs = line.substring(2).split(" ");
+                    int num = Integer.parseInt(largs[0]);
+                    Block block = blockCache.get(num);
+                    if (block == null)
+                    {
+                        System.out.println("Fetch this block first.");
+                        break;
+                    }
+                    int base = block.posts.size();
+                    num = Integer.parseInt(largs[1]);
+                    block.fetchPosts(num);
+                    for (int i = 0; i < num; ++i)
+                    {
+                        Post post = block.posts.get(base + i);
+                        postCache.put(post.id, post);
+                    }
+                    break;
+                }
+                case 'r':
+                {
+                    if (currentuser == null)
+                    {
+                        System.out.println("Login needed for this operation.");
+                        break;
+                    }
+                    currentuser.nickname.setContent(line.substring(2));
+                    currentuser.modify();
+                    break;
+                }
+                case 's':
+                {
+                    int spi = line.substring(2).indexOf(' ') + 3;
+                    int postID = Integer.parseInt(line.substring(2, spi));
+                    Post post = postCache.get(postID);
+                    if (post == null)
+                    {
+                        System.out.println("Fetch this post first.");
+                        break;
+                    }
+                    MessageInf inf = new MessageInf(line.substring(spi), 
+                        currentuser.id, postID);
+                    currentuser.sendMessage(post, inf);
+                    break;
+                }
+                case 'u':
+                {
+                    User user = User.fetchProfile(Integer.parseInt(
+                        line.substring(2)));
+                    userCache.put(user.id, user);
+                    break;
+                }
+                default:
+                    System.out.println(
+                        "Unknown operator" + operator +", type h for help.");
+                    break;
                 }
             }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

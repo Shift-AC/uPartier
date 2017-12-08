@@ -70,6 +70,11 @@ public class GenericFile implements ByteArrayIO
     @Override
     public int getLength()
     {
-        return SIZE_INT + SIZE_INT + name.getLength() + payload.length;
+        int res = SIZE_INT + SIZE_INT + name.getLength();
+        if (payload != null)
+        {
+            res += payload.length;
+        }
+        return res;
     }
 }

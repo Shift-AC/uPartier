@@ -37,6 +37,7 @@ public class Worker extends ServerWorker
 
             Util.log.logVerbose("Success. Returning: " + user.getInf());
             res = user.toPacket();
+            res.type = PacketType.TYPE_LOGIN;
         }
         catch (IOException ioe)
         {
@@ -85,6 +86,7 @@ public class Worker extends ServerWorker
             {
                 wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             }
+            wk.issueAck(new ACKInf(ACKInf.RET_SUCC).toPacket(), seq);
         }
     };
 
@@ -115,7 +117,7 @@ public class Worker extends ServerWorker
                 return;
             }
             res = new AES128Packet(tmp);
-            res.type = PacketType.TYPE_POST_FETCH;
+            res.type = PacketType.TYPE_USER_FETCH;
 
             Util.log.logVerbose("Success. Returning: " + tmp.getInf());
         }
@@ -241,7 +243,7 @@ public class Worker extends ServerWorker
                 return;
             }
             res = new AES128Packet(tmp);
-            res.type = PacketType.TYPE_POST_FETCH;
+            res.type = PacketType.TYPE_BLOCK_FETCH;
             
             Util.log.logVerbose("Success. Returning: " + tmp.getInf());
         }
@@ -297,7 +299,7 @@ public class Worker extends ServerWorker
                 return;
             }
             res = new AES128Packet(tmp);
-            res.type = PacketType.TYPE_POST_FETCH;
+            res.type = PacketType.TYPE_MESSAGE_FETCH;
             
             Util.log.logVerbose("Success. Returning: " + tmp.getInf());
         }
@@ -555,11 +557,13 @@ public class Worker extends ServerWorker
         {
         case PacketType.TYPE_LOGIN:
         case PacketType.TYPE_LOGOUT:
+        case PacketType.TYPE_BLOCK_FETCH:
         case PacketType.TYPE_USER_FETCH:
         case PacketType.TYPE_POST_FETCH:
         case PacketType.TYPE_SERVER_ACK:
         case PacketType.TYPE_MESSAGE_FETCH:
         case PacketType.TYPE_MESSAGE_PUSH:
+        case PacketType.TYPE_POST_MODIFY:
             pak.write(os);
             Util.log.logMessage("Package #" + pak.sequence + " sent.");   
             break;
