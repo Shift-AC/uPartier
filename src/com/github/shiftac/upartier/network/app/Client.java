@@ -204,14 +204,14 @@ public class Client extends AbstractClient
         TreeMap<Integer, Post> postCache = new TreeMap<Integer, Post>();
         TreeMap<Integer, User> userCache = new TreeMap<Integer, User>();
 
-        Util.log.logMessage("Waiting for input...");
+        Util.log.logMessage("Terminal client initialized.");
         while (true)
         {
             try
             {
                 if (currentuser != null && !client.isAlive())
                 {
-                    Util.log.logMessage("Client closed unexpectedly!");
+                    System.out.println("Client closed unexpectedly!");
                     break;
                 }
                 BufferedReader is = new BufferedReader(
@@ -230,7 +230,7 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     Block[] arr = Block.fetchBlocks();
@@ -244,14 +244,14 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     int num = Integer.parseInt(line.substring(2));
                     Post post = postCache.get(num);
                     if (post == null)
                     {
-                        Util.log.logMessage("Fetch this post first.");
+                        System.out.println("Fetch this post first.");
                         break;
                     }
                     post.fetchUserList();
@@ -261,7 +261,7 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     String[] largs = line.substring(2).split(" ");
@@ -269,7 +269,7 @@ public class Client extends AbstractClient
                     Post post = postCache.get(num);
                     if (post == null)
                     {
-                        Util.log.logMessage("Fetch this post first.");
+                        System.out.println("Fetch this post first.");
                         break;
                     }
                     post.fetchMessage(currentuser, Integer.parseInt(largs[1]));
@@ -277,13 +277,13 @@ public class Client extends AbstractClient
                     break;
                 }
                 case 'h':
-                    Util.log.logMessage(usage);
+                    System.out.println(usage);
                     break;
                 case 'i':
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     Post post = new Post();
@@ -296,14 +296,14 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     int num = Integer.parseInt(line.substring(2));
                     Post post = postCache.get(num);
                     if (post == null)
                     {
-                        Util.log.logMessage("Fetch this post first.");
+                        System.out.println("Fetch this post first.");
                         break;
                     }
                     currentuser.join(post);
@@ -321,7 +321,7 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     int base = currentuser.myPosts.size();
@@ -338,7 +338,7 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     Packet pak = new AES128Packet();
@@ -351,7 +351,7 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     String[] largs = line.substring(2).split(" ");
@@ -359,7 +359,7 @@ public class Client extends AbstractClient
                     Block block = blockCache.get(num);
                     if (block == null)
                     {
-                        Util.log.logMessage("Fetch this block first.");
+                        System.out.println("Fetch this block first.");
                         break;
                     }
                     int base = block.posts.size();
@@ -376,7 +376,7 @@ public class Client extends AbstractClient
                 {
                     if (currentuser == null)
                     {
-                        Util.log.logMessage("Login needed for this operation.");
+                        System.out.println("Login needed for this operation.");
                         break;
                     }
                     currentuser.nickname.setContent(line.substring(2));
@@ -390,7 +390,7 @@ public class Client extends AbstractClient
                     Post post = postCache.get(postID);
                     if (post == null)
                     {
-                        Util.log.logMessage("Fetch this post first.");
+                        System.out.println("Fetch this post first.");
                         break;
                     }
                     MessageInf inf = new MessageInf(line.substring(spi), 
@@ -406,7 +406,7 @@ public class Client extends AbstractClient
                     break;
                 }
                 default:
-                    Util.log.logMessage(
+                    System.out.println(
                         "Unknown operator" + operator +", type h for help.");
                     break;
                 }
