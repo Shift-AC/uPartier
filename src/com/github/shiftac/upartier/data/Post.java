@@ -171,7 +171,7 @@ public class Post implements ByteArrayIO, PacketGenerator
      * {@code Client.NETWORK_TIMEOUT} milliseconds.
      * @throws NoSuchPostException if no such post exists.
      */
-    public void fetchUserList(int count)
+    public void fetchUserList()
         throws IOException, SocketTimeoutException, NoSuchPostException
     {
         UserFetchInf inf = new UserFetchInf(UserFetchInf.POST_LIST, this.id);
