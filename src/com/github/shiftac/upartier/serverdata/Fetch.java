@@ -25,7 +25,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select top 3 * from block order By BlockId desc";
+			sql="select * from upartier.block order By BlockId desc limit 3";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			Block[] block=new Block[3];
