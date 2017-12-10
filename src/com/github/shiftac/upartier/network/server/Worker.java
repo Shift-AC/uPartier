@@ -84,8 +84,10 @@ public class Worker extends ServerWorker
             }
             catch (SQLException e)
             {
+                Util.log.logVerbose("SQLException, return ERRIO");
                 wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             }
+            Util.log.logVerbose("Success. Return RET_SUCC.");
             wk.issueAck(new ACKInf(ACKInf.RET_SUCC).toPacket(), seq);
         }
     };
@@ -153,17 +155,11 @@ public class Worker extends ServerWorker
     {
         PostFetchInf inf = (PostFetchInf)obj;
         Packet res = null;
-        boolean cur = false;
-
+        
         Util.log.logVerbose(String.format(
             "Got PostFetchInf: %s", inf.getInf()));
-        synchronized (wk.current)
+        if (!checkUser(wk, inf.user))
         {
-            cur = wk.current.id != inf.user;
-        }
-        if (cur)
-        {
-            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -272,17 +268,11 @@ public class Worker extends ServerWorker
     {
         MsgFetchInf inf = (MsgFetchInf)obj;
         Packet res = null;
-        boolean cur;
 
         Util.log.logVerbose(String.format(
             "Got MsgFetchInf: %s", inf.getInf()));
-        synchronized (wk.current)
+        if (!checkUser(wk, inf.user))
         {
-            cur = wk.current.id != inf.user;
-        }
-        if (cur)
-        {
-            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -332,17 +322,11 @@ public class Worker extends ServerWorker
     {
         User user = (User)obj;
         Packet res = null;
-        boolean cur = false;
 
         Util.log.logVerbose(String.format(
             "Got User: %s", user.getInf()));
-        synchronized (wk.current)
+        if (!checkUser(wk, user.id))
         {
-            cur = wk.current.id != user.id;
-        }
-        if (cur)
-        {
-            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -369,17 +353,11 @@ public class Worker extends ServerWorker
     {
         Post post = (Post)obj;
         Packet res = null;
-        boolean cur = false;
 
         Util.log.logVerbose(String.format(
             "Got Post: %s", post.getInf()));
-        synchronized (wk.current)
+        if (!checkUser(wk, post.userID))
         {
-            cur = wk.current.id != post.userID;
-        }
-        if (cur)
-        {
-            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -419,17 +397,11 @@ public class Worker extends ServerWorker
     {
         MessageInf inf = (MessageInf)obj;
         Packet res = null;
-        boolean cur = false;
 
         Util.log.logVerbose(String.format(
             "Got MessageInf: %s", inf.getInf()));
-        synchronized (wk.current)
+        if (!checkUser(wk, inf.userID))
         {
-            cur = wk.current.id != inf.userID;
-        }
-        if (cur)
-        {
-            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -492,17 +464,11 @@ public class Worker extends ServerWorker
     {
         PostJoinInf inf = (PostJoinInf)obj;
         Packet res = null;
-        boolean cur = false;
 
         Util.log.logVerbose(String.format(
             "Got PostJoinInf: %s", inf.getInf()));
-        synchronized (wk.current)
+        if (!checkUser(wk, inf.userID))
         {
-            cur = wk.current.id != inf.userID;
-        }
-        if (cur)
-        {
-            wk.issueAck(new ACKInf(ACKInf.RET_ERRIO).toPacket(), seq);
             return;
         }
         try
@@ -545,6 +511,22 @@ public class Worker extends ServerWorker
 
         wk.issueAck(res, seq);
     };
+
+    static boolean checkUser(ServerWorker wk, int id)
+    {
+        int cid;
+        synchronized (wk.current)
+        {
+            cid = wk.current.id;
+        }
+        if (cid != id)
+        {
+            Util.log.logMessage(String.format(
+                "User id(%d) mot match(expected %d), refuse.",
+                id, cid));
+        }
+        return cid == id;
+    }
 
     @Override
     protected void parseOut(Packet pak)

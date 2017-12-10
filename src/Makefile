@@ -17,7 +17,7 @@ com.github.shiftac.upartier.serverdata;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 LIB := ../lib
-CPLINUX := $(shell $(LIB)/generateLib $(LIB))
+CPLINUX := $(shell bash $(LIB)/generateLib $(LIB))
 CPWIN := $(subst :,;,$(CPLINUX))
 CP := $(CPWIN):$(CPLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
@@ -26,6 +26,7 @@ JAVADOCFLAGS := -locale en_US -private
 
 .PHONY: all
 all:
+	echo $(CPLINUX)
 	$(JAVAC) $(JAVAFLAGS) $(JAVASRC) -d $(TARGET) -cp "$(CP)"
 
 .PHONY: javadoc

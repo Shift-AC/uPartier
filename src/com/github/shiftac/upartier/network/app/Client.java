@@ -4,14 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
-import com.github.shiftac.upartier.data.ACKInf;
-import com.github.shiftac.upartier.data.BString;
 import com.github.shiftac.upartier.data.Block;
 import com.github.shiftac.upartier.data.LoginInf;
 import com.github.shiftac.upartier.data.MessageInf;
@@ -386,7 +382,7 @@ public class Client extends AbstractClient
                 case 's':
                 {
                     int spi = line.substring(2).indexOf(' ') + 3;
-                    int postID = Integer.parseInt(line.substring(2, spi));
+                    int postID = Integer.parseInt(line.substring(2, spi - 1));
                     Post post = postCache.get(postID);
                     if (post == null)
                     {
