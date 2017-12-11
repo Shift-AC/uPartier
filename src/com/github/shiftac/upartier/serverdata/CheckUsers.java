@@ -23,9 +23,11 @@ public class CheckUsers {
 			if(rs==null) {
 				NoSuchUserException e=new NoSuchUserException();
 				throw e;
+				
 			}
 			
-			 while(rs.next()) {
+			else { 
+				while(rs.next()) {
 				 int id= rs.getInt("UserId");
 				 String password=rs.getString("UserPassword");
                  String inpassword=inf.passwd.toString();
@@ -37,6 +39,7 @@ public class CheckUsers {
                  {NoSuchUserException e=new NoSuchUserException();
                 	 throw e;}
 			 }
+			}
 			 
 			 rs.close();
 			 stmt.close();
