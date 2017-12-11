@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.KeyGenerator;
 
 import com.github.shiftac.upartier.Util;
@@ -48,11 +49,13 @@ public class AES128Key
         }
         try
         {
-            KeyGenerator gen = KeyGenerator.getInstance("AES");
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            sr.setSeed(seed);
-            gen.init(128, sr);
-            this.key = gen.generateKey();
+            //PBKDF2WithHmacSHA1
+            //KeyGenerator gen = KeyGenerator.getInstance("AES");
+            //SecureRandom sr = SecureRandom.getInstance("DRBG");
+            //sr.setSeed(seed);
+            //gen.init(128, sr);
+            //this.key = gen.generateKey();
+            this.key = new SecretKeySpec(seed, "AES");
             spec = new IvParameterSpec(seed);
         }
         catch(Exception e)

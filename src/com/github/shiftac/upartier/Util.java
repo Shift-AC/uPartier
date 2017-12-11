@@ -20,7 +20,7 @@ public class Util
         "        {\n" +
         "            \"Server\":\n" +
         "            {\n" +
-        "                \"host\": \"222.29.98.72\",\n" +
+        "                \"host\": \"127.0.0.1\",\n" +
         "                \"port\": 2333,\n" +
         "                \"maxWorker\": 32\n" +
         "            },\n" +
