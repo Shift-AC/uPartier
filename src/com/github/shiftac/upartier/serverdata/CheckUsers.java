@@ -5,7 +5,7 @@ import  com.github.shiftac.upartier.data.NoSuchUserException;
 
 public class CheckUsers {
 	static final String url ="jdbc:mysql://localhost:3306/group4?useSSL=false"; 
-	static final String USER ="group4";
+	static final String USER ="root";
 	static final String PASS="group4";
 	
 	static public void checkusers(LoginInf inf) throws NoSuchUserException,SQLException {

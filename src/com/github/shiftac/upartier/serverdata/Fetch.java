@@ -6,7 +6,7 @@ import java.sql.*;
 import  com.github.shiftac.upartier.data.*;
 public class Fetch {
 	static final String url ="jdbc:mysql://localhost:3306/group4?useSSL=false"; 
-	static final String USER ="group4";
+	static final String USER ="root";
 	static final String PASS="group4";
 	/**
      * Try to fetch all existing post blocks, the {@code Block} objects returned 

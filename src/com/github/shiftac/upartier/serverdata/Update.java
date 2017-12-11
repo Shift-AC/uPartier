@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class Update {
 	static final String url ="jdbc:mysql://localhost:3306/group4?useSSL=false"; 
-	static final String USER ="group4";
+	static final String USER ="root";
 	static final String PASS="group4";
 
 	
