@@ -242,11 +242,7 @@ public class Fetch {
 					int i=0;
 			
 					while(rs.next()) {
-					 messageinf[i].postID=rs.getInt("PostId");
-						messageinf[i].time=rs.getLong("Time");
-						messageinf[i].type= rs.getByte("Type");
-					    messageinf[i].userID=rs.getInt("UserId");
-					   // messageinf[i].content=rs.getObject(arg0, arg1);
+					 messageinf[i]=new MessageInf(rs.getString("Content"),rs.getInt("UserId"),rs.getInt("PostId"));
 					 i++;
 					 }
 				}
@@ -379,12 +375,13 @@ public class Fetch {
 		            	 user[i].profile=new Image(rs.getString("Image"));
 					}
 		
-						sql="insert into messageinf(PostId,UserId,Type,Time) values(?,?,?,?)";
+						sql="insert into messageinf(PostId,UserId,Type,Time,Content) values(?,?,?,?,?)";
 						stmt = conn.prepareStatement(sql);
 						stmt.setInt(1, message.postID);
 						stmt.setInt(2, message.userID);
 						stmt.setByte(3, message.type);
 						stmt.setLong(4, message.time);
+						stmt.setString(5, message.content.toString());
 						stmt.execute();
 					    }
 			 return user;
