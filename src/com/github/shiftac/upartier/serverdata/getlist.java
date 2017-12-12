@@ -21,11 +21,7 @@ public class getlist {
 			ResultSet rs = stmt.executeQuery();	
 			ArrayList<MessageInf> pmlist =new ArrayList<MessageInf>();
 			while(rs.next()) {
-				MessageInf minf=new MessageInf();
-				minf.postID=rs.getInt("PostId");
-				minf.time=rs.getLong("Time");
-				minf.type=rs.getByte("Type");
-				minf.userID=rs.getInt("UserId");	
+				MessageInf minf=new MessageInf(rs.getString("Content"),rs.getInt("UserId"),rs.getInt("PostId"));	
 				pmlist.add(minf);
 			}
 			return pmlist;
