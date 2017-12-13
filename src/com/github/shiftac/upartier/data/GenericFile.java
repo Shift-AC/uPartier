@@ -52,7 +52,7 @@ public class GenericFile implements ByteArrayIO
     public void read(byte[] buf, int off, int len)
         throws IOException
     {
-        name.write(buf, off, len);
+        name.read(buf, off, len);
         int nlen = name.getLength();
         checkLen(len -= nlen, SIZE_INT + SIZE_INT);
         int blen = getInt(buf, off += nlen);

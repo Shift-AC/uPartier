@@ -199,8 +199,18 @@ public class Client extends AbstractClient
         TreeMap<Integer, Block> blockCache = new TreeMap<Integer, Block>();
         TreeMap<Integer, Post> postCache = new TreeMap<Integer, Post>();
         TreeMap<Integer, User> userCache = new TreeMap<Integer, User>();
-
+        BufferedReader is = null;
         Util.log.logMessage("Terminal client initialized.");
+        try
+        {
+            is = new BufferedReader(
+               new InputStreamReader(System.in));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+        }
         while (true)
         {
             try
@@ -210,8 +220,6 @@ public class Client extends AbstractClient
                     System.out.println("Client closed unexpectedly!");
                     break;
                 }
-                BufferedReader is = new BufferedReader(
-                    new InputStreamReader(System.in));
                 String line = is.readLine();
                 if (line == null || line.length() == 0)
                 {
@@ -337,9 +345,7 @@ public class Client extends AbstractClient
                         System.out.println("Login needed for this operation.");
                         break;
                     }
-                    Packet pak = new AES128Packet();
-                    pak.setLen(8);
-                    pak.type = PacketType.TYPE_LOGOUT;
+                    currentuser.logout();
                     currentuser = null;
                     break;
                 }
@@ -411,6 +417,8 @@ public class Client extends AbstractClient
             {
                 e.printStackTrace();
             }
+
+            System.out.println("Completed.");
         }
     }
 }

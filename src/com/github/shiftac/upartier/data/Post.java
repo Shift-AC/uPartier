@@ -61,8 +61,9 @@ public class Post implements ByteArrayIO, PacketGenerator
     public String getInf()
     {
         return String.format("id=%d, blockID=%d, userID=%d, name=%s, time=%d," +
-        " label=%s, place=%s, note=%s, userCount=%d", id, blockID, userID, 
-        name.toString(), label.toString(), note.toString(), userCount);
+            " label=%s, place=%s, note=%s, userCount=%d", id, blockID, userID, 
+            name.toString(), time, label.toString(), 
+            place.toString(), note.toString(), userCount);
     }
 
     @Override
