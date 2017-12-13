@@ -1,6 +1,7 @@
 package com.github.shiftac.upartier.network;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
@@ -47,26 +48,23 @@ public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
         int larr = getInt(buf, off);
         off += SIZE_INT;
         len -= SIZE_INT;
-        ArrayList<T> tarr = new ArrayList<T>(larr);
+        arr = (T[])Array.newInstance(cls, larr);
         for (int i = 0; i < larr; ++i)
         {
-            T ele = null;
             try
             {
-                ele = cls.getDeclaredConstructor().newInstance();
+                arr[i] = cls.getDeclaredConstructor().newInstance();
             }
             catch (Exception e)
             {
                 e.printStackTrace();
                 return;
             }
-            ele.read(buf, off, len);
-            int elen = ele.getLength();
+            arr[i].read(buf, off, len);
+            int elen = arr[i].getLength();
             off += elen;
             len -= elen;
-            tarr.set(i, ele);
         }
-        arr = (T[])tarr.toArray();
     }
 
     @Override
