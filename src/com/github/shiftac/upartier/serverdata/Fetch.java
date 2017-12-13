@@ -2,7 +2,7 @@ package com.github.shiftac.upartier.serverdata;
 import java.io.IOException;
 import java.sql.*;
 
-
+import com.github.shiftac.upartier.LogManager;
 import  com.github.shiftac.upartier.data.*;
 public class Fetch {
 	static final String url ="jdbc:mysql://localhost:3306/group4?useSSL=false"; 
@@ -275,11 +275,12 @@ public class Fetch {
 			stmt.setInt(1, post.id);
 			stmt.setInt(2, post.blockID);
 			stmt.setString(3, post.name.toString());
-			stmt.setLong(4, post.time);
+			Long mytime=LogManager.calendar.getTimeInMillis();;
+			stmt.setLong(4, mytime);
 			stmt.setString(5, post.label.toString());
 			stmt.setString(6, post.place.toString());
 			stmt.setString(7, post.note.toString());
-			stmt.setInt(8, post.userCount);
+			stmt.setInt(8, 1);
 			stmt.setInt(9, post.userID);
 			//post.users
 			//post.messages
