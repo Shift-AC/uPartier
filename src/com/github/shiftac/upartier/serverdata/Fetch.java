@@ -374,14 +374,14 @@ public class Fetch {
 			PreparedStatement stmt1=conn.prepareStatement(sql); 
 			stmt1.setInt(1, post.blockID);
 			ResultSet myrs=stmt1.executeQuery(); 
-			if(myrs==null) {
+			if(myrs.first()==false) {
 				throw new NoSuchBlockException();
 			}
 			sql="select * from user where UserId=?";
 			stmt1=conn.prepareStatement(sql);
 			stmt1.setInt(1, post.userID);
 			myrs=stmt1.executeQuery();
-			if(myrs==null) {
+			if(myrs.first()==false) {
 				throw new NoSuchUserException();
 			}
 			sql="insert into post(BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?) ";
@@ -403,7 +403,7 @@ public class Fetch {
 			//post.users
 		    stmt.execute();
 		    ResultSet rs1 = stmt.getGeneratedKeys(); //get result
-		    int mypostid = 10;
+		    int mypostid = 10000;
 		    while(rs1.next()) {  
 		    mypostid = rs1.getInt(1);//get ID  
 		    }
