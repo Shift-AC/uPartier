@@ -487,8 +487,7 @@ public class Fetch {
 					 }
 					 sql="select UserId from userpost where PostId = ?   ";
 					 stmt=conn.prepareStatement(sql);
-					 stmt.setInt(1, userid);
-					 stmt.setInt(2, postid);
+					 stmt.setInt(1, postid);
 					    rs = stmt.executeQuery();
 					    while(rs.next()) {
 					    int myuserid=rs.getInt("UserId");
