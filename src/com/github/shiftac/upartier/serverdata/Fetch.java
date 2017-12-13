@@ -157,7 +157,7 @@ public class Fetch {
 			  throw e;
 			}
 			
-			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) order by PostId desc  limit ?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
@@ -183,7 +183,7 @@ public class Fetch {
 			}
 			}
 			
-			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc)order by PostId desc limit ?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
@@ -229,7 +229,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql2="select UserId from userpost where PostId=?";
+			sql2="select UserId from userpost where PostId=? order by UserId desc";
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, id);
 			ResultSet rs2 = stmt2.executeQuery();
@@ -303,13 +303,21 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="select * from messageinf where PostId = ? and Time <? order by MessageId desc limit ? ";
+				sql="select * from messageinf where PostId =?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, id);
-				stmt.setLong(2, time);
-				stmt.setInt(3, count);
-				ResultSet rs = stmt.executeQuery();
-				if(rs==null) {throw new NoSuchPostException(); }
+				ResultSet rs=stmt.executeQuery();
+				if(rs==null) {
+					throw new NoSuchPostException();
+				}
+				sql="select * from messageinf where PostId = ? and UserId=? and Time <? order by MessageId desc limit ? ";
+				stmt=conn.prepareStatement(sql);
+				stmt.setInt(1, id);
+                stmt.setInt(2, userID);
+				stmt.setLong(3, time);
+				stmt.setInt(4, count);
+				rs = stmt.executeQuery();
+				if(rs==null) {throw new PermissionException(); }
 				int realcount=0;
 				while(rs.next()) {
 					realcount++;
@@ -328,12 +336,13 @@ public class Fetch {
 				}
 				}
             	int i=0;
-            	sql="select * from messageinf where PostId = ? and Time <? order by Time desc limit ? ";
-			    stmt=conn.prepareStatement(sql);
+            	sql="select * from messageinf where PostId = ? and UserId=? and Time <? order by MessageId desc limit ? ";
+				stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, id);
-				stmt.setLong(2, time);
-				stmt.setInt(3, count);
-			    rs = stmt.executeQuery();
+                stmt.setInt(2, userID);
+				stmt.setLong(3, time);
+				stmt.setInt(4, count);
+				rs = stmt.executeQuery();
 			   while(rs.next()) {
 					 messageinf[i]=new MessageInf(rs.getString("Content"),rs.getInt("UserId"),rs.getInt("PostId"));
 					 i++;
