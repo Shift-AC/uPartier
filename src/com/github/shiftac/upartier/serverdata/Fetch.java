@@ -78,6 +78,9 @@ public class Fetch {
 			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery();
 			Post[] post=new Post[count];
+			for(int j=0;j<count;j++) {
+				post[j]=new Post();
+			}
 			int i=0;
 			if(rs==null) {
 				throw new NoSuchBlockException();
@@ -135,6 +138,9 @@ public class Fetch {
 			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery();
 			Post[] post=new Post[count];
+			for(int j=0;j<count;j++) {
+				post[j]=new Post();
+			}
 			int i=0;
 			 while(rs.next()) {
 				 post[i].id=rs.getInt("PostId");
@@ -170,7 +176,10 @@ public class Fetch {
 	 * @throws NoSuchUserException 
      */
 	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException, IOException, NoSuchUserException{
-		User[] user=new User[20];
+		User[] user=new User[30];
+		for(int j=0;j<30;j++) {
+			user[j]=new User();
+		}
 		
 		Connection conn = null;
 		String sql,sql2;
@@ -236,6 +245,9 @@ public class Fetch {
      */
 	static public MessageInf[] fetchMessage(int id, int userID, int count, long time) throws SQLException, NoSuchPostException, PermissionException{
 			MessageInf[] messageinf=new MessageInf[count];
+			for(int j=0;j<count;j++) {
+				messageinf[j]=new MessageInf();
+			}
 			Connection conn = null;
 			String sql;
 			System.out.println("connecting to database....");
@@ -355,6 +367,9 @@ public class Fetch {
 		static public User[] sendMessage(int userid, int postid, MessageInf message) 
 				throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException, IOException{
 			 User[] user=new User[30];
+			 for(int j=0;j<30;j++) {
+				 user[j]=new User();
+			 }
 			 int i=0;
 			 Connection conn = null;
 				String sql;
