@@ -295,7 +295,8 @@ public class Fetch {
 			//stmt.setInt(1, post.id);
 			stmt.setInt(1, post.blockID);
 			stmt.setString(2, post.name.toString());
-			Long mytime=LogManager.calendar.getTimeInMillis();;
+			Long mytime=LogManager.calendar.getTimeInMillis();
+			post.time=mytime;
 			stmt.setLong(3, mytime);
 			stmt.setString(4, post.label.toString());
 			stmt.setString(5, post.place.toString());
@@ -311,6 +312,7 @@ public class Fetch {
 		    while(rs1.next()) {  
 		    mypostid = rs1.getInt(1);//get ID  
 		    }
+		    post.id=mypostid;
 		    sql="insert into userpost(UserId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.userID);
@@ -580,7 +582,7 @@ public class Fetch {
 	   
 	 
 	  /* public void saveimage(byte[] data,String path){
-		    if(data.length<3||path.equals("")) return;//byte
+		    if(data.length<3||path.equals("")) return;//judge data
 		    try{
 		    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//open file
 		    imageOutput.write(data, 0, data.length);//write byte
@@ -614,7 +616,7 @@ public class Fetch {
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
 				stmt.setInt(6, u.id);
-				//String mypath=u.profile.name.toString();
+				String mypath=u.profile.name.toString();
 				
 				stmt.executeUpdate();
 	    }
