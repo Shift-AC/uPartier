@@ -62,6 +62,7 @@ public class BString implements ByteArrayIO
         {
             content = str;
             mybytes = str.getBytes(Util.tgtSet);
+            System.out.printf("content %s\n", new String(mybytes, Util.tgtSet));
         }
     }
 
@@ -105,7 +106,7 @@ public class BString implements ByteArrayIO
             int slen = getInt(buf, off);
             checkLen(len -= SIZE_INT, slen);
             String tgt = new String(buf, off += SIZE_INT, slen, Util.tgtSet);
-            setContent(new String(tgt.getBytes(Util.tgtSet), Util.defSet));
+            setContent(tgt);
         }
     }
 
