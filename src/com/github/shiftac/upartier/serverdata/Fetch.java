@@ -579,10 +579,10 @@ public class Fetch {
 	    	}
 	   
 	 
-	  /* public void svaeimage(byte[] data,String path){
+	  /* public void saveimage(byte[] data,String path){
 		    if(data.length<3||path.equals("")) return;//byte
 		    try{
-		    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//打开输入流
+		    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//open file
 		    imageOutput.write(data, 0, data.length);//write byte
 		    imageOutput.close();
 		    System.out.println("Make Picture success,Please find image in " + path);
