@@ -28,15 +28,22 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select * from block order By BlockId desc limit 1";
+			sql="select * from block order By BlockId desc";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			int count=rs.getRow();
+			int count=0;
+			while(rs.next()) {
+				count++;
+			}
 			Block[] block=new Block[count];
 			int i=0;
 			for(i=0;i<count;i++) {
 				block[i]=new Block();
 			}
+			
+			sql="select * from block order By BlockId desc";
+			stmt=conn.createStatement();
+			rs = stmt.executeQuery(sql);		
 			if(rs !=null) {
 				i=0;
 			 while(rs.next()) {
@@ -44,7 +51,7 @@ public class Fetch {
 				 String name=rs.getString("BlockName");
 				 block[i].name=new BString(name);
 				 block[i].postCount=rs.getInt("PostCount");
-				 new getlist();
+				// new getlist();
 				//block[i].posts=getlist.getbpostlist(block[i].id);
 				i++;
 				 }
