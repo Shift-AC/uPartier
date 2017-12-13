@@ -36,7 +36,7 @@ public class Fetch {
 				 block[i].name=new BString(name);
 				 block[i].postCount=rs.getInt("PostCount");
 				 new getlist();
-				block[i].posts=getlist.getbpostlist(block[i].id);
+				//block[i].posts=getlist.getbpostlist(block[i].id);
 				 i++;
 				 }
 			 
@@ -83,7 +83,7 @@ public class Fetch {
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
 				 new getlist();
-				post[i].messages=getlist.getpmlist(post[i].id);
+				//post[i].messages=getlist.getpmlist(post[i].id);
 				 i++;
 				 }
 			 
@@ -138,10 +138,10 @@ public class Fetch {
 				 post[i].time=rs.getLong("Time");
 				 post[i].userID=rs.getInt("PostOwnerId");
 				 new getlist();
-				 post[i].messages=getlist.getpmlist(post[i].id);
-				 post[i].postUser=fetchProfile(post[i].userID);
+				// post[i].messages=getlist.getpmlist(post[i].id);
+				 //post[i].postUser=fetchProfile(post[i].userID);
 				 post[i].userCount=rs.getInt("UserCount");
-				 post[i].users=getlist.getpulist(post[i].id);
+				// post[i].users=getlist.getpulist(post[i].id);
 				 i++;
 				 }
 			 
@@ -197,7 +197,7 @@ public class Fetch {
 	            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 	            	 user[i].postCount=rs.getInt("PostCount");
 	            	 new getlist();
-	            	 user[i].myPosts=getlist.getupostlist(user[i].id);
+	            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
 	            	 user[i].postCount=rs.getInt("PostCount");
 	            	 user[i].profile=new Image(rs.getString("Image"));
 	            	 
@@ -285,14 +285,12 @@ public class Fetch {
 			//post.messages
 			//post.users
 		    stmt.execute();
-		    for( User postuser:post.users)
-		    {
-		    	 sql="insert into userpost(UserId,PostId) value(?,?)";
-		    	 stmt=conn.prepareStatement(sql);
-		    	 stmt.setInt(1, postuser.id);
-		    	 stmt.setInt(2, post.id);
-		    	 stmt.execute();
-		    }
+		    sql="insert into userpost(UserId,PostId) value(?,?)";
+		    stmt=conn.prepareStatement(sql);
+		    stmt.setInt(1, post.userID);
+		    stmt.setInt(2, post.id);
+		    stmt.execute();
+		    
 		    sql="insert into blockpost(BlockId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.blockID);
@@ -372,7 +370,7 @@ public class Fetch {
 		            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 		            	 user[i].postCount=rs.getInt("PostCount");			
 		            	 new getlist();
-		            	 user[i].myPosts=getlist.getupostlist(user[i].id);
+		            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
 		            	 user[i].postCount=rs.getInt("PostCount");
 		            	 user[i].profile=new Image(rs.getString("Image"));
 					}
@@ -489,7 +487,7 @@ public class Fetch {
         	 user.nickname=new BString(rs.getString("UserNickName"));
         	 user.postCount=rs.getInt("PostCount");
         	 new getlist();
-        	 user.myPosts=getlist.getupostlist(user.id);
+        	 //user.myPosts=getlist.getupostlist(user.id);
         	 user.postCount=rs.getInt("PostCount");
         	 user.profile=new Image(rs.getString("Image"));
         	 }
@@ -537,7 +535,7 @@ public class Fetch {
     	 user.nickname=new BString(rs.getString("UserNickName"));
     	 user.postCount=rs.getInt("PostCount");    	
     	 new getlist();
-    	 user.myPosts=getlist.getupostlist(user.id);
+    	 //user.myPosts=getlist.getupostlist(user.id);
     	 user.postCount=rs.getInt("PostCount");
     	 user.profile=new Image(rs.getString("Image"));
 	    	return user;
