@@ -303,7 +303,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="select * from messageinf where PostId = ? and Time <? order by Time desc limit ? ";
+				sql="select * from messageinf where PostId = ? and Time <? order by Mess desc limit ? ";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, id);
 				stmt.setLong(2, time);
@@ -485,12 +485,18 @@ public class Fetch {
 					 for(int j=0;j<count;j++) {
 						 user[j]=new User();
 					 }
-					 sql="select * from userpost where UserId = ? and PostId = ?   ";
+					 sql="select UserId from userpost where PostId = ?   ";
 					 stmt=conn.prepareStatement(sql);
 					 stmt.setInt(1, userid);
 					 stmt.setInt(2, postid);
 					    rs = stmt.executeQuery();
-						while(rs.next()) {
+					    while(rs.next()) {
+					    int myuserid=rs.getInt("UserId");
+					    sql="select * from user where UserId=?";
+					    stmt=conn.prepareStatement(sql);
+					    stmt.setInt(1, myuserid);
+					    ResultSet myrs=stmt.executeQuery();	
+						while(myrs.next()) {
 						user[i].age=rs.getInt("Age");
 		            	 user[i].gender=rs.getInt("Gender");
 		            	 user[i].id=rs.getInt("UserId");
@@ -501,7 +507,7 @@ public class Fetch {
 		            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
 		            	 user[i].postCount=rs.getInt("PostCount");
 		            	 user[i].profile=new Image(rs.getString("Image"));
-					}
+					}}
 		
 						sql="insert into messageinf(PostId,UserId,Type,Time,Content) values(?,?,?,?,?)";
 						stmt = conn.prepareStatement(sql);
