@@ -82,6 +82,8 @@ public class Fetch {
 				 post[i].note=new BString(rs.getString("PostNote"));
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
+				 new getlist();
+				post[i].messages=getlist.getpmlist(post[i].id);
 				 i++;
 				 }
 			 
