@@ -387,6 +387,7 @@ public class Fetch {
 			stmt.setString(5, post.place.toString());
 			stmt.setString(6, post.note.toString());
 			stmt.setInt(7, 1);
+			post.userCount=1;
 			stmt.setInt(8, post.userID);
 			//post.users
 			//post.messages
