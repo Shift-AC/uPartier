@@ -583,7 +583,7 @@ public class Fetch {
 				stmt.setString(5,u.nickname.toString());
 				stmt.setString(6, u.profile.name.toString());
 				stmt.setInt(7, u.id);
-				stmt.execute();
+				stmt.executeUpdate();
 	    }
 	}
 
