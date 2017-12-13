@@ -300,24 +300,26 @@ public class Fetch {
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.userID);
 			ResultSet rs = stmt.executeQuery();
+			while(rs.next()) {
 			int mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
 		    sql="update user set PostCount=? where UserId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.userID);
-			stmt.execute();
+			stmt.execute();}
 			sql="select PostCount from block where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.blockID);
 			rs = stmt.executeQuery();
-			mypostcount =rs.getInt("PostCount");
+			while(rs.next()) {
+			int mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
 		    sql="update user set PostCount=? where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.blockID);
-			stmt.execute();
+			stmt.execute();}
 		   
 			 stmt.close();
 			 conn.close();
@@ -369,7 +371,7 @@ public class Fetch {
 		            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
 		            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 		            	 user[i].postCount=rs.getInt("PostCount");			
-		            	 new getlist();
+		            	 //new getlist();
 		            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
 		            	 user[i].postCount=rs.getInt("PostCount");
 		            	 user[i].profile=new Image(rs.getString("Image"));
@@ -413,24 +415,26 @@ public class Fetch {
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					ResultSet rs = stmt.executeQuery();
+					  while(rs.next()) {
 					int mypostcount =rs.getInt("PostCount");
 					mypostcount=mypostcount+1;
 					sql="update user set PostCount=? where UserId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, mypostcount);
 					stmt.setInt(2, userid);
-					stmt.execute();
+					stmt.execute();}
 					sql="select UserCount from post where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
 					rs = stmt.executeQuery();
+					  while(rs.next()) {
 					int myusercount =rs.getInt("UserCount");
 					myusercount=myusercount+1;
 					sql="update post set UserCount=? where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, myusercount);
 					stmt.setInt(2, postid);
-					stmt.execute();
+					stmt.execute();}
 					/*sql="select * from upartier.post where PostId=?";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
@@ -523,23 +527,26 @@ public class Fetch {
         	 throw new NoSuchPostException();
          }
          else {
-         int ownerid=rs.getInt("PostOwnerId");
+        	 int ownerid = 0;
+        	 while(rs.next()) {
+          ownerid=rs.getInt("PostOwnerId");}
          sql="select * from user where UserId=?";
 		 stmt=conn.prepareStatement(sql);
          stmt.setInt(1, ownerid);
          rs = stmt.executeQuery();
+         while(rs.next()) {
          user.age=rs.getInt("Age");
     	 user.gender=rs.getInt("Gender");
     	 user.id=rs.getInt("UserId");
     	 user.mailAccount=new BString(rs.getString("MailAccount"));
     	 user.nickname=new BString(rs.getString("UserNickName"));
     	 user.postCount=rs.getInt("PostCount");    	
-    	 new getlist();
+    	 //new getlist();
     	 //user.myPosts=getlist.getupostlist(user.id);
     	 user.postCount=rs.getInt("PostCount");
-    	 user.profile=new Image(rs.getString("Image"));
+    	 user.profile=new Image(rs.getString("Image"));}
 	    	return user;
-	    	  }
+         }
 	    	}
 	   
 	   
