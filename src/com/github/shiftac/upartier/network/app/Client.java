@@ -103,6 +103,7 @@ public class Client extends AbstractClient
         case PacketType.TYPE_USER_MODIFY:
         case PacketType.TYPE_POST_MODIFY:
         case PacketType.TYPE_MESSAGE_FETCH:
+        case PacketType.TYPE_MESSAGE_PUSH:
             pak.write(os);
             Util.log.logMessage("Package #" + pak.sequence + " sent.");   
             break;
@@ -293,6 +294,7 @@ public class Client extends AbstractClient
                         break;
                     }
                     Post post = new Post();
+                    post.blockID = 1;
                     post.name.setContent(line.substring(2));
                     currentuser.issue(post);
                     postCache.put(post.id, post);
@@ -333,6 +335,8 @@ public class Client extends AbstractClient
                     int base = currentuser.myPosts.size();
                     int num = Integer.parseInt(line.substring(2));
                     currentuser.fetchMyPosts(num);
+                    num = num < currentuser.myPosts.size() - base ? num :
+                        currentuser.myPosts.size() - base;
                     for (int i = 0; i < num; ++i)
                     {
                         Post post = currentuser.myPosts.get(base + i);
@@ -369,6 +373,8 @@ public class Client extends AbstractClient
                     int base = block.posts.size();
                     num = Integer.parseInt(largs[1]);
                     block.fetchPosts(num);
+                    num = num < block.posts.size() - base ? num :
+                        block.posts.size() - base;
                     for (int i = 0; i < num; ++i)
                     {
                         Post post = block.posts.get(base + i);
