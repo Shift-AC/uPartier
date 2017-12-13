@@ -136,7 +136,7 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
         }
         content.read(buf, off += SIZE_LONG - SIZE_BYTE, 
             len -= SIZE_INT * 2 + SIZE_LONG);
-        System.err.printf("ct: %s\n", content.toString());
+        //System.err.printf("ct: %s\n", content.toString());
     }
 
     @Override

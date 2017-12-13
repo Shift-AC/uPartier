@@ -105,6 +105,7 @@ public class Client extends AbstractClient
         case PacketType.TYPE_POST_MODIFY:
         case PacketType.TYPE_MESSAGE_FETCH:
         case PacketType.TYPE_MESSAGE_PUSH:
+        case PacketType.TYPE_POST_JOIN:
             pak.write(os);
             Util.log.logMessage("Package #" + pak.sequence + " sent.");   
             break;
