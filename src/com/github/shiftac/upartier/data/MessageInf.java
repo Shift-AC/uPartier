@@ -45,7 +45,7 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
     @Override
     public int getLength()
     {
-        return SIZE_INT * 3 + content.getLength();
+        return SIZE_INT * 2 + SIZE_LONG + content.getLength();
     }
 
     @Override
@@ -136,6 +136,7 @@ public class MessageInf implements ByteArrayIO, PacketGenerator
         }
         content.read(buf, off += SIZE_LONG - SIZE_BYTE, 
             len -= SIZE_INT * 2 + SIZE_LONG);
+        System.err.printf("ct: %s\n", content.toString());
     }
 
     @Override
