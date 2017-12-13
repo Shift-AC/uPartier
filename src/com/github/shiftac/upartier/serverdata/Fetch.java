@@ -183,7 +183,12 @@ public class Fetch {
 			}
 			}
 			
-			
+			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, userid);
+			stmt.setInt(2, postid);
+			stmt.setInt(3, count);
+			rs = stmt.executeQuery();
 			int i=0;
 			 while(rs.next()) {
 				 post[i].id=rs.getInt("PostId");
