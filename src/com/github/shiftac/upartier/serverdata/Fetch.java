@@ -85,14 +85,32 @@ public class Fetch {
 			stmt.setInt(2, postid);
 			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery();
-			Post[] post=new Post[count];
-			for(int j=0;j<count;j++) {
-				post[j]=new Post();
-			}
 			int i=0;
 			if(rs==null) {
 				throw new NoSuchBlockException();
 			}
+			int realcount=0;
+			while((rs.next())&&(realcount<=count)) {
+				realcount++;
+			}
+			Post[] post;
+			if(realcount>=count) {
+			post=new Post[count];
+			for(int j=0;j<count;j++) {
+				post[j]=new Post();
+			}}
+			else {
+				post=new Post[realcount];
+				for(int j=0;j<realcount;j++) {
+					post[j]=new Post();
+				}}
+			
+			sql="select * from post where BlockId = ? and PostId <? order by PostId desc limit ? ";
+		    stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, blockid);
+			stmt.setInt(2, postid);
+			stmt.setInt(3, count);
+		     rs = stmt.executeQuery();
 			 while(rs.next()) {
 				 post[i].id=rs.getInt("PostId");
 				 post[i].blockID=rs.getInt("BlockId");
@@ -139,16 +157,33 @@ public class Fetch {
 			  throw e;
 			}
 			
-			sql="select * from post where PostId=(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
 			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery();
-			Post[] post=new Post[count];
+			int realcount=0;
+			while(rs.next()) {
+				realcount++;
+			}
+			
+			Post[] post;
+			if(realcount<count) {
+				post=new Post[realcount];
+				for(int j=0;j<realcount;j++) {
+					post[j]=new Post();
+				}
+				
+			}
+			else {
+			post=new Post[count];
 			for(int j=0;j<count;j++) {
 				post[j]=new Post();
 			}
+			}
+			
+			
 			int i=0;
 			 while(rs.next()) {
 				 post[i].id=rs.getInt("PostId");
@@ -159,7 +194,7 @@ public class Fetch {
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
 				 post[i].userID=rs.getInt("PostOwnerId");
-				 new getlist();
+				 //new getlist();
 				// post[i].messages=getlist.getpmlist(post[i].id);
 				 //post[i].postUser=fetchProfile(post[i].userID);
 				 post[i].userCount=rs.getInt("UserCount");
@@ -208,6 +243,7 @@ public class Fetch {
 				for(int j=0;j<count;j++) {
 					user[j]=new User();
 				}
+				
 				sql2="select UserId from userpost where PostId=?";
 			    stmt2=conn.prepareStatement(sql2);
 				stmt2.setInt(1, id);
@@ -402,11 +438,19 @@ public class Fetch {
 					stmt.setInt(2, postid);
 				    rs = stmt.executeQuery();
 				    if(rs==null) {throw new PermissionException(); }
-				    int count=rs.getRow();
+				    int count=0;
+				    while(rs.next()) {
+				    	count++;
+				    }
 				    User[] user=new User[count];
 					 for(int j=0;j<count;j++) {
 						 user[j]=new User();
 					 }
+					 sql="select * from userpost where UserId = ? and PostId = ?   ";
+					 stmt=conn.prepareStatement(sql);
+					 stmt.setInt(1, userid);
+					 stmt.setInt(2, postid);
+					    rs = stmt.executeQuery();
 						while(rs.next()) {
 						user[i].age=rs.getInt("Age");
 		            	 user[i].gender=rs.getInt("Gender");
@@ -620,7 +664,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="update user set Age=?,Gender=?,PostCount=?,MailAccount=?,NickName=?  where UserId=?";
+				sql="update user set Age=?,Gender=?,PostCount=?,MailAccount=?,UserNickName=?  where UserId=?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, u.age);
 				stmt.setInt(2, u.gender);
