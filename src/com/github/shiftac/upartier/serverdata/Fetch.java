@@ -361,6 +361,20 @@ public class Fetch {
 			System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);
 			System.out.println("Creating statement....");
+			sql="select * from block where BlockId=?";
+			PreparedStatement stmt1=conn.prepareStatement(sql); 
+			stmt1.setInt(1, post.blockID);
+			ResultSet myrs=stmt1.executeQuery(); 
+			if(myrs==null) {
+				throw new NoSuchBlockException();
+			}
+			sql="select * from user where UserId=?";
+			stmt1=conn.prepareStatement(sql);
+			stmt1.setInt(1, post.userID);
+			myrs=stmt1.executeQuery();
+			if(myrs==null) {
+				throw new NoSuchUserException();
+			}
 			sql="insert into post(BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?) ";
 			PreparedStatement stmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			//stmt.setInt(1, post.id);
@@ -384,6 +398,7 @@ public class Fetch {
 		    mypostid = rs1.getInt(1);//get ID  
 		    }
 		    post.id=mypostid;
+		    post.userCount=1;
 		    sql="insert into userpost(UserId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.userID);
@@ -406,7 +421,7 @@ public class Fetch {
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.userID);
-			stmt.execute();}
+			stmt.executeUpdate();}
 			sql="select PostCount from block where BlockId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, post.blockID);
@@ -418,7 +433,7 @@ public class Fetch {
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.blockID);
-			stmt.execute();}
+			stmt.executeUpdate();}
 		   
 			 stmt.close();
 			 conn.close();
