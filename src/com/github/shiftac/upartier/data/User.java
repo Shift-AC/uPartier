@@ -47,7 +47,7 @@ public class User implements ByteArrayIO, PacketGenerator
     public Image profile = new Image();
     public int postCount = 0;
     public AtomicBoolean myPostsLock = new AtomicBoolean(false);
-    public ArrayList<Post> myPosts = null;
+    public ArrayList<Post> myPosts = new ArrayList<Post>();
 
     public User() {}
 
@@ -270,7 +270,7 @@ public class User implements ByteArrayIO, PacketGenerator
         long token;
         synchronized (myPostsLock)
         {
-            if (myPosts == null)
+            if (myPosts.size() == 0)
             {
                 token = 2147483647;
             }
@@ -292,7 +292,7 @@ public class User implements ByteArrayIO, PacketGenerator
                 Util.clsPost, pak);
             synchronized (myPostsLock)
             {
-                if (myPosts == null)
+                if (myPosts.size() == 0)
                 {
                     myPosts = new ArrayList<Post>();
                 }
@@ -352,7 +352,7 @@ public class User implements ByteArrayIO, PacketGenerator
             post.read(pak);
             synchronized (myPostsLock)
             {
-                if (myPosts == null)
+                if (myPosts.size() == 0)
                 {
                     myPosts = new ArrayList<Post>();
                 }
@@ -435,7 +435,7 @@ public class User implements ByteArrayIO, PacketGenerator
                     message.time = res.retval;
                     synchronized (post.messagesLock)
                     {
-                        if (post.messages == null)
+                        if (post.messages.size() == 0)
                         {
                             post.messages = new ArrayList<MessageInf>();
                         }

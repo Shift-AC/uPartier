@@ -32,7 +32,7 @@ public class Block implements ByteArrayIO, PacketGenerator
     public BString name = new BString();
     public int postCount = 0;
     public AtomicBoolean postsLock = new AtomicBoolean(false);
-    public ArrayList<Post> posts = null;
+    public ArrayList<Post> posts = new ArrayList<Post>();
 
     public Block() {}
 
@@ -115,7 +115,7 @@ public class Block implements ByteArrayIO, PacketGenerator
         long token;
         synchronized (postsLock)
         {
-            if (posts == null)
+            if (posts.size() == 0)
             {
                 token = 2147483647;
             }
@@ -138,7 +138,7 @@ public class Block implements ByteArrayIO, PacketGenerator
             res.read(pak);
             synchronized (postsLock)
             {
-                if (posts == null)
+                if (posts.size() == 0)
                 {
                     posts = new ArrayList<Post>();
                 }

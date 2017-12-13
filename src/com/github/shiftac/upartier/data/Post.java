@@ -42,12 +42,12 @@ public class Post implements ByteArrayIO, PacketGenerator
     public BString label = new BString();
     public BString place = new BString();
     public BString note = new BString();
-    public User postUser = null;
+    public User postUser = new User();
     public AtomicBoolean messagesLock = new AtomicBoolean(false);
-    public ArrayList<MessageInf> messages = null;
+    public ArrayList<MessageInf> messages = new ArrayList<MessageInf>();
     public int userCount = 0;
     public AtomicBoolean usersLock = new AtomicBoolean(false);
-    public ArrayList<User> users = null;
+    public ArrayList<User> users = new ArrayList<User>();
 
     public Post() {}
 
@@ -187,7 +187,7 @@ public class Post implements ByteArrayIO, PacketGenerator
                 Util.clsUser, pak);
             synchronized (usersLock)
             {
-                if (users == null)
+                if (users.size() == 0)
                 {
                     users = new ArrayList<User>();
                 }
@@ -241,7 +241,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         long token;
         synchronized (messagesLock)
         {
-            if (messages == null)
+            if (messages.size() == 0)
             {
                 token = 2147483647;
             }
@@ -263,7 +263,7 @@ public class Post implements ByteArrayIO, PacketGenerator
                 new ByteArrayIOList<MessageInf>(Util.clsMessageInf, pak);
             synchronized (messagesLock)
             {
-                if (messages == null)
+                if (messages.size() == 0)
                 {
                     messages = new ArrayList<MessageInf>();
                 }

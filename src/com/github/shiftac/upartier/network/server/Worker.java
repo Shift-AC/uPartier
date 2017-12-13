@@ -158,10 +158,6 @@ public class Worker extends ServerWorker
         
         Util.log.logVerbose(String.format(
             "Got PostFetchInf: %s", inf.getInf()));
-        if (!checkUser(wk, inf.user))
-        {
-            return;
-        }
         try
         {
             ByteArrayIO tmp;
