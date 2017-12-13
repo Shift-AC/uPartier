@@ -44,7 +44,7 @@ public class Fetch {
 			sql="select * from block order By BlockId desc";
 			stmt=conn.createStatement();
 			rs = stmt.executeQuery(sql);		
-			if(rs !=null) {
+			
 				i=0;
 			 while(rs.next()) {
 				 block[i].id=rs.getInt("BlockId");
@@ -55,7 +55,7 @@ public class Fetch {
 				//block[i].posts=getlist.getbpostlist(block[i].id);
 				i++;
 				 }
-			}
+			
 			 rs.close();
 			 stmt.close();
 			 conn.close();
@@ -86,9 +86,10 @@ public class Fetch {
 			stmt.setInt(3, count);
 			ResultSet rs = stmt.executeQuery();
 			int i=0;
-			if(rs==null) {
+			if(!rs.first()) {
 				throw new NoSuchBlockException();
 			}
+			rs.previous();
 			int realcount=0;
 			while((rs.next())&&(realcount<=count)) {
 				realcount++;
@@ -152,7 +153,7 @@ public class Fetch {
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, userid);
 			ResultSet rs2 = stmt2.executeQuery();
-			if(rs2==null) 
+			if(!rs2.first()) 
 			{NoSuchUserException e= new NoSuchUserException();
 			  throw e;
 			}
@@ -233,11 +234,11 @@ public class Fetch {
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, id);
 			ResultSet rs2 = stmt2.executeQuery();
-			if(rs2==null) 
+			if(!rs2.first()) 
 			{NoSuchPostException e= new NoSuchPostException();
 			  throw e;
 			}
-			
+			rs2.previous();
 				int useri;
 				int i=0;
 		        int count=0;
@@ -307,7 +308,7 @@ public class Fetch {
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, id);
 				ResultSet rs=stmt.executeQuery();
-				if(rs==null) {
+				if(!rs.first()) {
 					throw new NoSuchPostException();
 				}
 				sql="select * from messageinf where PostId = ? and UserId=? and Time <? order by MessageId desc limit ? ";
@@ -317,7 +318,8 @@ public class Fetch {
 				stmt.setLong(3, time);
 				stmt.setInt(4, count);
 				rs = stmt.executeQuery();
-				if(rs==null) {throw new PermissionException(); }
+				if(!rs.first()) {throw new PermissionException(); }
+				rs.previous();
 				int realcount=0;
 				while(rs.next()) {
 					realcount++;
@@ -374,14 +376,14 @@ public class Fetch {
 			PreparedStatement stmt1=conn.prepareStatement(sql); 
 			stmt1.setInt(1, post.blockID);
 			ResultSet myrs=stmt1.executeQuery(); 
-			if(myrs.first()==false) {
+			if(!myrs.first()) {
 				throw new NoSuchBlockException();
 			}
 			sql="select * from user where UserId=?";
 			stmt1=conn.prepareStatement(sql);
 			stmt1.setInt(1, post.userID);
 			myrs=stmt1.executeQuery();
-			if(myrs.first()==false) {
+			if(!myrs.first()) {
 				throw new NoSuchUserException();
 			}
 			sql="insert into post(BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?) ";
@@ -474,18 +476,19 @@ public class Fetch {
 					PreparedStatement stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					ResultSet rs = stmt.executeQuery();
-					if(rs==null) {throw new NoSuchUserException(); }
+					if(!rs.first()) {throw new NoSuchUserException(); }
 					sql="select * from post where PostId = ? ";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, postid);
 					rs=stmt.executeQuery();
-					if(rs==null) {throw new NoSuchPostException(); }
+					if(!rs.first()) {throw new NoSuchPostException(); }
 					sql="select * from userpost where UserId = ? and PostId = ?   ";
 					stmt=conn.prepareStatement(sql);
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
 				    rs = stmt.executeQuery();
-				    if(rs==null) {throw new PermissionException(); }
+				    if(!rs.first()) {throw new PermissionException(); }
+				    rs.previous();
 				    int count=0;
 				    while(rs.next()) {
 				    	count++;
@@ -513,7 +516,7 @@ public class Fetch {
 		            	 user[i].postCount=myrs.getInt("PostCount");			
 		            	 //new getlist();
 		            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
-		            	 user[i].postCount=myrs.getInt("PostCount");
+		            	 
 		            	 user[i].profile=new Image(myrs.getString("Image"));
 					}
 						}
@@ -619,11 +622,12 @@ public class Fetch {
 			 PreparedStatement stmt=conn.prepareStatement(sql);
              stmt.setInt(1, id);
              ResultSet rs = stmt.executeQuery();
-             if(rs==null) {
+             if(!rs.first()) {
             	 throw new NoSuchUserException();
              }
              else 
              {
+            	 rs.previous();
             	 while(rs.next()) {
              user.age=rs.getInt("Age");
         	 user.gender=rs.getInt("Gender");
@@ -663,11 +667,12 @@ public class Fetch {
 		 PreparedStatement stmt=conn.prepareStatement(sql);
          stmt.setInt(1, id);
          ResultSet rs = stmt.executeQuery();
-         if(rs==null)
+         if(!rs.first())
          {
         	 throw new NoSuchPostException();
          }
          else {
+        	 rs.previous();
         	 int ownerid = 0;
         	 while(rs.next()) {
           ownerid=rs.getInt("PostOwnerId");}
