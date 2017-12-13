@@ -120,6 +120,7 @@ public class Client extends AbstractClient
         {
         case PacketType.TYPE_LOGIN:
         case PacketType.TYPE_USER_FETCH:
+        case PacketType.TYPE_BLOCK_FETCH:
         case PacketType.TYPE_POST_FETCH:
         case PacketType.TYPE_MESSAGE_FETCH:
         case PacketType.TYPE_POST_MODIFY:
