@@ -8,6 +8,11 @@ import org.json.JSONPointer;
 import org.json.JSONPointerException;
 import org.json.JSONTokener;
 
+import com.github.shiftac.upartier.data.Block;
+import com.github.shiftac.upartier.data.MessageInf;
+import com.github.shiftac.upartier.data.Post;
+import com.github.shiftac.upartier.data.User;
+
 public class Util
 {
     public static final long version = 0x0000000000000001;
@@ -47,6 +52,12 @@ public class Util
     private static JSONObject config;
     public static LogManager log = new LogManager(System.err, 10, true);
 
+    private static final String pakname = "com.github.shiftac.upartier";
+    public static Class<User> clsUser;
+    public static Class<Post> clsPost;
+    public static Class<Block> clsBlock;
+    public static Class<MessageInf> clsMessageInf;
+
     static
     {
         try
@@ -58,6 +69,24 @@ public class Util
         catch (Exception e)
         {
             errorExit("Can't initialize config manager.", e);
+        }
+        initClass();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void initClass()
+    {
+        try
+        {
+            clsUser = (Class<User>)Class.forName(pakname + ".data.User");
+            clsPost = (Class<Post>)Class.forName(pakname + ".data.Post");
+            clsBlock = (Class<Block>)Class.forName(pakname + ".data.Block");
+            clsMessageInf = (Class<MessageInf>)Class.forName(pakname +
+                ".data.MessageInf");
+        }
+        catch (Exception e)
+        {
+            errorExit("Can't initialize class.", e);
         }
     }
     

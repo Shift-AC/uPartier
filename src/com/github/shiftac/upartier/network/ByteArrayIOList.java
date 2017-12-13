@@ -6,15 +6,18 @@ import java.util.ArrayList;
 public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
 {
     public T[] arr;
+    private Class<T> cls;
 
-    public ByteArrayIOList(T[] arr)
+    public ByteArrayIOList(Class<T> cls, T[] arr)
     {
+        this.cls = cls;
         this.arr = arr;
     }
 
-    public ByteArrayIOList(Packet pak)
+    public ByteArrayIOList(Class<T> cls, Packet pak)
         throws IOException
     {
+        this.cls = cls;
         this.read(pak);
     }
 
@@ -47,11 +50,21 @@ public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
         ArrayList<T> tarr = new ArrayList<T>(larr);
         for (int i = 0; i < larr; ++i)
         {
-            T ele = tarr.get(i);
+            T ele = null;
+            try
+            {
+                ele = cls.getDeclaredConstructor().newInstance();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return;
+            }
             ele.read(buf, off, len);
             int elen = ele.getLength();
             off += elen;
             len -= elen;
+            tarr.set(i, ele);
         }
         arr = (T[])tarr.toArray();
     }

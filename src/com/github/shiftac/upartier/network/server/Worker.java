@@ -108,7 +108,7 @@ public class Worker extends ServerWorker
                 tmp = Fetch.fetchProfile(inf.id);
                 break;    
             case UserFetchInf.POST_LIST:
-                tmp = new ByteArrayIOList<User>(
+                tmp = new ByteArrayIOList<User>(Util.clsUser,
                     Fetch.fetchPostUserList(inf.id));
                 break;
             case UserFetchInf.POST_ISSUE:
@@ -169,11 +169,11 @@ public class Worker extends ServerWorker
             {
             //case PostFetchInf.ID:
             case PostFetchInf.BLOCK:
-                tmp = new ByteArrayIOList<Post>(
+                tmp = new ByteArrayIOList<Post>(Util.clsPost,
                     Fetch.fetchPostForBlock(inf.id, (int)inf.token, inf.count));
                 break;    
             case PostFetchInf.USER:
-                tmp = new ByteArrayIOList<Post>(
+                tmp = new ByteArrayIOList<Post>(Util.clsPost,
                     Fetch.fetchPostForUser(inf.user, (int)inf.token, 
                     inf.count));
                 break;
@@ -232,7 +232,8 @@ public class Worker extends ServerWorker
             {
             //case BlockFetchInf.ID:
             case BlockFetchInf.ALL:
-                tmp = new ByteArrayIOList<Block>(Fetch.fetchBlocks());
+                tmp = new ByteArrayIOList<Block>(Util.clsBlock, 
+                    Fetch.fetchBlocks());
                 break;
             default:
                 Util.log.logVerbose("Unrecognized type, ignore.");
@@ -281,8 +282,8 @@ public class Worker extends ServerWorker
             switch (inf.type)
             {
             case MsgFetchInf.POST:
-                tmp = new ByteArrayIOList<MessageInf>(Fetch.fetchMessage(
-                    inf.id, inf.user, inf.count, inf.token));
+                tmp = new ByteArrayIOList<MessageInf>(Util.clsMessageInf,
+                    Fetch.fetchMessage(inf.id, inf.user, inf.count, inf.token));
                 break;
             default:
                 Util.log.logVerbose("Unrecognized type, ignore.");

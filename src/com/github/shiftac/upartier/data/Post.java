@@ -183,7 +183,8 @@ public class Post implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_USER_FETCH:
         {
-            ByteArrayIOList<User> res = new ByteArrayIOList<User>(pak);
+            ByteArrayIOList<User> res = new ByteArrayIOList<User>(
+                Util.clsUser, pak);
             synchronized (usersLock)
             {
                 if (users == null)
@@ -259,7 +260,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         case PacketType.TYPE_MESSAGE_FETCH:
         {
             ByteArrayIOList<MessageInf> res = 
-                new ByteArrayIOList<MessageInf>(pak);
+                new ByteArrayIOList<MessageInf>(Util.clsMessageInf, pak);
             synchronized (messagesLock)
             {
                 if (messages == null)

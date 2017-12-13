@@ -70,7 +70,8 @@ public class Block implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_BLOCK_FETCH:
         {
-            ByteArrayIOList<Block> res = new ByteArrayIOList<Block>(pak);
+            ByteArrayIOList<Block> res = new ByteArrayIOList<Block>(
+                Util.clsBlock, pak);
             Util.log.logVerbose("Success. result:");
             for (int i = 0; i < res.arr.length; ++i)
             {
@@ -132,7 +133,8 @@ public class Block implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_POST_FETCH:
         {
-            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
+            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(
+                Util.clsPost, pak);
             res.read(pak);
             synchronized (postsLock)
             {

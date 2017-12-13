@@ -288,7 +288,8 @@ public class User implements ByteArrayIO, PacketGenerator
         {
         case PacketType.TYPE_POST_FETCH:
         {
-            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(pak);
+            ByteArrayIOList<Post> res = new ByteArrayIOList<Post>(
+                Util.clsPost, pak);
             synchronized (myPostsLock)
             {
                 if (myPosts == null)
