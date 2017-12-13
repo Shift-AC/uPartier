@@ -418,7 +418,7 @@ public class Fetch {
 			while(rs.next()) {
 			int mypostcount =rs.getInt("PostCount");
 			mypostcount=mypostcount+1;
-		    sql="update block set PostCount=? where UserId=?";
+		    sql="update user set PostCount=? where UserId=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, mypostcount);
 			stmt.setInt(2, post.userID);
