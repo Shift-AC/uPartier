@@ -187,10 +187,6 @@ public class Post implements ByteArrayIO, PacketGenerator
                 Util.clsUser, pak);
             synchronized (usersLock)
             {
-                if (users.size() == 0)
-                {
-                    users = new ArrayList<User>();
-                }
                 users.addAll(Arrays.asList(res.arr));
             }
             Util.log.logVerbose("Success. result:");
@@ -263,10 +259,6 @@ public class Post implements ByteArrayIO, PacketGenerator
                 new ByteArrayIOList<MessageInf>(Util.clsMessageInf, pak);
             synchronized (messagesLock)
             {
-                if (messages.size() == 0)
-                {
-                    messages = new ArrayList<MessageInf>();
-                }
                 messages.addAll(Arrays.asList(res.arr));
             }
             Util.log.logVerbose("Success. result:");

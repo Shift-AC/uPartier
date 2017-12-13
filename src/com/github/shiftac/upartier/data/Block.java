@@ -138,10 +138,6 @@ public class Block implements ByteArrayIO, PacketGenerator
             res.read(pak);
             synchronized (postsLock)
             {
-                if (posts.size() == 0)
-                {
-                    posts = new ArrayList<Post>();
-                }
                 posts.addAll(Arrays.asList(res.arr));
             }
             Util.log.logVerbose("Success. result:");

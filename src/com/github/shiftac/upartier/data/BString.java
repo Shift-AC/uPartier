@@ -97,7 +97,14 @@ public class BString implements ByteArrayIO
         synchronized (this)
         {
             content = str;
-            mybytes = str.getBytes();
+            try
+            {
+                mybytes = str.getBytes("GBK");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -140,7 +147,7 @@ public class BString implements ByteArrayIO
             checkLen(len, SIZE_INT);
             int slen = getInt(buf, off);
             checkLen(len -= SIZE_INT, slen);
-            setContent(new String(buf, off += SIZE_INT, slen));
+            setContent(new String(buf, off += SIZE_INT, slen, "GBK"));
         }
     }
 

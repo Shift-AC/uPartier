@@ -292,10 +292,6 @@ public class User implements ByteArrayIO, PacketGenerator
                 Util.clsPost, pak);
             synchronized (myPostsLock)
             {
-                if (myPosts.size() == 0)
-                {
-                    myPosts = new ArrayList<Post>();
-                }
                 myPosts.addAll(Arrays.asList(res.arr));
             }
             Util.log.logVerbose("Success. result:");
@@ -352,10 +348,6 @@ public class User implements ByteArrayIO, PacketGenerator
             post.read(pak);
             synchronized (myPostsLock)
             {
-                if (myPosts.size() == 0)
-                {
-                    myPosts = new ArrayList<Post>();
-                }
                 myPosts.add(0, post);
             }
             Util.log.logVerbose("Success. result: " + post.getInf());
@@ -435,10 +427,6 @@ public class User implements ByteArrayIO, PacketGenerator
                     message.time = res.retval;
                     synchronized (post.messagesLock)
                     {
-                        if (post.messages.size() == 0)
-                        {
-                            post.messages = new ArrayList<MessageInf>();
-                        }
                         // this is ugly and inefficient. fix this later.
                         post.messages.add(0, message);
                     }

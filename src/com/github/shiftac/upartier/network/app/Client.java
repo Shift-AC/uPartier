@@ -162,7 +162,6 @@ public class Client extends AbstractClient
                 Util.log.logMessage(String.format(
                     "User #%d issued a message in post #%d with type=%d",
                     inf.userID, inf.postID, inf.type));
-                    System.out.println(Charset.defaultCharset());
                 Post.parseIncomingMessage(inf);
             }
             catch (IOException ioe)
@@ -232,6 +231,8 @@ public class Client extends AbstractClient
                 }
 
                 char operator = line.charAt(0);
+                Charset set = Charset.defaultCharset();
+                line = new String(line.getBytes(set), "GBK");
 
                 switch (operator)
                 {
