@@ -39,10 +39,14 @@ public class WorkerManager
         idMap.remove(id);
     }
 
-    public void broadcast(Packet pak, int[] ids)
+    public void broadcast(Packet pak, int[] ids, int source)
     {
         for (int i = 0; i < ids.length; ++i)
         {
+            if (ids[i] == source)
+            {
+                continue;
+            }
             ServerWorker worker = idMap.get(ids[i]);
             worker.issue(pak);
         }

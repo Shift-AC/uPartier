@@ -416,7 +416,7 @@ public class Worker extends ServerWorker
             Packet pak = inf.toPacket();
             pak.type = PacketType.TYPE_MESSAGE_PUSH;
             pak.ack = seq;
-            wk.manager.broadcast(pak, ids);
+            wk.manager.broadcast(pak, ids, inf.userID);
             
             Util.log.logVerbose("Success. Returning: " + ack.getInf());
         }

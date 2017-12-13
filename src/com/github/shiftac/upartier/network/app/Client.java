@@ -160,7 +160,7 @@ public class Client extends AbstractClient
                 MessageInf inf = new MessageInf(pak);
                 Util.log.logMessage(String.format(
                     "User #%d issued a message in post #%d with type=%d",
-                    inf.postID, inf.userID, inf.type));
+                    inf.userID, inf.postID, inf.type));
                 Post.parseIncomingMessage(inf);
             }
             catch (IOException ioe)
