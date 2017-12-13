@@ -1,7 +1,8 @@
 # Auto generated file, modify if you want to add functions.
 
 LIB := lib
-CPLINUX := upartier.jar:$(shell $(LIB)/generateLib $(LIB))
+CPLINUX := upartier.jar:lib/hamcrest-core-1.3.jar:lib/junit-4.12.jar:lib/org.json.jar:lib/mysql-connector-java-5.1.44-bin.jar:
+#CPLINUX := upartier.jar:$(shell $(LIB)/generateLib $(LIB))
 CPWIN := $(subst :,;,$(CPLINUX))
 CP := $(CPWIN):$(CPLINUX)
 

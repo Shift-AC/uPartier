@@ -9,12 +9,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.data.Block;
+import com.github.shiftac.upartier.data.Image;
 import com.github.shiftac.upartier.data.LoginInf;
 import com.github.shiftac.upartier.data.MessageInf;
 import com.github.shiftac.upartier.data.PacketType;
 import com.github.shiftac.upartier.data.Post;
 import com.github.shiftac.upartier.data.User;
-import com.github.shiftac.upartier.network.AES128Packet;
 import com.github.shiftac.upartier.network.Packet;
 import com.github.shiftac.upartier.network.PacketFormatException;
 
@@ -122,6 +122,7 @@ public class Client extends AbstractClient
         case PacketType.TYPE_USER_FETCH:
         case PacketType.TYPE_POST_FETCH:
         case PacketType.TYPE_MESSAGE_FETCH:
+        case PacketType.TYPE_POST_MODIFY:
         case PacketType.TYPE_SERVER_ACK:
             int ack = pak.ack;
             Thread waiting;
@@ -382,6 +383,7 @@ public class Client extends AbstractClient
                         break;
                     }
                     currentuser.nickname.setContent(line.substring(2));
+                    currentuser.profile = new Image("resource/icon.jpg");
                     currentuser.modify();
                     break;
                 }

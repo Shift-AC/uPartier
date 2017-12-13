@@ -17,7 +17,8 @@ com.github.shiftac.upartier.serverdata;
 JAVASRCPATH := $(subst .,/,$(PACKAGES))
 JAVASRC := $(subst ;,/*.java ,$(JAVASRCPATH))
 LIB := ../lib
-CPLINUX := $(shell bash $(LIB)/generateLib $(LIB))
+CPLINUX := ../lib/hamcrest-core-1.3.jar:../lib/junit-4.12.jar:../lib/org.json.jar:../lib/mysql-connector-java-5.1.44-bin.jar:
+#CPLINUX := $(shell bash $(LIB)/generateLib $(LIB))
 CPWIN := $(subst :,;,$(CPLINUX))
 CP := $(CPWIN):$(CPLINUX)
 JAVAFLAGS := -encoding utf8 -Xlint:all
