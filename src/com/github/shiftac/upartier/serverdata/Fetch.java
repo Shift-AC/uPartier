@@ -303,7 +303,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="select * from messageinf where PostId = ? and Time <? order by Mess desc limit ? ";
+				sql="select * from messageinf where PostId = ? and Time <? order by MessageId desc limit ? ";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, id);
 				stmt.setLong(2, time);
