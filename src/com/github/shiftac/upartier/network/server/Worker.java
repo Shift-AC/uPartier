@@ -335,6 +335,13 @@ public class Worker extends ServerWorker
             
             Util.log.logVerbose("Success. Returning: " + tmp.getInf());
         }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+            Util.log.logVerbose("IOException, return ERRIO");
+            ACKInf ack = new ACKInf(ACKInf.RET_ERRIO);
+            res = ack.toPacket();
+        }
         catch (SQLException sqle)
         {
             sqle.printStackTrace();
