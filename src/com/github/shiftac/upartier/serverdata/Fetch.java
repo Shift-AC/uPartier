@@ -496,17 +496,18 @@ public class Fetch {
 					    stmt.setInt(1, myuserid);
 					    ResultSet myrs=stmt.executeQuery();	
 						while(myrs.next()) {
-						user[i].age=rs.getInt("Age");
-		            	 user[i].gender=rs.getInt("Gender");
-		            	 user[i].id=rs.getInt("UserId");
-		            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
-		            	 user[i].nickname=new BString(rs.getString("UserNickName"));
-		            	 user[i].postCount=rs.getInt("PostCount");			
+						user[i].age=myrs.getInt("Age");
+		            	 user[i].gender=myrs.getInt("Gender");
+		            	 user[i].id=myrs.getInt("UserId");
+		            	 user[i].mailAccount=new BString(myrs.getString("MailAccount"));
+		            	 user[i].nickname=new BString(myrs.getString("UserNickName"));
+		            	 user[i].postCount=myrs.getInt("PostCount");			
 		            	 //new getlist();
 		            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
-		            	 user[i].postCount=rs.getInt("PostCount");
-		            	 user[i].profile=new Image(rs.getString("Image"));
-					}}
+		            	 user[i].postCount=myrs.getInt("PostCount");
+		            	 user[i].profile=new Image(myrs.getString("Image"));
+					}
+						}
 		
 						sql="insert into messageinf(PostId,UserId,Type,Time,Content) values(?,?,?,?,?)";
 						stmt = conn.prepareStatement(sql);
