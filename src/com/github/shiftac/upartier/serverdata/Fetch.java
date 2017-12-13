@@ -1,6 +1,9 @@
 package com.github.shiftac.upartier.serverdata;
+import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+
+import javax.imageio.stream.FileImageOutputStream;
 
 import com.github.shiftac.upartier.LogManager;
 import  com.github.shiftac.upartier.data.*;
@@ -28,21 +31,21 @@ public class Fetch {
 			sql="select * from block order By BlockId desc limit 1";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			Block block=new Block();
-			block.id=1;
-			String defaultName="Default";
-			block.name=new BString(defaultName);
-			block.postCount=0;
+			Block[] block=new Block[30];
 			int i=0;
+			for(i=0;i<30;i++) {
+				block[i]=new Block();
+			}
 			if(rs !=null) {
+				i=0;
 			 while(rs.next()) {
-				 block.id=rs.getInt("BlockId");
+				 block[i].id=rs.getInt("BlockId");
 				 String name=rs.getString("BlockName");
-				 block.name=new BString(name);
-				 block.postCount=rs.getInt("PostCount");
+				 block[i].name=new BString(name);
+				 block[i].postCount=rs.getInt("PostCount");
 				 new getlist();
 				//block[i].posts=getlist.getbpostlist(block[i].id);
-				// i++;
+				i++;
 				 }
 			}
 			 rs.close();
@@ -560,6 +563,20 @@ public class Fetch {
          }
 	    	}
 	   
+	 
+	   public void byte2image(byte[] data,String path){
+		    if(data.length<3||path.equals("")) return;//判断输入的byte是否为空
+		    try{
+		    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//打开输入流
+		    imageOutput.write(data, 0, data.length);//将byte写入硬盘
+		    imageOutput.close();
+		    System.out.println("Make Picture success,Please find image in " + path);
+		    } catch(Exception ex) {
+		      System.out.println("Exception: " + ex);
+		      ex.printStackTrace();
+		    }
+		  }
+	   
 	   
 	   /**
 	     * Attempts to modify user profile.
@@ -581,8 +598,8 @@ public class Fetch {
 				stmt.setInt(3, u.postCount);
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
-				//stmt.setString(6, u.profile.name.toString());
 				stmt.setInt(6, u.id);
+				
 				stmt.executeUpdate();
 	    }
 	}
