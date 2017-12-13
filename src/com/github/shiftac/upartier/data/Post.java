@@ -243,7 +243,7 @@ public class Post implements ByteArrayIO, PacketGenerator
         {
             if (messages.size() == 0)
             {
-                token = 2147483647;
+                token = 9223372036854775807L;
             }
             else
             {

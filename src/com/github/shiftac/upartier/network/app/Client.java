@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
+import java.nio.charset.Charset;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -161,6 +162,7 @@ public class Client extends AbstractClient
                 Util.log.logMessage(String.format(
                     "User #%d issued a message in post #%d with type=%d",
                     inf.userID, inf.postID, inf.type));
+                    System.out.println(Charset.defaultCharset());
                 Post.parseIncomingMessage(inf);
             }
             catch (IOException ioe)

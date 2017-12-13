@@ -25,7 +25,14 @@ public class ByteArrayIOList<T extends ByteArrayIO> implements ByteArrayIO
     @Override
     public String getInf()
     {
-        return String.format("type=%s, len=%d", arr.toString(), arr.length);
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format(
+            "type=%s, len=%d", arr.toString(), arr.length));
+        for (int i = 0; i < arr.length; ++i)
+        {
+            sb.append(String.format(" ->arr[%d]:%s", i, arr[i].getInf()));
+        }
+        return sb.toString();
     }
 
     @Override
