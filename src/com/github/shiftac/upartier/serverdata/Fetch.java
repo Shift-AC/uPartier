@@ -297,10 +297,7 @@ public class Fetch {
 	 * @throws PermissionException if the user hasn't join the post.
      */
 	static public MessageInf[] fetchMessage(int id, int userID, int count, long time) throws SQLException, NoSuchPostException, PermissionException{
-			MessageInf[] messageinf=new MessageInf[count];
-			for(int j=0;j<count;j++) {
-				messageinf[j]=new MessageInf();
-			}
+			
 			Connection conn = null;
 			String sql;
 			System.out.println("connecting to database....");
@@ -313,14 +310,35 @@ public class Fetch {
 				stmt.setInt(3, count);
 				ResultSet rs = stmt.executeQuery();
 				if(rs==null) {throw new NoSuchPostException(); }
-				else{
-					int i=0;
-			
-					while(rs.next()) {
+				int realcount=0;
+				while(rs.next()) {
+					realcount++;
+				}
+				MessageInf[] messageinf;
+				if(realcount<count) {
+					messageinf=new MessageInf[realcount];
+					for(int j=0;j<realcount;j++) {
+						messageinf[j]=new MessageInf();
+					}
+				}
+				else {
+				messageinf=new MessageInf[count];
+				for(int j=0;j<count;j++) {
+					messageinf[j]=new MessageInf();
+				}
+				}
+            	int i=0;
+            	sql="select * from messageinf where PostId = ? and Time <? order by Time desc limit ? ";
+			    stmt=conn.prepareStatement(sql);
+				stmt.setInt(1, id);
+				stmt.setLong(2, time);
+				stmt.setInt(3, count);
+			    rs = stmt.executeQuery();
+			   while(rs.next()) {
 					 messageinf[i]=new MessageInf(rs.getString("Content"),rs.getInt("UserId"),rs.getInt("PostId"));
 					 i++;
 					 }
-				}
+				
 				 rs.close();
 				 stmt.close();
 				 conn.close();
