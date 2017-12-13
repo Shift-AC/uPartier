@@ -511,6 +511,7 @@ public class User implements ByteArrayIO, PacketGenerator
         checkLen(len, SIZE_BYTE + SIZE_INT * 3);
         id = getInt(buf, off);
         age = getInt(buf, off += SIZE_INT);
+        postCount = getInt(buf, off += SIZE_INT);
         gender = buf[off += SIZE_INT];
         mailAccount.read(buf, off += SIZE_BYTE, 
             len -= SIZE_INT * 3 + SIZE_BYTE);
@@ -527,6 +528,7 @@ public class User implements ByteArrayIO, PacketGenerator
         checkLen(len, SIZE_BYTE + SIZE_INT * 3);
         setInt(buf, off, id);
         setInt(buf, off += SIZE_INT, age);
+        setInt(buf, off += SIZE_INT, postCount);
         buf[off += SIZE_INT] = (byte)gender;
         mailAccount.write(buf, off += SIZE_BYTE, 
             len -= SIZE_INT * 3 + SIZE_BYTE);
