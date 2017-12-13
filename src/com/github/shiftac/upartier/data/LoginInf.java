@@ -34,7 +34,7 @@ public class LoginInf implements ByteArrayIO, PacketGenerator
         checkLen(len, SIZE_INT);
         id = getInt(buf, off);
         isNewUser = id < 0;
-        id = id & 0x7FFFFFFF;
+        id = id < 0 ? -id : id;
         passwd.read(buf, off += SIZE_INT, len -= SIZE_INT);
     }
 
