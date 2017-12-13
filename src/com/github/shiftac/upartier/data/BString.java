@@ -33,17 +33,17 @@ public class BString implements ByteArrayIO
 
     public BString(byte[] bytes)
     {
-        setContent(new String(bytes, Util.tgtSet));
+        setContent(new String(bytes));
     }
 
     public BString(byte[] bytes, int offset, int length)
     {
-        setContent(new String(bytes, offset, length, Util.tgtSet));
+        setContent(new String(bytes, offset, length));
     }
 
     public BString(String str)
     {
-        setContent(new String(str.getBytes(Util.defSet), Util.tgtSet));
+        setContent(str);
     }
 
     public BString(StringBuffer buffer)
@@ -61,14 +61,7 @@ public class BString implements ByteArrayIO
         synchronized (this)
         {
             content = str;
-            try
-            {
-                mybytes = str.getBytes("GBK");
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            mybytes = str.getBytes(Util.tgtSet);
         }
     }
 
@@ -111,7 +104,7 @@ public class BString implements ByteArrayIO
             checkLen(len, SIZE_INT);
             int slen = getInt(buf, off);
             checkLen(len -= SIZE_INT, slen);
-            setContent(new String(buf, off += SIZE_INT, slen, "GBK"));
+            setContent(new String(buf, off += SIZE_INT, slen));
         }
     }
 
