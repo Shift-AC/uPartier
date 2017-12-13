@@ -109,7 +109,7 @@ public class User implements ByteArrayIO, PacketGenerator
             {
             case ACKInf.RET_ERRIO:
                 throw new IOException("Server IO exception.");
-            case ACKInf.RET_ERRPERMISSION:
+            case ACKInf.RET_ERRUSER:
                 throw new NoSuchUserException("User ID & password not match.");
             default:
                 throw new IOException("Server returning unknown ack value("
