@@ -157,7 +157,7 @@ public class Fetch {
 			  throw e;
 			}
 			
-			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) order by PostId desc  limit ?";
 			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
@@ -183,7 +183,7 @@ public class Fetch {
 			}
 			}
 			
-			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc) limit ?";
+			sql="select * from post where PostId=any(select PostId from userpost where UserId = ? and PostId<? order by PostId desc)order by PostId desc limit ?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, postid);
@@ -229,7 +229,7 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql2="select UserId from userpost where PostId=?";
+			sql2="select UserId from userpost where PostId=? order by UserId desc";
 			PreparedStatement stmt2=conn.prepareStatement(sql2);
 			stmt2.setInt(1, id);
 			ResultSet rs2 = stmt2.executeQuery();
