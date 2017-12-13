@@ -200,11 +200,19 @@ public class Fetch {
 			
 				int useri;
 				int i=0;
-		        int count=rs2.getRow();
+		        int count=0;
+		        while(rs2.next()) {
+		        	count++;
+		        }
 		        User[] user=new User[count];
 				for(int j=0;j<count;j++) {
 					user[j]=new User();
 				}
+				sql2="select UserId from userpost where PostId=?";
+			    stmt2=conn.prepareStatement(sql2);
+				stmt2.setInt(1, id);
+				rs2 = stmt2.executeQuery();
+				
 	        while(rs2.next()) 
 	        {   
 	        	useri=rs2.getInt("UserId");
@@ -612,7 +620,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="update user set Age=? Gender=? PostCount=? MailAccount=? NickName=?  where UserId=?";
+				sql="update user set Age=?,Gender=?,PostCount=?,MailAccount=?,NickName=?  where UserId=?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, u.age);
 				stmt.setInt(2, u.gender);
