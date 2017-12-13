@@ -94,7 +94,7 @@ public class Fetch {
 				 post[i].note=new BString(rs.getString("PostNote"));
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
-				 new getlist();
+				 //new getlist();
 				//post[i].messages=getlist.getpmlist(post[i].id);
 				 i++;
 				 }
@@ -177,11 +177,6 @@ public class Fetch {
 	 * @throws NoSuchUserException 
      */
 	static public User[] fetchPostUserList(int id) throws SQLException,NoSuchPostException, IOException, NoSuchUserException{
-		User[] user=new User[30];
-		for(int j=0;j<30;j++) {
-			user[j]=new User();
-		}
-		
 		Connection conn = null;
 		String sql,sql2;
 		System.out.println("connecting to database....");
@@ -195,11 +190,14 @@ public class Fetch {
 			{NoSuchPostException e= new NoSuchPostException();
 			  throw e;
 			}
-		
-			else {	
+			
 				int useri;
 				int i=0;
-		
+		        int count=rs2.getRow();
+		        User[] user=new User[count];
+				for(int j=0;j<count;j++) {
+					user[j]=new User();
+				}
 	        while(rs2.next()) 
 	        {   
 	        	useri=rs2.getInt("UserId");
@@ -223,8 +221,6 @@ public class Fetch {
 	             }
 	             i++;
 				 }
-			
-			}
 			 
 			 rs2.close();
 			 stmt2.close();
@@ -369,10 +365,6 @@ public class Fetch {
 	     */
 		static public User[] sendMessage(int userid, int postid, MessageInf message) 
 				throws SQLException, NoSuchUserException, NoSuchPostException, PermissionException, IOException{
-			 User[] user=new User[30];
-			 for(int j=0;j<30;j++) {
-				 user[j]=new User();
-			 }
 			 int i=0;
 			 Connection conn = null;
 				String sql;
@@ -394,8 +386,12 @@ public class Fetch {
 					stmt.setInt(1, userid);
 					stmt.setInt(2, postid);
 				    rs = stmt.executeQuery();
-					if(rs==null) {throw new PermissionException(); }
-					else { 
+				    if(rs==null) {throw new PermissionException(); }
+				    int count=rs.getRow();
+				    User[] user=new User[count];
+					 for(int j=0;j<count;j++) {
+						 user[j]=new User();
+					 }
 						while(rs.next()) {
 						user[i].age=rs.getInt("Age");
 		            	 user[i].gender=rs.getInt("Gender");
@@ -417,7 +413,7 @@ public class Fetch {
 						stmt.setLong(4, message.time);
 						stmt.setString(5, message.content.toString());
 						stmt.execute();
-					    }
+					    
 			 return user;
 		}
 
