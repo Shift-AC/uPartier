@@ -120,6 +120,7 @@ public class Fetch {
 				 post[i].note=new BString(rs.getString("PostNote"));
 				 post[i].place=new BString(rs.getString("PostPlace"));
 				 post[i].time=rs.getLong("Time");
+				 post[i].userCount=rs.getInt("UserCount");
 				 //new getlist();
 				//post[i].messages=getlist.getpmlist(post[i].id);
 				 i++;
@@ -269,9 +270,9 @@ public class Fetch {
 	            	 user[i].mailAccount=new BString(rs.getString("MailAccount"));
 	            	 user[i].nickname=new BString(rs.getString("UserNickName"));
 	            	 user[i].postCount=rs.getInt("PostCount");
-	            	 new getlist();
+	            	 //new getlist();
 	            	 //user[i].myPosts=getlist.getupostlist(user[i].id);
-	            	 user[i].postCount=rs.getInt("PostCount");
+	            	 //user[i].postCount=rs.getInt("PostCount");
 	            	 user[i].profile=new Image(rs.getString("Image"));
 	            	 
 	            	 
