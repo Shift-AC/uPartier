@@ -691,18 +691,15 @@ public class Fetch {
 	    	}
 	   
 	 
-	  /* public void saveimage(byte[] data,String path){
+	   public static void saveimage(byte[] data,String path) throws IOException{
 		    if(data.length<3||path.equals("")) return;//judge data
-		    try{
+		    
 		    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//open file
 		    imageOutput.write(data, 0, data.length);//write byte
 		    imageOutput.close();
 		    System.out.println("Make Picture success,Please find image in " + path);
-		    } catch(Exception ex) {
-		      System.out.println("Exception: " + ex);
-		      ex.printStackTrace();
-		    }
-		  }*/
+		    
+		  }
 	   
 	   
 	   /**
@@ -711,22 +708,25 @@ public class Fetch {
 	     * Current thread will <b>block</b> inside this call.
 	     *
 	     * @throws SQLException if SQLException occured when accessing database files.
+	 * @throws IOException 
 	     */
-	    public static void renewProfile(User u) throws SQLException{
+	    public static void renewProfile(User u) throws SQLException, IOException{
 	    	Connection conn = null;
 			String sql;
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="update user set Age=?,Gender=?,PostCount=?,MailAccount=?,UserNickName=?  where UserId=?";
+				sql="update user set Age=?,Gender=?,PostCount=?,MailAccount=?,UserNickName=?,Image=? where UserId=?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
+				String mypath="/home/shift/Pictures/"+Long.toString(LogManager.calendar.getTimeInMillis())+u.profile.name;
+				saveimage(u.profile.payload,mypath);
 				stmt.setInt(1, u.age);
 				stmt.setInt(2, u.gender);
 				stmt.setInt(3, u.postCount);
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
-				stmt.setInt(6, u.id);
-				//String mypath=u.profile.name.toString();
+				stmt.setString(6,mypath);
+				stmt.setInt(7, u.id);
 				
 				stmt.executeUpdate();
 	    }
