@@ -25,11 +25,16 @@ public class Fetch {
 		System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);	
 			System.out.println("Creating statement....");
-			sql="select * from block order By BlockId desc limit 3";
+			sql="select * from block order By BlockId desc limit 1";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			Block[] block=new Block[3];
+			Block[] block=new Block[1];
+			block[0].id=1;
+			String defaultName="Default";
+			block[0].name=new BString(defaultName);
+			block[0].postCount=0;
 			int i=0;
+			if(rs !=null) {
 			 while(rs.next()) {
 				 block[i].id=rs.getInt("BlockId");
 				 String name=rs.getString("BlockName");
@@ -39,7 +44,7 @@ public class Fetch {
 				//block[i].posts=getlist.getbpostlist(block[i].id);
 				 i++;
 				 }
-			 
+			}
 			 rs.close();
 			 stmt.close();
 			 conn.close();
@@ -270,7 +275,7 @@ public class Fetch {
 			System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);
 			System.out.println("Creating statement....");
-			sql="insert into post(BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?,?) ";
+			sql="insert into post(BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?) ";
 			PreparedStatement stmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			//stmt.setInt(1, post.id);
 			stmt.setInt(1, post.blockID);
