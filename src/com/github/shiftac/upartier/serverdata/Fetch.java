@@ -28,21 +28,21 @@ public class Fetch {
 			sql="select * from block order By BlockId desc limit 1";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			Block[] block=new Block[1];
-			block[0].id=1;
+			Block block=new Block();
+			block.id=1;
 			String defaultName="Default";
-			block[0].name=new BString(defaultName);
-			block[0].postCount=0;
+			block.name=new BString(defaultName);
+			block.postCount=0;
 			int i=0;
 			if(rs !=null) {
 			 while(rs.next()) {
-				 block[i].id=rs.getInt("BlockId");
+				 block.id=rs.getInt("BlockId");
 				 String name=rs.getString("BlockName");
-				 block[i].name=new BString(name);
-				 block[i].postCount=rs.getInt("PostCount");
+				 block.name=new BString(name);
+				 block.postCount=rs.getInt("PostCount");
 				 new getlist();
 				//block[i].posts=getlist.getbpostlist(block[i].id);
-				 i++;
+				// i++;
 				 }
 			}
 			 rs.close();
@@ -574,15 +574,15 @@ public class Fetch {
 			System.out.println("connecting to database....");
 				conn = DriverManager.getConnection(url,USER,PASS);	
 				System.out.println("Creating statement....");
-				sql="update user set Age=? Gender=? PostCount=? MailAccount=? NickName=?  Image=? where UserId=?";
+				sql="update user set Age=? Gender=? PostCount=? MailAccount=? NickName=?  where UserId=?";
 				PreparedStatement stmt=conn.prepareStatement(sql);
 				stmt.setInt(1, u.age);
 				stmt.setInt(2, u.gender);
 				stmt.setInt(3, u.postCount);
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
-				stmt.setString(6, u.profile.name.toString());
-				stmt.setInt(7, u.id);
+				//stmt.setString(6, u.profile.name.toString());
+				stmt.setInt(6, u.id);
 				stmt.executeUpdate();
 	    }
 	}
