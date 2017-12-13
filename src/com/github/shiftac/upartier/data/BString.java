@@ -104,7 +104,8 @@ public class BString implements ByteArrayIO
             checkLen(len, SIZE_INT);
             int slen = getInt(buf, off);
             checkLen(len -= SIZE_INT, slen);
-            setContent(new String(buf, off += SIZE_INT, slen));
+            String tgt = new String(buf, off += SIZE_INT, slen, Util.tgtSet);
+            setContent(new String(tgt.getBytes(Util.tgtSet), Util.defSet));
         }
     }
 

@@ -231,8 +231,8 @@ public class Client extends AbstractClient
                 }
 
                 char operator = line.charAt(0);
-                line = new String(line.getBytes(Util.defSet), Util.tgtSet);
-                System.out.printf("Str: %s", line);
+                //line = new String(line.getBytes(Util.defSet), Util.tgtSet);
+                //System.out.printf("Str: %s", line);
 
                 switch (operator)
                 {
