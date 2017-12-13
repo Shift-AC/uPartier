@@ -579,18 +579,18 @@ public class Fetch {
 	    	}
 	   
 	 
-	   public void byte2image(byte[] data,String path){
-		    if(data.length<3||path.equals("")) return;//判断输入的byte是否为空
+	  /* public void svaeimage(byte[] data,String path){
+		    if(data.length<3||path.equals("")) return;//byte
 		    try{
 		    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//打开输入流
-		    imageOutput.write(data, 0, data.length);//将byte写入硬盘
+		    imageOutput.write(data, 0, data.length);//write byte
 		    imageOutput.close();
 		    System.out.println("Make Picture success,Please find image in " + path);
 		    } catch(Exception ex) {
 		      System.out.println("Exception: " + ex);
 		      ex.printStackTrace();
 		    }
-		  }
+		  }*/
 	   
 	   
 	   /**
@@ -614,6 +614,7 @@ public class Fetch {
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
 				stmt.setInt(6, u.id);
+				//String mypath=u.profile.name.toString();
 				
 				stmt.executeUpdate();
 	    }
