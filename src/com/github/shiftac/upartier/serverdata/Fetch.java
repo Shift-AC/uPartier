@@ -270,32 +270,37 @@ public class Fetch {
 			System.out.println("connecting to database....");
 			conn = DriverManager.getConnection(url,USER,PASS);
 			System.out.println("Creating statement....");
-			sql="insert into post(PostId,BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?,?) ";
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, post.id);
-			stmt.setInt(2, post.blockID);
-			stmt.setString(3, post.name.toString());
+			sql="insert into post(BlockId,PostName,Time,PostLabel,PostPlace,PostNote,UserCount,PostOwnerId) values(?,?,?,?,?,?,?,?,?) ";
+			PreparedStatement stmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			//stmt.setInt(1, post.id);
+			stmt.setInt(1, post.blockID);
+			stmt.setString(2, post.name.toString());
 			Long mytime=LogManager.calendar.getTimeInMillis();;
-			stmt.setLong(4, mytime);
-			stmt.setString(5, post.label.toString());
-			stmt.setString(6, post.place.toString());
-			stmt.setString(7, post.note.toString());
-			stmt.setInt(8, 1);
-			stmt.setInt(9, post.userID);
+			stmt.setLong(3, mytime);
+			stmt.setString(4, post.label.toString());
+			stmt.setString(5, post.place.toString());
+			stmt.setString(6, post.note.toString());
+			stmt.setInt(7, 1);
+			stmt.setInt(8, post.userID);
 			//post.users
 			//post.messages
 			//post.users
 		    stmt.execute();
+		    ResultSet rs1 = stmt.getGeneratedKeys(); //get result
+		    int mypostid = 10;
+		    while(rs1.next()) {  
+		    mypostid = rs1.getInt(1);//get ID  
+		    }
 		    sql="insert into userpost(UserId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.userID);
-		    stmt.setInt(2, post.id);
+		    stmt.setInt(2, mypostid);
 		    stmt.execute();
 		    
 		    sql="insert into blockpost(BlockId,PostId) value(?,?)";
 		    stmt=conn.prepareStatement(sql);
 		    stmt.setInt(1, post.blockID);
-		    stmt.setInt(2, post.id);
+		    stmt.setInt(2, mypostid);
 		    stmt.execute();
 		    sql="select PostCount from user where UserId=?";
 			stmt=conn.prepareStatement(sql);
