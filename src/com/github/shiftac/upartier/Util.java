@@ -1,5 +1,7 @@
 package com.github.shiftac.upartier;
 
+import java.nio.charset.Charset;
+
 //import java.io.FileInputStream;
 
 import org.json.JSONArray;
@@ -51,6 +53,8 @@ public class Util
         "}";
     private static JSONObject config;
     public static LogManager log = new LogManager(System.err, 10, true);
+    public static Charset defSet;
+    public static Charset tgtSet;
 
     private static final String pakname = "com.github.shiftac.upartier";
     public static Class<User> clsUser;
@@ -65,6 +69,8 @@ public class Util
             //config = new JSONObject(new JSONTokener(new FileInputStream(
             //    "config/config.json")));
             config = new JSONObject(new JSONTokener(configString));
+            defSet = Charset.defaultCharset();
+            tgtSet = Charset.forName("UTF-8");
         }
         catch (Exception e)
         {

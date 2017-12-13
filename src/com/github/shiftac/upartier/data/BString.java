@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+import com.github.shiftac.upartier.Util;
 import com.github.shiftac.upartier.network.ByteArrayIO;
 
 
@@ -32,64 +33,27 @@ public class BString implements ByteArrayIO
 
     public BString(byte[] bytes)
     {
-        setContent(new String(bytes));
+        setContent(new String(bytes, Util.tgtSet));
     }
 
     public BString(byte[] bytes, int offset, int length)
     {
-        setContent(new String(bytes, offset, length));
-    }
-
-    public BString(byte[] bytes, int offset, int length, String charsetName)
-        throws UnsupportedEncodingException
-    {
-        setContent(new String(bytes, offset, length, charsetName));
-    }
-
-    public BString(byte[] bytes, int offset, int length, Charset charset)
-    {
-        setContent(new String(bytes, offset, length, charset));
-    }
-
-    public BString(byte[] bytes, String charsetName)
-        throws UnsupportedEncodingException
-    {
-        setContent(new String(bytes, charsetName));
-    }
-
-    public BString(byte[] bytes, Charset charset)
-    {
-        setContent(new String(bytes, charset));
-    }
-
-    public BString(char[] value)
-    {
-        setContent(new String(value));
-    }
-
-    public BString(char[] value, int offset, int count)
-    {
-        setContent(new String(value, offset, count));
-    }
-
-    public BString(int[] codePoints, int offset, int count)
-    {
-        setContent(new String(codePoints, offset, count));
+        setContent(new String(bytes, offset, length, Util.tgtSet));
     }
 
     public BString(String str)
     {
-        setContent(str);
+        setContent(new String(str.getBytes(Util.defSet), Util.tgtSet));
     }
 
     public BString(StringBuffer buffer)
     {
-        setContent(new String(buffer));
+        this(buffer.toString());
     }
 
     public BString(StringBuilder builder)
     {
-        setContent(new String(builder));
+        this(builder.toString());
     }
 
     public void setContent(String str)
