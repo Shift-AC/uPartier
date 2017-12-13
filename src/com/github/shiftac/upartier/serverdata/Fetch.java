@@ -31,9 +31,10 @@ public class Fetch {
 			sql="select * from block order By BlockId desc limit 1";
 			stmt=conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			Block[] block=new Block[30];
+			int count=rs.getRow();
+			Block[] block=new Block[count];
 			int i=0;
-			for(i=0;i<30;i++) {
+			for(i=0;i<count;i++) {
 				block[i]=new Block();
 			}
 			if(rs !=null) {
@@ -616,7 +617,7 @@ public class Fetch {
 				stmt.setString(4,u.mailAccount.toString());
 				stmt.setString(5,u.nickname.toString());
 				stmt.setInt(6, u.id);
-				String mypath=u.profile.name.toString();
+				//String mypath=u.profile.name.toString();
 				
 				stmt.executeUpdate();
 	    }
