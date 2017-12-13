@@ -105,8 +105,10 @@ public class BString implements ByteArrayIO
             checkLen(len, SIZE_INT);
             int slen = getInt(buf, off);
             checkLen(len -= SIZE_INT, slen);
-            String tgt = new String(buf, off += SIZE_INT, slen, Util.tgtSet);
-            setContent(tgt);
+            mybytes = new byte[slen];
+            memcpy(mybytes, 0, buf, off += SIZE_INT, slen);
+            content = new String(mybytes, Util.tgtSet);
+            System.out.printf("read: %s\n", content);
         }
     }
 
@@ -132,6 +134,21 @@ public class BString implements ByteArrayIO
         synchronized (this)
         {
             return content;
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        String str = new String("メッセージ");
+        BString bstr = new BString(str);
+        try
+        {
+            bstr.read(bstr.toByteArray());
+            System.out.printf("res: %s\n", bstr);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 }

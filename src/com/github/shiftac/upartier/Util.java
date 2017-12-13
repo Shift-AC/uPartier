@@ -70,7 +70,8 @@ public class Util
             //    "config/config.json")));
             config = new JSONObject(new JSONTokener(configString));
             defSet = Charset.defaultCharset();
-            tgtSet = Charset.forName("UTF-8");
+            tgtSet = Charset.forName("GBK");
+            //tgtSet = Charset.forName("UTF-8");
         }
         catch (Exception e)
         {

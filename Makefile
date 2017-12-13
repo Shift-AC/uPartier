@@ -51,3 +51,6 @@ runServerTest: all
 
 runClientTest: all
 	java -cp "$(CP)"  com.github.shiftac.upartier.network.app.Client
+
+runLocaleTest: all
+	java -cp "$(CP)"  com.github.shiftac.upartier.data.BString
