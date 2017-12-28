@@ -295,6 +295,8 @@ public class Post implements ByteArrayIO, PacketGenerator
 
     public static void parseIncomingMessage(MessageInf inf)
     {
-        
+        // we don't maintain the messages in our queue, instead we just pass it
+        // to the GUI and let it fetch the messages when it needs to.
+        //com.github.shiftac.upartier.JoinPostActivity.parseIncomingMessage(inf);
     }
 }

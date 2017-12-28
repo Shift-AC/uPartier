@@ -41,6 +41,7 @@ public class WorkerManager
 
     public void broadcast(Packet pak, int[] ids, int source)
     {
+        Util.log.logMessage("Broadcasting...");
         for (int i = 0; i < ids.length; ++i)
         {
             if (ids[i] == source)
@@ -48,6 +49,7 @@ public class WorkerManager
                 continue;
             }
             ServerWorker worker = idMap.get(ids[i]);
+            Util.log.logMessage("Sending to worker " + i);
             worker.issue(pak);
         }
     }
