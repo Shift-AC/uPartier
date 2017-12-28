@@ -16,7 +16,6 @@ import com.github.shiftac.upartier.data.LoginInf;
 public abstract class ServerWorker extends AbstractWorker
 {
     protected static final LoginInf dumbLoginInf = new LoginInf(0, "", false);
-    protected AES128Key key = null;
     protected SynObject obj = new SynObject();
     protected LoginInf current = dumbLoginInf;
     protected WorkerManager manager = null;

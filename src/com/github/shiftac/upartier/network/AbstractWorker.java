@@ -19,6 +19,7 @@ public abstract class AbstractWorker
     protected ConcurrentLinkedDeque<Packet> sendQueue = 
         new ConcurrentLinkedDeque<Packet>();
     protected AtomicBoolean started = new AtomicBoolean(false);
+    protected AES128Key key;
 
     protected class OutputThread extends SimpleWaitThread
     {
@@ -92,6 +93,7 @@ public abstract class AbstractWorker
         @Override
         public void run()
         {
+        	AES128Packet.setKey(key);
             try
             {
                 AES128Packet pak = new AES128Packet();

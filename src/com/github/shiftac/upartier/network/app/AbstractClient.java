@@ -14,7 +14,6 @@ import com.github.shiftac.upartier.Util;
 public abstract class AbstractClient extends AbstractWorker
 {
     protected SynObject obj = new SynObject();
-    protected AES128Key key = null;
 
     public AbstractClient() 
     {
