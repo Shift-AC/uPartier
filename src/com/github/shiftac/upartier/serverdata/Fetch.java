@@ -690,7 +690,7 @@ public class Fetch {
     	 user.postCount=rs.getInt("PostCount");    	
     	 //new getlist();
     	 //user.myPosts=getlist.getupostlist(user.id);
-    	 user.postCount=rs.getInt("PostCount");
+    	 //user.postCount=rs.getInt("PostCount");
     	 user.profile=new Image(rs.getString("Image"));}
 	    	return user;
          }

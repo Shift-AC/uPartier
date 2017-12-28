@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
 
 import javax.crypto.Cipher;
 import com.github.shiftac.upartier.Util;
@@ -11,7 +12,8 @@ import com.github.shiftac.upartier.Util;
 public class AES128Packet extends Packet
 {
     protected byte[] buf = new byte[16];
-    static AES128Key key = null;
+
+    static HashMap<Thread, AES128Key> keyMap = new HashMap<Thread, AES128Key>();
     static AtomicInteger nowSeq = new AtomicInteger(0);
 
     public AES128Packet() 
@@ -41,14 +43,17 @@ public class AES128Packet extends Packet
     static synchronized AES128Key accessKey(
         AES128Key nkey, boolean read)
     {
+    	AES128Key res;
         if (read)
         {
-            return key;
+            res = keyMap.get(Thread.currentThread());
         }
         else
         {
-            return key = nkey;
+        	keyMap.put(Thread.currentThread(), nkey);
+            res = nkey;
         }
+        return res;
     }
 
     public static void setKey(AES128Key nkey)
@@ -65,6 +70,7 @@ public class AES128Packet extends Packet
     // also encrypt(), AES128Key.AES128Key().
     void decrypt(byte[] src, int off)
     {
+    	AES128Key key = keyMap.get(Thread.currentThread());
         try 
         {
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
@@ -79,6 +85,7 @@ public class AES128Packet extends Packet
 
     void encrypt(byte[] src, int off)
     {
+    	AES128Key key = keyMap.get(Thread.currentThread());
         try 
         {
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
